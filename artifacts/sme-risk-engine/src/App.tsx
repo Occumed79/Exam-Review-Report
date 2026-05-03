@@ -1,0 +1,130 @@
+import { Switch, Route, Router as WouterRouter, useLocation, useParams } from "wouter";
+import { useStore } from "@/lib/store";
+import AppShell from "@/components/layout/AppShell";
+import Dashboard from "@/pages/Dashboard";
+import CaseIntake from "@/pages/CaseIntake";
+import CaseHub from "@/pages/CaseHub";
+import Guidelines from "@/pages/Guidelines";
+import Sources from "@/pages/Sources";
+import Settings from "@/pages/Settings";
+import AORUpdates from "@/pages/AORUpdates";
+import ClearanceMatrix from "@/pages/ClearanceMatrix";
+import DrugChecker from "@/pages/DrugChecker";
+import ClinicalCalculator from "@/pages/ClinicalCalculator";
+import Citations from "@/pages/Citations";
+
+function CaseHubWrapper({ store }: { store: ReturnType<typeof useStore> }) {
+  const params = useParams<{ id: string }>();
+  const [, setLocation] = useLocation();
+  const caseData = store.getCaseById(params.id);
+
+  if (!caseData) {
+    return (
+      <div style={{ textAlign: "center", padding: "4rem" }}>
+        <div style={{ fontSize: "1.125rem", color: "rgba(255,255,255,0.5)", marginBottom: "1.25rem" }}>
+          Case not found: {params.id}
+        </div>
+        <button className="glow-btn" onClick={() => setLocation("/")} data-testid="btn-go-home">
+          Return to Dashboard
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <CaseHub
+      caseData={caseData}
+      onSave={(c) => store.saveCase(c)}
+    />
+  );
+}
+
+function NewCaseWrapper({ store }: { store: ReturnType<typeof useStore> }) {
+  const [, setLocation] = useLocation();
+  return (
+    <CaseIntake
+      onSave={(c) => {
+        store.saveCase(c);
+        setLocation(`/case/${c.id}`);
+      }}
+    />
+  );
+}
+
+function AppRouter() {
+  const store = useStore();
+
+  return (
+    <AppShell cases={store.cases}>
+      <Switch>
+        <Route path="/">
+          <Dashboard
+            cases={store.cases}
+            onDelete={store.deleteCase}
+            onDuplicate={store.duplicateCase}
+          />
+        </Route>
+        <Route path="/case/new">
+          <NewCaseWrapper store={store} />
+        </Route>
+        <Route path="/case/:id">
+          <CaseHubWrapper store={store} />
+        </Route>
+        <Route path="/aor">
+          <AORUpdates />
+        </Route>
+        <Route path="/matrix">
+          <ClearanceMatrix cases={store.cases} />
+        </Route>
+        <Route path="/drugs">
+          <DrugChecker />
+        </Route>
+        <Route path="/calculator">
+          <ClinicalCalculator />
+        </Route>
+        <Route path="/citations">
+          <Citations />
+        </Route>
+        <Route path="/guidelines">
+          <Guidelines
+            guidelines={store.guidelines}
+            onSave={store.saveGuideline}
+            onDelete={store.deleteGuideline}
+          />
+        </Route>
+        <Route path="/sources">
+          <Sources
+            sources={store.sources}
+            onSave={store.saveSource}
+            onDelete={store.deleteSource}
+          />
+        </Route>
+        <Route path="/settings">
+          <Settings
+            caseCount={store.cases.length}
+            guidelineCount={store.guidelines.length}
+            sourceCount={store.sources.length}
+            onExport={store.exportAll}
+            onImport={store.importAll}
+            onClearAll={store.clearAll}
+          />
+        </Route>
+        <Route>
+          <div style={{ textAlign: "center", padding: "4rem" }}>
+            <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "rgba(255,255,255,0.4)" }}>Page not found</div>
+          </div>
+        </Route>
+      </Switch>
+    </AppShell>
+  );
+}
+
+function App() {
+  return (
+    <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 
+      <AppRouter />
+    </WouterRouter>
+  );
+}
+
+export default App;
