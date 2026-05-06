@@ -1,5 +1,65 @@
 import { useState, useEffect, useCallback } from "react";
 import { SMECase, Guideline, Source } from "./types";
+
+
+type UnknownRecord = Record<string, unknown>;
+
+function isRecord(value: unknown): value is UnknownRecord {
+  return typeof value === "object" && value !== null;
+}
+
+function isSMECaseLike(value: unknown): value is SMECase {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    typeof value.caseId === "string" &&
+    typeof value.examineeName === "string" &&
+    typeof value.jobTitle === "string" &&
+    typeof value.status === "string"
+  );
+}
+
+function isGuidelineLike(value: unknown): value is Guideline {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    typeof value.sourceName === "string" &&
+    typeof value.agency === "string"
+  );
+}
+
+function isSourceLike(value: unknown): value is Source {
+  if (!isRecord(value)) return false;
+  return (
+    typeof value.id === "string" &&
+    typeof value.title === "string" &&
+    typeof value.organization === "string"
+  );
+}
+
+function sanitizeImportData(data: unknown): { cases: SMECase[]; guidelines: Guideline[]; sources: Source[] } | null {
+  if (!isRecord(data)) return null;
+
+  const rawCases = Array.isArray(data.cases) ? data.cases : [];
+  const rawGuidelines = Array.isArray(data.guidelines) ? data.guidelines : [];
+  const rawSources = Array.isArray(data.sources) ? data.sources : [];
+
+  const cases = rawCases.filter(isSMECaseLike);
+  const guidelines = rawGuidelines.filter(isGuidelineLike);
+  const sources = rawSources.filter(isSourceLike);
+
+  if (rawCases.length && !cases.length) return null;
+  if (rawGuidelines.length && !guidelines.length) return null;
+  if (rawSources.length && !sources.length) return null;
+
+  return { cases, guidelines, sources };
+}
+
+function loadValidatedArray<T>(key: string, validator: (value: unknown) => value is T): T[] {
+  const raw = load<unknown>(key, []);
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(validator);
+}
 import { SAMPLE_CASES, SAMPLE_GUIDELINES, SAMPLE_SOURCES } from "./sampleData";
 
 const KEYS = {
@@ -28,9 +88,9 @@ function save<T>(key: string, value: T): void {
 }
 
 export function useStore() {
-  const [cases, setCases] = useState<SMECase[]>(() => load(KEYS.cases, []));
-  const [guidelines, setGuidelines] = useState<Guideline[]>(() => load(KEYS.guidelines, []));
-  const [sources, setSources] = useState<Source[]>(() => load(KEYS.sources, []));
+  const [cases, setCases] = useState<SMECase[]>(() => loadValidatedArray(KEYS.cases, isSMECaseLike));
+  const [guidelines, setGuidelines] = useState<Guideline[]>(() => loadValidatedArray(KEYS.guidelines, isGuidelineLike));
+  const [sources, setSources] = useState<Source[]>(() => loadValidatedArray(KEYS.sources, isSourceLike));
 
   // Initialize with sample data on first load
   useEffect(() => {
@@ -156,10 +216,16 @@ export function useStore() {
 
   const importAll = useCallback((jsonString: string) => {
     try {
-      const data = JSON.parse(jsonString);
-      if (data.cases) { save(KEYS.cases, data.cases); setCases(data.cases); }
-      if (data.guidelines) { save(KEYS.guidelines, data.guidelines); setGuidelines(data.guidelines); }
-      if (data.sources) { save(KEYS.sources, data.sources); setSources(data.sources); }
+      const parsedData: unknown = JSON.parse(jsonString);
+      const data = sanitizeImportData(parsedData);
+      if (!data) return false;
+
+      save(KEYS.cases, data.cases);
+      save(KEYS.guidelines, data.guidelines);
+      save(KEYS.sources, data.sources);
+      setCases(data.cases);
+      setGuidelines(data.guidelines);
+      setSources(data.sources);
       localStorage.setItem(KEYS.initialized, "true");
       return true;
     } catch {
