@@ -54,12 +54,15 @@ function sanitizeImportData(data: unknown): { cases: SMECase[]; guidelines: Guid
 
   return { cases, guidelines, sources };
 }
+<<<<<<< codex/assist-with-github-repo-interaction-w5pbao
 
 function loadValidatedArray<T>(key: string, validator: (value: unknown) => value is T): T[] {
   const raw = load<unknown>(key, []);
   if (!Array.isArray(raw)) return [];
   return raw.filter(validator);
 }
+=======
+>>>>>>> main
 import { SAMPLE_CASES, SAMPLE_GUIDELINES, SAMPLE_SOURCES } from "./sampleData";
 
 const KEYS = {
