@@ -12,53 +12,57 @@ Vercel is the gold standard for React/Vite applications. It offers seamless GitH
 - **Pros**: Zero-config, extremely fast global CDN, built-in SSL, and excellent environment variable management.
 - **Cost**: Free tier is very generous; Pro tier is $20/mo.
 
-### **Option B: Netlify (Great Alternative)**
-Similar to Vercel, Netlify is perfect for modern web apps.
-- **Pros**: Excellent form handling and identity management if you decide to add a backend later.
-- **Cost**: Free tier available.
+### **Option B: Render (Best for Full-Stack Flexibility)**
+Render is a powerful alternative that can host both your frontend and your backend (if you decide to use the `api-server` later).
+- **Pros**: Unified platform for web services, static sites, and databases. Excellent "Blueprint" feature for infrastructure-as-code.
+- **Cost**: Free tier for static sites; Web services start at $7/mo.
 
-### **Option C: Replit (Best for Rapid Prototyping)**
-Since the repository already contains a `replit.md`, this is a great option if you want to keep everything in one place for development and hosting.
-- **Pros**: Integrated IDE and hosting.
-- **Cost**: Free and paid tiers.
+### **Option C: Neon (The Elite Database Solution)**
+If you want to move beyond `localStorage` and store your cases in a real database, **Neon** is the "Elite Tier" choice.
+- **Pros**: Serverless Postgres with "branching" capabilities (like Git for your data). It scales automatically and is extremely fast.
+- **Cost**: Generous free tier; Pro tier based on usage.
 
 ---
 
-## 2. Step-by-Step Deployment Guide (Vercel)
+## 2. Step-by-Step Deployment Guide (Render)
 
 ### **Step 1: Connect Your GitHub**
-1. Go to [vercel.com](https://vercel.com) and sign up with your GitHub account.
-2. Click **"Add New..."** and select **"Project."**
+1. Go to [render.com](https://render.com) and sign up with your GitHub account.
+2. Click **"New +"** and select **"Static Site."**
 3. Import your `Exam-Review-Report` repository.
 
 ### **Step 2: Configure Build Settings**
-Vercel should automatically detect the Vite settings, but ensure they match:
-- **Framework Preset**: Vite
-- **Build Command**: `pnpm build` (or `npm run build`)
-- **Output Directory**: `dist`
+- **Name**: `sme-risk-intelligence`
 - **Root Directory**: `artifacts/sme-risk-engine`
+- **Build Command**: `pnpm install && pnpm build`
+- **Publish Directory**: `dist`
 
 ### **Step 3: Add Your "Nuclear Fuel" API Keys**
-This is the most important step. You must add your API keys as **Environment Variables**:
-1. In the Vercel project settings, go to **"Environment Variables."**
+1. In the Render dashboard, go to the **"Environment"** tab.
 2. Add each key from your `NUCLEAR_FUEL_API_GUIDE.md`:
    - `OPENAI_API_KEY`
    - `ONET_API_KEY`
    - `PUBMED_API_KEY`
    - etc.
-3. Click **"Save."**
-
-### **Step 4: Deploy**
-1. Click **"Deploy."**
-2. Vercel will build your application and provide you with a live URL (e.g., `sme-risk-intelligence.vercel.app`).
+3. Click **"Save Changes."**
 
 ---
 
-## 3. Post-Deployment Checklist
+## 3. Setting Up Neon (Optional Database)
+
+If you decide to upgrade to a persistent database:
+1. Go to [neon.tech](https://neon.tech) and create a new project.
+2. Copy your **Connection String** (it looks like `postgres://user:password@host/dbname`).
+3. Add this string to your Render/Vercel environment variables as `DATABASE_URL`.
+4. The platform is already architected to support this transition in future versions.
+
+---
+
+## 4. Post-Deployment Checklist
 - [ ] **Verify SSL**: Ensure your site is running on `https://`.
 - [ ] **Test APIs**: Open the "Nuclear Fuel" tab in the live app to ensure all APIs are connected.
 - [ ] **Check Aesthetic**: Verify that the "Liquid Glass" and "Cursor Glow" effects are performing smoothly on the live URL.
-- [ ] **Secure Your Site**: If you are handling sensitive data, consider adding a password protection layer (Vercel offers this in the Pro tier).
+- [ ] **Secure Your Site**: If you are handling sensitive data, consider adding a password protection layer.
 
 ---
 
