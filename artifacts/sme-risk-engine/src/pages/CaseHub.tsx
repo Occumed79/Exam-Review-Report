@@ -15,6 +15,7 @@ import HealthEquity from "./case-tabs/HealthEquity";
 import RiskScoring from "./case-tabs/RiskScoring";
 import DocumentationGaps from "./case-tabs/DocumentationGaps";
 import SMEReport from "./case-tabs/SMEReport";
+import ExecutiveIntelligenceReport from "./case-tabs/ExecutiveIntelligenceReport";
 import ReportBuilder from "./ReportBuilder";
 import CaseIntake from "./CaseIntake";
 
@@ -36,6 +37,7 @@ const TABS = [
   { id: "health-equity", label: "Health Equity", icon: Users },
   { id: "risk-scoring", label: "Risk Scoring", icon: TrendingUp },
   { id: "doc-gaps", label: "Doc Gaps", icon: FileSearch },
+  { id: "executive", label: "Executive Report", icon: TrendingUp },
   { id: "report", label: "SME Report", icon: FileText },
   { id: "builder", label: "Report Builder", icon: ChevronRight },
 ];
@@ -61,6 +63,7 @@ function getTabCompletion(tab: string, c: SMECase): "complete" | "partial" | "em
     case "health-equity": return c.healthEquity ? "complete" : "empty";
     case "risk-scoring": return c.riskScores.length > 0 ? "complete" : "empty";
     case "doc-gaps": return c.documentationGaps.length > 0 ? "complete" : "empty";
+    case "executive": return c.medicalConditions.length > 0 && c.jobTitle ? "complete" : "partial";
     case "report": return c.smeAssessment.clinicalInterpretation ? "complete" : "empty";
     case "builder": return c.riskScores.length > 0 ? "complete" : "empty";
     default: return "empty";
@@ -94,6 +97,7 @@ export default function CaseHub({ caseData, onSave, guidelines }: CaseHubProps) 
       case "health-equity": return <HealthEquity caseData={localCase} onUpdate={updateCase} />;
       case "risk-scoring": return <RiskScoring caseData={localCase} onUpdate={updateCase} />;
       case "doc-gaps": return <DocumentationGaps caseData={localCase} onUpdate={updateCase} />;
+      case "executive": return <ExecutiveIntelligenceReport caseData={localCase} onUpdate={updateCase} />;
       case "report": return <SMEReport caseData={localCase} onUpdate={updateCase} />;
       case "builder": return <ReportBuilder caseData={localCase} guidelines={guidelines} />;
       default: return null;

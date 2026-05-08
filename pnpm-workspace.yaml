@@ -36,8 +36,8 @@ minimumReleaseAgeExclude:
 
 packages:
   - artifacts/*
-  - lib/*
-  - lib/integrations/*
+  - Lib/*
+  - Lib/integrations/*
   - scripts
 
 catalog:
