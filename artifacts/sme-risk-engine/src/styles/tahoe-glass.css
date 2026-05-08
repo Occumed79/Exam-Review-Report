@@ -1,0 +1,475 @@
+/**
+ * macOS Tahoe Liquid Glass Aesthetic
+ * Luminous, floating orbs, cursor glow, and glassmorphism
+ */
+
+:root {
+  /* Tahoe Glass Color Palette */
+  --glass-primary: rgba(255, 255, 255, 0.08);
+  --glass-secondary: rgba(255, 255, 255, 0.12);
+  --glass-tertiary: rgba(255, 255, 255, 0.15);
+  --glass-glow: rgba(255, 255, 255, 0.25);
+  
+  /* Luminous Colors */
+  --luminous-white: #ffffff;
+  --luminous-blue: #0084ff;
+  --luminous-green: #00d084;
+  --luminous-purple: #a855f7;
+  --luminous-pink: #ec4899;
+  
+  /* Dark Background */
+  --bg-dark: #0a0e27;
+  --bg-darker: #050812;
+  
+  /* Glassmorphism Blur */
+  --glass-blur: blur(20px);
+  --glass-blur-light: blur(10px);
+}
+
+/* ============================================
+   BACKGROUND & FLOATING ORBS
+   ============================================ */
+
+body {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1428 100%);
+  background-attachment: fixed;
+  color: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Floating Orbs Background */
+.tahoe-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05));
+  filter: blur(60px);
+  animation: float 20s ease-in-out infinite;
+}
+
+.orb-1 {
+  width: 400px;
+  height: 400px;
+  top: 10%;
+  left: 10%;
+  animation: float 25s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+.orb-2 {
+  width: 300px;
+  height: 300px;
+  top: 60%;
+  right: 15%;
+  animation: float 30s ease-in-out infinite reverse;
+  opacity: 0.25;
+}
+
+.orb-3 {
+  width: 350px;
+  height: 350px;
+  bottom: 10%;
+  left: 50%;
+  animation: float 28s ease-in-out infinite;
+  opacity: 0.2;
+}
+
+.orb-4 {
+  width: 250px;
+  height: 250px;
+  top: 40%;
+  right: 5%;
+  animation: float 22s ease-in-out infinite reverse;
+  opacity: 0.15;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+  25% {
+    transform: translate(30px, -30px);
+  }
+  50% {
+    transform: translate(-20px, 20px);
+  }
+  75% {
+    transform: translate(20px, 10px);
+  }
+}
+
+/* ============================================
+   CURSOR GLOW EFFECT
+   ============================================ */
+
+.cursor-glow {
+  position: fixed;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 132, 255, 0.4), rgba(0, 132, 255, 0.1), transparent);
+  pointer-events: none;
+  z-index: 9999;
+  box-shadow: 0 0 40px rgba(0, 132, 255, 0.3), 0 0 80px rgba(0, 132, 255, 0.15);
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+}
+
+.cursor-glow.active {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 40px rgba(0, 132, 255, 0.3), 0 0 80px rgba(0, 132, 255, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 60px rgba(0, 132, 255, 0.5), 0 0 120px rgba(0, 132, 255, 0.25);
+  }
+}
+
+/* ============================================
+   GLASSMORPHISM CONTAINERS
+   ============================================ */
+
+.glass-container {
+  background: var(--glass-primary);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-secondary);
+  border-radius: 24px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: 24px;
+}
+
+.glass-container-elevated {
+  background: var(--glass-secondary);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-tertiary);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+}
+
+.glass-card {
+  background: var(--glass-tertiary);
+  backdrop-filter: var(--glass-blur-light);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  background: var(--glass-glow);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 132, 255, 0.1);
+}
+
+/* ============================================
+   LUMINOUS TEXT & GLOWS
+   ============================================ */
+
+.text-luminous {
+  color: var(--luminous-white);
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.text-glow-blue {
+  color: var(--luminous-blue);
+  text-shadow: 0 0 20px rgba(0, 132, 255, 0.5);
+}
+
+.text-glow-green {
+  color: var(--luminous-green);
+  text-shadow: 0 0 20px rgba(0, 208, 132, 0.5);
+}
+
+.text-glow-purple {
+  color: var(--luminous-purple);
+  text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+}
+
+.glow-accent {
+  background: linear-gradient(135deg, var(--luminous-blue), var(--luminous-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 30px rgba(0, 132, 255, 0.3);
+}
+
+/* ============================================
+   GLOWING BARS & CHARTS
+   ============================================ */
+
+.glow-bar {
+  background: linear-gradient(90deg, rgba(0, 132, 255, 0.3), rgba(0, 132, 255, 0.6), rgba(0, 132, 255, 0.3));
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 132, 255, 0.4), inset 0 0 20px rgba(0, 132, 255, 0.2);
+}
+
+.glow-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.glow-bar-success {
+  background: linear-gradient(90deg, rgba(0, 208, 132, 0.3), rgba(0, 208, 132, 0.6), rgba(0, 208, 132, 0.3));
+  box-shadow: 0 0 20px rgba(0, 208, 132, 0.4), inset 0 0 20px rgba(0, 208, 132, 0.2);
+}
+
+.glow-bar-warning {
+  background: linear-gradient(90deg, rgba(255, 165, 0, 0.3), rgba(255, 165, 0, 0.6), rgba(255, 165, 0, 0.3));
+  box-shadow: 0 0 20px rgba(255, 165, 0, 0.4), inset 0 0 20px rgba(255, 165, 0, 0.2);
+}
+
+.glow-bar-danger {
+  background: linear-gradient(90deg, rgba(236, 72, 153, 0.3), rgba(236, 72, 153, 0.6), rgba(236, 72, 153, 0.3));
+  box-shadow: 0 0 20px rgba(236, 72, 153, 0.4), inset 0 0 20px rgba(236, 72, 153, 0.2);
+}
+
+/* ============================================
+   NEURAL PROCESSING VISUALS
+   ============================================ */
+
+.neural-processor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px;
+  background: var(--glass-secondary);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 132, 255, 0.3);
+}
+
+.neural-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--luminous-blue);
+  box-shadow: 0 0 10px rgba(0, 132, 255, 0.8);
+  animation: pulse-dot 1.5s ease-in-out infinite;
+}
+
+.neural-dot:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.neural-dot:nth-child(2) {
+  animation-delay: 0.3s;
+}
+
+.neural-dot:nth-child(3) {
+  animation-delay: 0.6s;
+}
+
+@keyframes pulse-dot {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.neural-wave {
+  position: relative;
+  height: 60px;
+  background: var(--glass-tertiary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 132, 255, 0.2);
+}
+
+.neural-wave svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px rgba(0, 132, 255, 0.4));
+}
+
+/* ============================================
+   ANIMATED CHARTS
+   ============================================ */
+
+.chart-container {
+  position: relative;
+  padding: 20px;
+  background: var(--glass-secondary);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 132, 255, 0.2);
+}
+
+.chart-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  height: 200px;
+  padding: 20px 0;
+}
+
+.chart-bar-item {
+  flex: 1;
+  background: linear-gradient(180deg, var(--luminous-blue), rgba(0, 132, 255, 0.3));
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 15px rgba(0, 132, 255, 0.3);
+  animation: grow-up 1s ease-out forwards;
+}
+
+.chart-bar-item::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.6);
+  animation: glow-top 2s ease-in-out infinite;
+}
+
+@keyframes grow-up {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--height);
+  }
+}
+
+@keyframes glow-top {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   BUTTONS & INTERACTIVE ELEMENTS
+   ============================================ */
+
+.btn-glass {
+  background: var(--glass-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--luminous-white);
+  padding: 12px 24px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: var(--glass-blur-light);
+}
+
+.btn-glass:hover {
+  background: var(--glass-glow);
+  border-color: rgba(0, 132, 255, 0.5);
+  box-shadow: 0 0 20px rgba(0, 132, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-glass-primary {
+  background: linear-gradient(135deg, rgba(0, 132, 255, 0.3), rgba(168, 85, 247, 0.2));
+  border: 1px solid rgba(0, 132, 255, 0.4);
+}
+
+.btn-glass-primary:hover {
+  background: linear-gradient(135deg, rgba(0, 132, 255, 0.5), rgba(168, 85, 247, 0.4));
+  box-shadow: 0 0 30px rgba(0, 132, 255, 0.4);
+}
+
+/* ============================================
+   MAIN CONTENT AREA
+   ============================================ */
+
+.main-content {
+  position: relative;
+  z-index: 10;
+  padding: 40px;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar Styling */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: rgba(0, 132, 255, 0.3);
+  border-radius: 4px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 132, 255, 0.5);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 20px;
+  }
+
+  .glass-container {
+    padding: 16px;
+  }
+
+  .orb {
+    filter: blur(40px);
+  }
+
+  .cursor-glow {
+    width: 60px;
+    height: 60px;
+  }
+}
