@@ -1,6 +1,7 @@
 /**
- * Advanced Risk Intelligence Engine
- * Sophisticated probability calculation combining medical, occupational, and legal factors
+ * Advanced Risk Intelligence Engine - Expanded Version
+ * Sophisticated probability calculation combining medical, occupational, and legal factors.
+ * Integrates MOD 18, POST, NFPA, FMCSA, and DOT guidelines.
  */
 
 import { SMECase, MedicalCondition, InjuryRecord } from "./types";
@@ -14,6 +15,8 @@ export interface RiskProbabilityResult {
   protectiveFactors: ProtectiveFactor[];
   timeline: RiskTimeline[];
   legalAnalysis: LegalAnalysis;
+  regulatoryCompliance: RegulatoryCompliance;
+  explainability: ExplainabilityFactor[];
   recommendations: string[];
 }
 
@@ -22,7 +25,7 @@ export interface RiskFactor {
   severity: "high" | "moderate" | "low";
   probability: number; // 0-1
   weight: number; // 0-1
-  source: "medical" | "occupational" | "environmental" | "legal";
+  source: "medical" | "occupational" | "environmental" | "legal" | "regulatory";
   description: string;
 }
 
@@ -64,20 +67,57 @@ export interface LegalPrecedent {
   applicability: "high" | "moderate" | "low";
 }
 
+export interface RegulatoryCompliance {
+  mod18: ComplianceStatus;
+  post: ComplianceStatus;
+  nfpa1582: ComplianceStatus;
+  fmcsa: ComplianceStatus;
+  dot: ComplianceStatus;
+}
+
+export interface ComplianceStatus {
+  status: "compliant" | "non-compliant" | "waiver-required" | "not-applicable";
+  findings: string[];
+  riskImpact: number; // 0-1
+}
+
+export interface ExplainabilityFactor {
+  factor: string;
+  impact: number; // -1 to 1
+  description: string;
+}
+
 /**
  * Main calculation function
  */
 export function calculateAdvancedRisk(caseData: SMECase): RiskProbabilityResult {
   const riskFactors = extractRiskFactors(caseData);
   const protectiveFactors = extractProtectiveFactors(caseData);
+  const regulatory = assessRegulatoryCompliance(caseData);
+  
+  // Add regulatory risks to factors
+  Object.values(regulatory).forEach(reg => {
+    if (reg.status === "non-compliant" || reg.status === "waiver-required") {
+      riskFactors.push({
+        name: `Regulatory: ${reg.status.toUpperCase()}`,
+        severity: reg.riskImpact > 0.7 ? "high" : "moderate",
+        probability: reg.riskImpact,
+        weight: 0.4,
+        source: "regulatory",
+        description: reg.findings.join("; "),
+      });
+    }
+  });
+
   const injuryProb = calculateInjuryProbability(riskFactors, protectiveFactors);
   const aggravationProb = calculateAggravationProbability(caseData);
   const directThreat = calculateDirectThreatScore(caseData, injuryProb, aggravationProb);
   const timeline = generateRiskTimeline(caseData, injuryProb);
   const legalAnalysis = performLegalAnalysis(caseData, directThreat);
+  const explainability = generateExplainability(riskFactors, protectiveFactors, regulatory);
 
   const overallRiskScore = Math.round(
-    injuryProb * 60 + aggravationProb * 25 + (directThreat.likelihood / 100) * 15
+    injuryProb * 50 + aggravationProb * 20 + (directThreat.likelihood / 100) * 15 + (calculateRegulatoryRisk(regulatory) * 15)
   );
 
   return {
@@ -89,11 +129,14 @@ export function calculateAdvancedRisk(caseData: SMECase): RiskProbabilityResult 
     protectiveFactors,
     timeline,
     legalAnalysis,
+    regulatoryCompliance: regulatory,
+    explainability,
     recommendations: generateRecommendations(
       injuryProb,
       aggravationProb,
       directThreat,
-      caseData
+      caseData,
+      regulatory
     ),
   };
 }
@@ -173,7 +216,8 @@ function assessInjuryRisk(injury: InjuryRecord): RiskFactor | null {
   // Adjust for documentation confidence
   if (injury.documentationConfidence === "missing") baseProbability = 0.7;
   else if (injury.documentationConfidence === "unclear") baseProbability = 0.5;
-  else  if (injury.documentationConfidence === "documented") baseProbability = 0.2;
+  else if (injury.documentationConfidence === "documented") baseProbability = 0.2;
+  
   // Adjust for residual pain
   if (injury.residualPain >= 7) baseProbability *= 1.5;
   else if (injury.residualPain >= 4) baseProbability *= 1.2;
@@ -345,21 +389,129 @@ function extractProtectiveFactors(caseData: SMECase): ProtectiveFactor[] {
     });
   }
 
-  // Good health equity factors
-  if (caseData.healthEquity) {
-    const he = caseData.healthEquity;
-    if (he.accessToCare === "Adequate" || he.accessToCare === "Good") {
-      factors.push({
-        name: "Good Healthcare Access",
-        strength: "moderate",
-        probability: 0.55,
-        weight: 0.1,
-        description: "Adequate access to ongoing medical care",
-      });
-    }
+  return factors;
+}
+
+/**
+ * Assess Regulatory Compliance (MOD 18, POST, NFPA, FMCSA, DOT)
+ */
+function assessRegulatoryCompliance(caseData: SMECase): RegulatoryCompliance {
+  const compliance: RegulatoryCompliance = {
+    mod18: { status: "not-applicable", findings: [], riskImpact: 0 },
+    post: { status: "not-applicable", findings: [], riskImpact: 0 },
+    nfpa1582: { status: "not-applicable", findings: [], riskImpact: 0 },
+    fmcsa: { status: "not-applicable", findings: [], riskImpact: 0 },
+    dot: { status: "not-applicable", findings: [], riskImpact: 0 },
+  };
+
+  const isDeployment = caseData.examType === "deployment";
+  const isLawEnforcement = caseData.examType === "law-enforcement";
+  const isFirefighter = caseData.examType === "firefighter";
+  const isAviation = caseData.examType === "aviation";
+  const isDOT = caseData.examType === "dot-fmcsa";
+
+  // MOD 18 Assessment
+  if (isDeployment) {
+    const findings: string[] = [];
+    let riskImpact = 0;
+    
+    caseData.medicalConditions.forEach(c => {
+      if (c.category === "respiratory" && c.severity > 5) {
+        findings.push("MOD 18: Moderate/Severe respiratory condition requires waiver");
+        riskImpact = Math.max(riskImpact, 0.8);
+      }
+      if (c.category === "neurologic" && c.conditionName.toLowerCase().includes("seizure")) {
+        findings.push("MOD 18: Seizure history requires 1-year stability for waiver");
+        riskImpact = Math.max(riskImpact, 0.9);
+      }
+      if (c.category === "endocrine-metabolic" && c.conditionName.toLowerCase().includes("diabetes") && c.severity > 6) {
+        findings.push("MOD 18: HbA1c > 7.0 or insulin use is disqualifying");
+        riskImpact = Math.max(riskImpact, 0.85);
+      }
+    });
+
+    compliance.mod18 = {
+      status: findings.length > 0 ? "waiver-required" : "compliant",
+      findings,
+      riskImpact,
+    };
   }
 
-  return factors;
+  // NFPA 1582 Assessment
+  if (isFirefighter) {
+    const findings: string[] = [];
+    let riskImpact = 0;
+    
+    caseData.medicalConditions.forEach(c => {
+      if (c.category === "cardiovascular" && c.severity > 6) {
+        findings.push("NFPA 1582: Category A Cardiac condition detected");
+        riskImpact = Math.max(riskImpact, 0.95);
+      }
+      if (c.category === "respiratory" && c.severity > 7) {
+        findings.push("NFPA 1582: Category A Respiratory condition detected");
+        riskImpact = Math.max(riskImpact, 0.9);
+      }
+    });
+
+    compliance.nfpa1582 = {
+      status: findings.length > 0 ? "non-compliant" : "compliant",
+      findings,
+      riskImpact,
+    };
+  }
+
+  // FMCSA / DOT Assessment
+  if (isDOT) {
+    const findings: string[] = [];
+    let riskImpact = 0;
+    
+    caseData.medicalConditions.forEach(c => {
+      if (c.category === "cardiovascular" && c.severity > 5) {
+        findings.push("FMCSA: Cardiovascular condition requires specific certification");
+        riskImpact = Math.max(riskImpact, 0.7);
+      }
+      if (c.category === "neurologic" && c.conditionName.toLowerCase().includes("seizure")) {
+        findings.push("FMCSA: Seizure history generally requires 8-10 years seizure-free");
+        riskImpact = Math.max(riskImpact, 0.95);
+      }
+    });
+
+    compliance.fmcsa = {
+      status: findings.length > 0 ? "non-compliant" : "compliant",
+      findings,
+      riskImpact,
+    };
+    compliance.dot = compliance.fmcsa;
+  }
+
+  // POST Assessment
+  if (isLawEnforcement) {
+    const findings: string[] = [];
+    let riskImpact = 0;
+    
+    caseData.medicalConditions.forEach(c => {
+      if (c.severity > 7) {
+        findings.push(`POST: High severity ${c.category} condition requires individualized risk quantification`);
+        riskImpact = Math.max(riskImpact, 0.75);
+      }
+    });
+
+    compliance.post = {
+      status: findings.length > 0 ? "waiver-required" : "compliant",
+      findings,
+      riskImpact,
+    };
+  }
+
+  return compliance;
+}
+
+/**
+ * Calculate overall regulatory risk
+ */
+function calculateRegulatoryRisk(compliance: RegulatoryCompliance): number {
+  const impacts = Object.values(compliance).map(c => c.riskImpact);
+  return Math.max(...impacts);
 }
 
 /**
@@ -369,10 +521,7 @@ function calculateInjuryProbability(
   riskFactors: RiskFactor[],
   protectiveFactors: ProtectiveFactor[]
 ): number {
-  // Prior probability (baseline)
   const priorProb = 0.3;
-
-  // Calculate weighted risk
   let riskScore = 0;
   let totalRiskWeight = 0;
   for (const factor of riskFactors) {
@@ -381,7 +530,6 @@ function calculateInjuryProbability(
   }
   const normalizedRiskScore = totalRiskWeight > 0 ? riskScore / totalRiskWeight : 0;
 
-  // Calculate weighted protective
   let protectiveScore = 0;
   let totalProtectiveWeight = 0;
   for (const factor of protectiveFactors) {
@@ -390,7 +538,6 @@ function calculateInjuryProbability(
   }
   const normalizedProtectiveScore = totalProtectiveWeight > 0 ? protectiveScore / totalProtectiveWeight : 0;
 
-  // Bayesian update
   const likelihood = normalizedRiskScore;
   const notLikelihood = 1 - normalizedProtectiveScore;
   const posterior = (likelihood * priorProb) / (likelihood * priorProb + notLikelihood * (1 - priorProb));
@@ -402,25 +549,18 @@ function calculateInjuryProbability(
  * Calculate aggravation probability
  */
 function calculateAggravationProbability(caseData: SMECase): number {
-  let aggravationProb = 0.2; // Base probability
-
-  // Increase if there are unresolved injuries
+  let aggravationProb = 0.2;
   const unresolvedInjuries = caseData.injuries.filter(i => i.documentationConfidence !== "documented");
   if (unresolvedInjuries.length > 0) {
     aggravationProb += unresolvedInjuries.length * 0.15;
   }
-
-  // Increase if there are active conditions
   const activeConditions = caseData.medicalConditions.filter(c => c.status === "active" || c.status === "uncontrolled");
   if (activeConditions.length > 0) {
     aggravationProb += activeConditions.length * 0.12;
   }
-
-  // Increase if job demands are high
   if (caseData.jobDuties.physicalDemands.length >= 4) {
     aggravationProb += 0.15;
   }
-
   return Math.min(1, aggravationProb);
 }
 
@@ -432,65 +572,32 @@ function calculateDirectThreatScore(
   injuryProb: number,
   aggravationProb: number
 ): DirectThreatCriteria {
-  // Duration: How long will the risk persist?
   const durationScore = Math.min(100, injuryProb * 100);
-
-  // Severity: What is the worst-case scenario?
   const maxSeverity = Math.max(
     ...caseData.medicalConditions.map(c => c.severity),
-    ...caseData.injuries.map(i => i.residualPain)
+    ...caseData.injuries.map(i => i.residualPain),
+    0
   );
   const severityScore = Math.min(100, (maxSeverity / 10) * 100);
-
-  // Likelihood: What is the probability of harm?
   const likelihoodScore = injuryProb * 100;
-
-  // Imminence: How soon could this happen?
-  let imminenceScore = 30; // Base
+  let imminenceScore = 30;
   const activeConditions = caseData.medicalConditions.filter(c => c.status === "active" || c.status === "uncontrolled");
   if (activeConditions.length > 0) {
     imminenceScore = Math.min(100, 60 + activeConditions.length * 15);
   }
-
   const overallScore = Math.round((durationScore + severityScore + likelihoodScore + imminenceScore) / 4);
-
-  return {
-    duration: durationScore,
-    severity: severityScore,
-    likelihood: likelihoodScore,
-    imminence: imminenceScore,
-    overallScore,
-  };
+  return { duration: durationScore, severity: severityScore, likelihood: likelihoodScore, imminence: imminenceScore, overallScore };
 }
 
 /**
  * Generate risk timeline
  */
 function generateRiskTimeline(caseData: SMECase, injuryProb: number): RiskTimeline[] {
-  const timeline: RiskTimeline[] = [];
-
-  // Short term (0-3 months)
-  timeline.push({
-    period: "0-3 months",
-    probability: injuryProb * 0.7,
-    severity: injuryProb > 0.6 ? "high" : injuryProb > 0.3 ? "moderate" : "low",
-  });
-
-  // Medium term (3-12 months)
-  timeline.push({
-    period: "3-12 months",
-    probability: injuryProb * 0.85,
-    severity: injuryProb > 0.5 ? "high" : injuryProb > 0.25 ? "moderate" : "low",
-  });
-
-  // Long term (1-5 years)
-  timeline.push({
-    period: "1-5 years",
-    probability: injuryProb * 0.95,
-    severity: injuryProb > 0.4 ? "high" : injuryProb > 0.2 ? "moderate" : "low",
-  });
-
-  return timeline;
+  return [
+    { period: "0-3 months", probability: injuryProb * 0.7, severity: injuryProb > 0.6 ? "high" : injuryProb > 0.3 ? "moderate" : "low" },
+    { period: "3-12 months", probability: injuryProb * 0.85, severity: injuryProb > 0.5 ? "high" : injuryProb > 0.25 ? "moderate" : "low" },
+    { period: "1-5 years", probability: injuryProb * 0.95, severity: injuryProb > 0.4 ? "high" : injuryProb > 0.2 ? "moderate" : "low" },
+  ];
 }
 
 /**
@@ -501,59 +608,51 @@ function performLegalAnalysis(
   directThreat: DirectThreatCriteria
 ): LegalAnalysis {
   const applicableLaws = ["Americans with Disabilities Act (ADA)", "EEOC Guidance on Fitness for Duty"];
-
-  if (caseData.agencyStandard) {
-    applicableLaws.push(`${caseData.agencyStandard} Standards`);
-  }
+  if (caseData.agencyStandard) applicableLaws.push(`${caseData.agencyStandard} Standards`);
 
   const precedents: LegalPrecedent[] = [
-    {
-      case: "Chevron U.S.A. Inc. v. Echazabal",
-      year: 2002,
-      relevance: "Establishes employer right to consider direct threat to employee's own health",
-      outcome: "Employers can deny employment based on occupational health risk",
-      applicability: "high",
-    },
-    {
-      case: "Bragdon v. Abbott",
-      year: 1998,
-      relevance: "Defines disability and substantial limitation in major life activities",
-      outcome: "Broad interpretation of disability under ADA",
-      applicability: "moderate",
-    },
-    {
-      case: "EEOC v. Prevo's Family Market",
-      year: 2013,
-      relevance: "Direct threat assessment must be individualized and based on objective evidence",
-      outcome: "Employers must conduct individualized risk assessment",
-      applicability: "high",
-    },
+    { case: "Chevron U.S.A. Inc. v. Echazabal", year: 2002, relevance: "Employer right to consider direct threat to employee's own health", outcome: "Upheld", applicability: "high" },
+    { case: "EEOC v. Prevo's Family Market", year: 2013, relevance: "Individualized assessment requirement", outcome: "Upheld", applicability: "high" },
   ];
 
-  // Defensibility score based on documentation and risk factors
-  const defensibility = Math.min(
-    100,
-    (directThreat.overallScore * 0.5) + (caseData.documentationGaps.length === 0 ? 25 : 10)
-  );
-
-  const recommendations = [];
-  if (directThreat.overallScore > 70) {
-    recommendations.push("High direct threat score - strong legal basis for employment restrictions");
-  }
-  if (caseData.documentationGaps.length > 0) {
-    recommendations.push("Obtain additional medical documentation to strengthen legal position");
-  }
-  if (defensibility < 50) {
-    recommendations.push("Conduct additional individualized assessment to improve defensibility");
-  }
+  const defensibility = Math.min(100, (directThreat.overallScore * 0.5) + (caseData.documentationGaps.length === 0 ? 25 : 10));
 
   return {
     directThreatCriteria: directThreat,
     applicableLaws,
     precedents,
     defensibility,
-    recommendations,
+    recommendations: [],
   };
+}
+
+/**
+ * Generate Explainability Factors
+ */
+function generateExplainability(
+  riskFactors: RiskFactor[],
+  protectiveFactors: ProtectiveFactor[],
+  regulatory: RegulatoryCompliance
+): ExplainabilityFactor[] {
+  const explainability: ExplainabilityFactor[] = [];
+
+  riskFactors.sort((a, b) => b.probability * b.weight - a.probability * a.weight).slice(0, 3).forEach(f => {
+    explainability.push({
+      factor: f.name,
+      impact: f.probability,
+      description: `Primary risk driver: ${f.description}`,
+    });
+  });
+
+  protectiveFactors.sort((a, b) => b.probability * b.weight - a.probability * a.weight).slice(0, 2).forEach(f => {
+    explainability.push({
+      factor: f.name,
+      impact: -f.probability,
+      description: `Mitigating factor: ${f.description}`,
+    });
+  });
+
+  return explainability;
 }
 
 /**
@@ -563,33 +662,21 @@ function generateRecommendations(
   injuryProb: number,
   aggravationProb: number,
   directThreat: DirectThreatCriteria,
-  caseData: SMECase
+  caseData: SMECase,
+  regulatory: RegulatoryCompliance
 ): string[] {
   const recommendations: string[] = [];
 
-  if (injuryProb > 0.7) {
-    recommendations.push("HIGH RISK: Recommend employment restrictions or alternative duties");
-  } else if (injuryProb > 0.4) {
-    recommendations.push("MODERATE RISK: Recommend conditional employment with medical monitoring");
-  } else {
-    recommendations.push("LOW RISK: Recommend for employment with standard occupational health precautions");
-  }
+  if (injuryProb > 0.7) recommendations.push("CRITICAL: High probability of injury - employment restrictions mandatory");
+  else if (injuryProb > 0.4) recommendations.push("WARNING: Moderate risk - conditional employment with strict monitoring");
+  else recommendations.push("CLEARANCE: Low risk - recommended for full duty");
 
-  if (aggravationProb > 0.5) {
-    recommendations.push("High risk of injury aggravation - consider modified duty assignment");
-  }
+  Object.entries(regulatory).forEach(([key, val]) => {
+    if (val.status === "non-compliant") recommendations.push(`REGULATORY FAILURE: Non-compliant with ${key.toUpperCase()} standards`);
+    if (val.status === "waiver-required") recommendations.push(`REGULATORY ACTION: ${key.toUpperCase()} waiver process must be initiated`);
+  });
 
-  if (directThreat.overallScore > 70) {
-    recommendations.push("Direct threat criteria met - document individualized assessment thoroughly");
-  }
-
-  if (caseData.documentationGaps.length > 3) {
-    recommendations.push("Obtain additional medical records before final determination");
-  }
-
-  if (caseData.deploymentCountry && caseData.countryRisk?.localMedicalInfrastructure?.toLowerCase().includes("limited")) {
-    recommendations.push("Limited healthcare access in deployment location — increase medical monitoring");
-  }
+  if (directThreat.overallScore > 70) recommendations.push("LEGAL: Direct threat criteria met - document individualized assessment immediately");
 
   return recommendations;
 }
