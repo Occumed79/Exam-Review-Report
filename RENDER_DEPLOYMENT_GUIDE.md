@@ -31,24 +31,29 @@ Since we are using a **Root Directory**, Render will run these commands *inside*
 
 > **Note**: Render automatically detects `pnpm` if a `pnpm-lock.yaml` is present. If it fails, you can use `npm install -g pnpm && pnpm install && pnpm run build` as the build command.
 
-## 4. Set Up Environment Variables
+## 4. Set Up Environment Variables (The Full Arsenal)
 
-This is the most critical step for the **"Nuclear Fuel"** features to work.
+This is the most critical step for the **"Nuclear Warhead"** features to work. You have **14 elite APIs** integrated.
 
 1.  Scroll down to the **"Environment Variables"** section.
-2.  Click **"Add Environment Variable"** for each of the following (refer to your `.env.example` or the `nuclearWarheadAPIs.ts` file):
+2.  Click **"Add Environment Variable"** for each of the following:
 
-| Key | Value |
+| Key | Purpose |
 | :--- | :--- |
-| **`VITE_GROQ_KEY`** | *Your Groq API Key* |
-| **`VITE_GEMINI_KEY`** | *Your Google Gemini API Key* |
-| **`VITE_OPENROUTER_KEY`** | *Your OpenRouter API Key* |
-| **`VITE_TAVILY_KEY`** | *Your Tavily API Key* |
-| **`VITE_EXA_KEY`** | *Your Exa Search API Key* |
-| **`VITE_FIRECRAWL_KEY`** | *Your Firecrawl API Key* |
-| **`VITE_YOU_API_KEY`** | *Your You.com API Key* |
-| **`VITE_JINA_KEY`** | *Your Jina AI API Key* |
-| **`VITE_OCR_SPACE_KEY`** | *Your OCR.space API Key* |
+| **`VITE_GROQ_KEY`** | Ultra-fast LLM inference |
+| **`VITE_OPENROUTER_KEY`** | Claude Advanced Reasoning |
+| **`VITE_GEMINI_KEY`** | Gemini Multi-modal Vision |
+| **`VITE_TAVILY_KEY`** | Real-time Medical Research |
+| **`VITE_EXA_KEY`** | Deep Semantic Search |
+| **`VITE_FIRECRAWL_KEY`** | Intelligent Web Crawling |
+| **`VITE_BROWSERBASE_KEY`** | Headless Browser Automation |
+| **`VITE_YOU_API_KEY`** | Real-time Web Search |
+| **`VITE_JINA_KEY`** | AI-powered Content Extraction |
+| **`VITE_SERPER_KEY`** | Google-like Search Results |
+| **`VITE_BROWSE_AI_KEY`** | No-code Web Automation |
+| **`VITE_BROWSERLESS_KEY`** | Headless Browser Service |
+| **`VITE_OCR_SPACE_KEY`** | Free Medical Document OCR |
+| **`VITE_CLOUD_KEY`** | Custom Intelligence Layer |
 
 ## 5. Advanced Settings (Optional but Recommended)
 
