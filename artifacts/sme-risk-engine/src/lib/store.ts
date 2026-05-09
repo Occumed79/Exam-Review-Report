@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { SMECase, Guideline, Source } from "./types";
-
+import { NuclearWarheadConfig } from "./nuclearWarheadAPIs";
+import { SAMPLE_CASES, SAMPLE_GUIDELINES, SAMPLE_SOURCES } from "./sampleData";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -54,7 +55,6 @@ function sanitizeImportData(data: unknown): { cases: SMECase[]; guidelines: Guid
 
   return { cases, guidelines, sources };
 }
-import { SAMPLE_CASES, SAMPLE_GUIDELINES, SAMPLE_SOURCES } from "./sampleData";
 
 const KEYS = {
   cases: "sme_cases",
@@ -85,6 +85,26 @@ export function useStore() {
   const [cases, setCases] = useState<SMECase[]>(() => load(KEYS.cases, []));
   const [guidelines, setGuidelines] = useState<Guideline[]>(() => load(KEYS.guidelines, []));
   const [sources, setSources] = useState<Source[]>(() => load(KEYS.sources, []));
+  const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
+
+  const [nuclearConfig] = useState<NuclearWarheadConfig>(() => ({
+    groqApiKey: import.meta.env.VITE_GROQ_KEY,
+    openrouterApiKey: import.meta.env.VITE_OPENROUTER_KEY,
+    geminiApiKey: import.meta.env.VITE_GEMINI_KEY,
+    tavilyApiKey: import.meta.env.VITE_TAVILY_KEY,
+    exaApiKey: import.meta.env.VITE_EXA_KEY,
+    firecrawlApiKey: import.meta.env.VITE_FIRECRAWL_KEY,
+    browserbaseApiKey: import.meta.env.VITE_BROWSERBASE_KEY,
+    youComApiKey: import.meta.env.VITE_YOU_API_KEY,
+    jinaSearchApiKey: import.meta.env.VITE_JINA_KEY,
+    serperApiKey: import.meta.env.VITE_SERPER_KEY,
+    browseAiApiKey: import.meta.env.VITE_BROWSE_AI_KEY,
+    browserlessApiKey: import.meta.env.VITE_BROWSERLESS_KEY,
+    cloudApiKey: import.meta.env.VITE_CLOUD_KEY,
+    ocrSpaceApiKey: import.meta.env.VITE_OCR_SPACE_KEY,
+    minimaxApiKey: import.meta.env.VITE_MINIMAX_KEY,
+    olostepApiKey: import.meta.env.VITE_OLOSTEP_KEY,
+  }));
 
   // Initialize with sample data on first load
   useEffect(() => {
@@ -228,7 +248,8 @@ export function useStore() {
   }, []);
 
   return {
-    cases, guidelines, sources,
+    cases, guidelines, sources, activeCaseId, nuclearConfig,
+    setActiveCaseId,
     saveCase, deleteCase, duplicateCase, getCaseById,
     saveGuideline, deleteGuideline,
     saveSource, deleteSource,
