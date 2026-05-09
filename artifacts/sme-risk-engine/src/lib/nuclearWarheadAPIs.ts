@@ -17,7 +17,6 @@
  * - Serper: Google-like search results with instant access
  * - Browse AI: No-code web automation
  * - Browserless: Headless browser as a service
- * - Scraper API: Proxy-based web scraping and CAPTCHA bypass
  * - MiniMax: Advanced multimodal image and document analysis
  * - OLO STEP: Transparent, step-by-step AI reasoning
  */
@@ -39,7 +38,6 @@ export interface NuclearWarheadConfig {
   browserlessApiKey?: string;
   cloudApiKey?: string;
   ocrSpaceApiKey?: string;
-  scraperApiKey?: string;
   minimaxApiKey?: string;
   olostepApiKey?: string;
 }
@@ -246,21 +244,6 @@ export function initializeNuclearWarheadAgents(config: NuclearWarheadConfig): Re
     });
   }
 
-  // Scraper API Agent: Proxy-based scraping
-  if (config.scraperApiKey) {
-    agents.push({
-      name: 'Scraper Proxy',
-      purpose: 'Proxy-based web scraping and CAPTCHA bypass',
-      apiKey: config.scraperApiKey,
-      capabilities: [
-        'IP rotation',
-        'CAPTCHA solving',
-        'Residential proxies',
-        'High-volume data extraction'
-      ]
-    });
-  }
-
   // MiniMax Agent: Advanced multimodal analysis
   if (config.minimaxApiKey) {
     agents.push({
@@ -408,7 +391,6 @@ export function getActiveAgents(config: NuclearWarheadConfig): string[] {
   if (config.serperApiKey) activeAgents.push('Serper Scholar');
   if (config.browseAiApiKey) activeAgents.push('Browse AI');
   if (config.browserlessApiKey) activeAgents.push('Browserless Service');
-  if (config.scraperApiKey) activeAgents.push('Scraper Proxy');
   if (config.minimaxApiKey) activeAgents.push('MiniMax Vision');
   if (config.olostepApiKey) activeAgents.push('OLO STEP Reasoner');
   if (config.ocrSpaceApiKey) activeAgents.push('OCR.space Scanner');
@@ -444,5 +426,5 @@ export async function extractTextFromDocument(
  */
 export function calculateNuclearPowerLevel(config: NuclearWarheadConfig): number {
   const activeAgents = getActiveAgents(config);
-  return Math.min(100, (activeAgents.length / 16) * 100);
+  return Math.min(100, (activeAgents.length / 15) * 100);
 }
