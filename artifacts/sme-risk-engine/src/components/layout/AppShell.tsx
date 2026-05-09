@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
+import { IntelligenceSidebar } from "../IntelligenceSidebar";
 import AnimatedBackground from "./AnimatedBackground";
 import { SMECase } from "@/lib/types";
 
@@ -16,6 +17,7 @@ export default function AppShell({ children, cases }: AppShellProps) {
         backgroundColor: "var(--app-bg)",
         color: "var(--app-fg)",
         position: "relative",
+        overflow: "hidden"
       }}
     >
       <AnimatedBackground />
@@ -28,12 +30,18 @@ export default function AppShell({ children, cases }: AppShellProps) {
             flex: 1,
             minWidth: 0,
             padding: "2rem",
-            maxWidth: "calc(100vw - 240px)",
+            marginLeft: "240px",
+            marginRight: "320px", // Space for IntelligenceSidebar
+            maxWidth: "calc(100vw - 560px)",
+            height: "100vh",
+            overflowY: "auto",
             overflowX: "hidden",
           }}
         >
           {children}
         </main>
+
+        <IntelligenceSidebar />
       </div>
     </div>
   );
