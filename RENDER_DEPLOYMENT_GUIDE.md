@@ -33,7 +33,7 @@ Since we are using a **Root Directory**, Render will run these commands *inside*
 
 ## 4. Set Up Environment Variables (The Full Arsenal)
 
-This is the most critical step for the **"Nuclear Warhead"** features to work. You have **14 elite APIs** integrated.
+This is the most critical step for the **"Nuclear Warhead"** features to work. You have **16 elite APIs** integrated.
 
 1.  Scroll down to the **"Environment Variables"** section.
 2.  Click **"Add Environment Variable"** for each of the following:
@@ -54,11 +54,14 @@ This is the most critical step for the **"Nuclear Warhead"** features to work. Y
 | **`VITE_BROWSERLESS_KEY`** | Headless Browser Service |
 | **`VITE_OCR_SPACE_KEY`** | Free Medical Document OCR |
 | **`VITE_CLOUD_KEY`** | Custom Intelligence Layer |
+| **`VITE_MINIMAX_KEY`** | Advanced Multimodal Vision |
+| **`VITE_OLOSTEP_KEY`** | Transparent AI Reasoning |
 
 ## 5. Advanced Settings (Optional but Recommended)
 
 1.  **Auto-Deploy**: Set to **"Yes"** so every time you push to GitHub, Render updates your site.
 2.  **Health Check Path**: Set to `/` (the root of your app).
+3.  **Publish Directory**: Set this to `dist/public`. This is where your built application files are located within the `artifacts/sme-risk-engine` directory.
 
 ## 6. Deploy!
 
@@ -68,9 +71,9 @@ This is the most critical step for the **"Nuclear Warhead"** features to work. Y
 
 ## 💡 Troubleshooting
 
-- **Build Fails**: Ensure that the **Root Directory** is correctly set to `artifacts/sme-risk-engine`.
-- **Blank Page**: Check the browser console. If you see "Environment variable missing" errors, double-check your Render Environment Variables.
-- **Port Issues**: Vite's `serve` command (preview) defaults to port 4173. Render usually detects this, but if not, you can add an environment variable `PORT` with value `4173`.
+-   **Build Fails**: Ensure that the **Root Directory** is correctly set to `artifacts/sme-risk-engine`.
+-   **Blank Page**: This often means the **Publish Directory** is incorrect or assets are not loading. Ensure it is set to `dist/public`.
+-   **Port Issues**: Vite's `serve` command (preview) defaults to port 4173. Render usually detects this, but if not, you can add an environment variable `PORT` with value `4173`.
 
 ---
 
