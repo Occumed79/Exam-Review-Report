@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useLocation, useParams } from "wouter";
+import { useLocation } from "wouter";
 import {
   ArrowLeft, Heart, Bone, Briefcase, Shield, Globe, BarChart2,
-  Users, TrendingUp, FileSearch, FileText, ChevronRight
+  Users, TrendingUp, FileSearch, FileText, ChevronRight, Zap
 } from "lucide-react";
 import { SMECase } from "@/lib/types";
+import { MasterDossier } from "./case-tabs/MasterDossier";
 import MedicalProfile from "./case-tabs/MedicalProfile";
 import InjuryHistory from "./case-tabs/InjuryHistory";
 import JobDuties from "./case-tabs/JobDuties";
@@ -26,6 +27,7 @@ interface CaseHubProps {
 }
 
 const TABS = [
+  { id: "master", label: "Master Dossier", icon: Zap },
   { id: "overview", label: "Overview", icon: BarChart2 },
   { id: "intake", label: "Case Info", icon: FileText },
   { id: "medical", label: "Medical Profile", icon: Heart },
@@ -53,6 +55,7 @@ const STATUS_META: Record<string, { cls: string }> = {
 
 function getTabCompletion(tab: string, c: SMECase): "complete" | "partial" | "empty" {
   switch (tab) {
+    case "master": return "complete";
     case "intake": return c.examineeName && c.jobTitle ? "complete" : "partial";
     case "medical": return c.medicalConditions.length > 0 ? "complete" : "empty";
     case "injuries": return c.injuries.length > 0 ? "complete" : "empty";
@@ -74,7 +77,7 @@ const CASE_STATUSES = ["Draft","Needs Records","Risk Review Needed","Ready for S
 
 export default function CaseHub({ caseData, onSave, guidelines }: CaseHubProps) {
   const [, setLocation] = useLocation();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("master");
   const [localCase, setLocalCase] = useState<SMECase>(caseData);
 
   function updateCase(updates: Partial<SMECase>) {
@@ -85,6 +88,7 @@ export default function CaseHub({ caseData, onSave, guidelines }: CaseHubProps) 
 
   function renderTab() {
     switch (activeTab) {
+      case "master": return <MasterDossier caseData={localCase} />;
       case "overview": return <Overview c={localCase} onTabChange={setActiveTab} />;
       case "intake": return <CaseIntake existingCase={localCase} onSave={(c) => { setLocalCase(c); onSave(c); }} />;
       case "medical": return <MedicalProfile caseData={localCase} onUpdate={updateCase} />;
