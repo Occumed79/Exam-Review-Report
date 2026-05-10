@@ -75,6 +75,7 @@
     "zod": "catalog:"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@types/topojson-client": "^3.1.5",
     "react-simple-maps": "^3.0.0",
     "tesseract.js": "^7.0.0",
