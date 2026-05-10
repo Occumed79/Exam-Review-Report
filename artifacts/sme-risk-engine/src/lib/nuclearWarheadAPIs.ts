@@ -341,6 +341,43 @@ export function initializeNuclearWarheadAgents(config: NuclearWarheadConfig): Re
     });
   }
 
+  // Direct Government Agents (Free & Unlimited)
+  agents.push({
+    name: 'NIH PubMed Direct',
+    purpose: 'Direct access to 35M+ clinical papers and studies',
+    apiKey: 'FREE_DIRECT',
+    capabilities: [
+      'Real-time clinical literature search',
+      'Evidence-based medicine retrieval',
+      'Medical study synthesis',
+      'Authoritative source citations'
+    ]
+  });
+
+  agents.push({
+    name: 'NIH RxNav Direct',
+    purpose: 'Authoritative drug intelligence and interaction database',
+    apiKey: 'FREE_DIRECT',
+    capabilities: [
+      'Drug interaction checking',
+      'Clinical drug class identification',
+      'Medication terminology standardization',
+      'Safety warning retrieval'
+    ]
+  });
+
+  agents.push({
+    name: 'OSHA Regulatory Direct',
+    purpose: 'Real-time occupational safety standards and guidance',
+    apiKey: 'FREE_DIRECT',
+    capabilities: [
+      'OSHA standard lookup',
+      'Occupational safety guidance',
+      'Industry-specific regulation tracking',
+      'Safety violation history'
+    ]
+  });
+
   return agents;
 }
 
