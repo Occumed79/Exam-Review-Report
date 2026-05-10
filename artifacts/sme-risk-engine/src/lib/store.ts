@@ -104,6 +104,8 @@ export function useStore() {
     ocrSpaceApiKey: import.meta.env.VITE_OCR_SPACE_KEY,
     minimaxApiKey: import.meta.env.VITE_MINIMAX_KEY,
     olostepApiKey: import.meta.env.VITE_OLOSTEP_KEY,
+    apifyApiKey: import.meta.env.VITE_APIFY_KEY,
+    langsearchApiKey: import.meta.env.VITE_LANGSEARCH_KEY,
   }));
 
   // Initialize with sample data on first load

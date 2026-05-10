@@ -43,6 +43,8 @@ export interface NuclearWarheadConfig {
   ocrSpaceApiKey?: string;
   minimaxApiKey?: string;
   olostepApiKey?: string;
+  apifyApiKey?: string;
+  langsearchApiKey?: string;
 }
 
 export interface ResearchAgent {
@@ -305,6 +307,36 @@ export function initializeNuclearWarheadAgents(config: NuclearWarheadConfig): Re
         'Injury report OCR',
         'Multi-language support',
         'Batch processing'
+      ]
+    });
+  }
+
+  // Apify Agent: Advanced web scraping
+  if (config.apifyApiKey) {
+    agents.push({
+      name: 'Apify Extractor',
+      purpose: 'Advanced web scraping and data extraction from medical portals',
+      apiKey: config.apifyApiKey,
+      capabilities: [
+        'Complex portal data extraction',
+        'Automated medical record retrieval',
+        'Structured data from unstructured web',
+        'Scalable web automation'
+      ]
+    });
+  }
+
+  // LangSearch Agent: Semantic search
+  if (config.langsearchApiKey) {
+    agents.push({
+      name: 'LangSearch Semantic',
+      purpose: 'High-performance semantic search across clinical guidelines',
+      apiKey: config.langsearchApiKey,
+      capabilities: [
+        'Semantic guideline search',
+        'Clinical evidence retrieval',
+        'Medical case law matching',
+        'Context-aware search results'
       ]
     });
   }
