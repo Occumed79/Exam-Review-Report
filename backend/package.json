@@ -1,0 +1,34 @@
+{
+  "name": "sme-risk-engine-backend",
+  "version": "1.0.0",
+  "description": "HIPAA-compliant backend for SME Risk Intelligence Engine",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hipaa",
+    "parse-server",
+    "medical",
+    "occupational-health",
+    "sme",
+    "risk-intelligence"
+  ],
+  "author": "Occumed79",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "parse": "^8.6.0",
+    "parse-server": "^9.9.0",
+    "pg": "^8.20.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
