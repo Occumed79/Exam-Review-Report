@@ -5,7 +5,7 @@
  * to ensure compliance with HIPAA audit trail requirements.
  */
 
-import { initializeParseClient } from '../../../backend/parseClient';
+import { initializeParseClient } from '../../../../backend/parseClient';
 
 // Initialize Parse client (will use environment variables)
 const Parse = initializeParseClient();
