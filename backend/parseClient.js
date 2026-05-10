@@ -5,15 +5,15 @@
  * from the frontend React application.
  */
 
-const Parse = require('parse/node');
+import Parse from 'parse';
 
 /**
  * Initialize Parse client with backend configuration
  */
-function initializeParseClient(config = {}) {
-  const appId = config.appId || process.env.REACT_APP_PARSE_APP_ID || 'sme-risk-engine-app';
-  const serverUrl = config.serverUrl || process.env.REACT_APP_PARSE_SERVER_URL || 'http://localhost:1337/parse';
-  const restApiKey = config.restApiKey || process.env.REACT_APP_PARSE_REST_API_KEY;
+export function initializeParseClient(config = {}) {
+  const appId = config.appId || (typeof process !== 'undefined' ? process.env.REACT_APP_PARSE_APP_ID : null) || 'sme-risk-engine-app';
+  const serverUrl = config.serverUrl || (typeof process !== 'undefined' ? process.env.REACT_APP_PARSE_SERVER_URL : null) || 'http://localhost:1337/parse';
+  const restApiKey = config.restApiKey || (typeof process !== 'undefined' ? process.env.REACT_APP_PARSE_REST_API_KEY : null);
 
   Parse.initialize(appId, restApiKey);
   Parse.serverURL = serverUrl;
@@ -28,7 +28,7 @@ function initializeParseClient(config = {}) {
 /**
  * Create a new Case
  */
-async function createCase(caseData) {
+export async function createCase(caseData) {
   const Case = Parse.Object.extend('Case');
   const newCase = new Case();
 
@@ -51,7 +51,7 @@ async function createCase(caseData) {
 /**
  * Fetch a Case by ID
  */
-async function getCase(caseId) {
+export async function getCase(caseId) {
   const Case = Parse.Object.extend('Case');
   const query = new Parse.Query(Case);
 
@@ -68,7 +68,7 @@ async function getCase(caseId) {
 /**
  * Update a Case
  */
-async function updateCase(caseId, updates) {
+export async function updateCase(caseId, updates) {
   const Case = Parse.Object.extend('Case');
   const query = new Parse.Query(Case);
 
@@ -91,7 +91,7 @@ async function updateCase(caseId, updates) {
 /**
  * Save Medical Profile
  */
-async function saveMedicalProfile(caseId, profileData) {
+export async function saveMedicalProfile(caseId, profileData) {
   const MedicalProfile = Parse.Object.extend('MedicalProfile');
   const profile = new MedicalProfile();
 
@@ -119,7 +119,7 @@ async function saveMedicalProfile(caseId, profileData) {
 /**
  * Save Job Profile
  */
-async function saveJobProfile(caseId, profileData) {
+export async function saveJobProfile(caseId, profileData) {
   const JobProfile = Parse.Object.extend('JobProfile');
   const profile = new JobProfile();
 
@@ -148,7 +148,7 @@ async function saveJobProfile(caseId, profileData) {
 /**
  * Save Risk Assessment
  */
-async function saveRiskAssessment(caseId, assessmentData) {
+export async function saveRiskAssessment(caseId, assessmentData) {
   const RiskAssessment = Parse.Object.extend('RiskAssessment');
   const assessment = new RiskAssessment();
 
@@ -177,7 +177,7 @@ async function saveRiskAssessment(caseId, assessmentData) {
 /**
  * Upload and process a document
  */
-async function uploadDocument(caseId, file, documentType) {
+export async function uploadDocument(caseId, file, documentType) {
   const Document = Parse.Object.extend('Document');
   const doc = new Document();
 
@@ -209,7 +209,7 @@ async function uploadDocument(caseId, file, documentType) {
 /**
  * Fetch audit logs for a case
  */
-async function getAuditLogs(caseId, limit = 50) {
+export async function getAuditLogs(caseId, limit = 50) {
   const AuditLog = Parse.Object.extend('AuditLog');
   const query = new Parse.Query(AuditLog);
   query.equalTo('entityId', caseId);
@@ -229,7 +229,7 @@ async function getAuditLogs(caseId, limit = 50) {
 /**
  * Create an Intelligence Report
  */
-async function createIntelligenceReport(caseId, reportData) {
+export async function createIntelligenceReport(caseId, reportData) {
   const IntelligenceReport = Parse.Object.extend('IntelligenceReport');
   const report = new IntelligenceReport();
 
@@ -255,7 +255,7 @@ async function createIntelligenceReport(caseId, reportData) {
   }
 }
 
-module.exports = {
+export default {
   initializeParseClient,
   createCase,
   getCase,
