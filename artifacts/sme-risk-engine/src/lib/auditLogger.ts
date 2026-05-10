@@ -7,8 +7,7 @@
 
 import { initializeParseClient } from '../../../../backend/parseClient';
 
-// Initialize Parse client (will use environment variables)
-const Parse = initializeParseClient();
+import Parse from 'parse';
 
 export type AuditAction = 
   | 'PHI_ACCESS' 
@@ -32,6 +31,9 @@ export interface AuditEntry {
  * Log a HIPAA-compliant audit entry
  */
 export async function logAuditEntry(entry: AuditEntry): Promise<void> {
+  // Ensure Parse is initialized before use
+  initializeParseClient();
+  
   const AuditLog = Parse.Object.extend('AuditLog');
   const log = new AuditLog();
 

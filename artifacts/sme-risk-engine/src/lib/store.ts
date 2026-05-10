@@ -93,6 +93,7 @@ export function useStore() {
   // Initialize Parse Client
   useEffect(() => {
     try {
+      console.log("🔄 Initializing HIPAA Backend...");
       initializeParseClient();
       setIsBackendConnected(true);
       console.log("🛡️ HIPAA Backend Connected");

@@ -11,9 +11,15 @@ import Parse from 'parse';
  * Initialize Parse client with backend configuration
  */
 export function initializeParseClient(config = {}) {
-  const appId = config.appId || (typeof process !== 'undefined' ? process.env.REACT_APP_PARSE_APP_ID : null) || 'sme-risk-engine-app';
-  const serverUrl = config.serverUrl || (typeof process !== 'undefined' ? process.env.REACT_APP_PARSE_SERVER_URL : null) || 'http://localhost:1337/parse';
-  const restApiKey = config.restApiKey || (typeof process !== 'undefined' ? process.env.REACT_APP_PARSE_REST_API_KEY : null);
+  // Use Vite environment variables (import.meta.env) or fallback to provided config/defaults
+  const appId = config.appId || import.meta.env.VITE_PARSE_APP_ID || 'sme-risk-engine-app';
+  const serverUrl = config.serverUrl || import.meta.env.VITE_PARSE_SERVER_URL || 'http://localhost:1337/parse';
+  const restApiKey = config.restApiKey || import.meta.env.VITE_PARSE_REST_API_KEY;
+
+  if (!appId || !serverUrl) {
+    console.warn('⚠️ Parse initialization skipped: Missing appId or serverUrl');
+    return Parse;
+  }
 
   Parse.initialize(appId, restApiKey);
   Parse.serverURL = serverUrl;
