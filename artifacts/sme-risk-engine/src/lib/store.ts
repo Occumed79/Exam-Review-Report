@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { SMECase, Guideline, Source } from "./types";
 import { NuclearWarheadConfig } from "./nuclearWarheadAPIs";
 import { SAMPLE_CASES, SAMPLE_GUIDELINES, SAMPLE_SOURCES } from "./sampleData";
+import { initializeParseClient, createCase as apiCreateCase, updateCase as apiUpdateCase } from "../../../backend/parseClient";
+import { logAuditEntry, logPHIAccess } from "./auditLogger";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -86,6 +88,18 @@ export function useStore() {
   const [guidelines, setGuidelines] = useState<Guideline[]>(() => load(KEYS.guidelines, []));
   const [sources, setSources] = useState<Source[]>(() => load(KEYS.sources, []));
   const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
+  const [isBackendConnected, setIsBackendConnected] = useState(false);
+
+  // Initialize Parse Client
+  useEffect(() => {
+    try {
+      initializeParseClient();
+      setIsBackendConnected(true);
+      console.log("🛡️ HIPAA Backend Connected");
+    } catch (error) {
+      console.error("❌ Failed to connect to HIPAA Backend:", error);
+    }
+  }, []);
 
   const [nuclearConfig] = useState<NuclearWarheadConfig>(() => ({
     groqApiKey: import.meta.env.VITE_GROQ_KEY,
@@ -126,7 +140,8 @@ export function useStore() {
   }, []);
 
   // Cases
-  const saveCase = useCallback((c: SMECase) => {
+  const saveCase = useCallback(async (c: SMECase) => {
+    // 1. Update Local State
     setCases(prev => {
       const exists = prev.findIndex(x => x.id === c.id);
       const updated = exists >= 0
@@ -135,7 +150,33 @@ export function useStore() {
       save(KEYS.cases, updated);
       return updated;
     });
-  }, []);
+
+    // 2. Sync with HIPAA Backend
+    if (isBackendConnected) {
+      try {
+        const exists = cases.some(x => x.id === c.id);
+        if (exists) {
+          await apiUpdateCase(c.id, c);
+          await logAuditEntry({
+            action: 'PHI_MODIFICATION',
+            entityId: c.id,
+            entityType: 'Case',
+            reason: 'User updated case details'
+          });
+        } else {
+          await apiCreateCase(c);
+          await logAuditEntry({
+            action: 'PHI_ACCESS',
+            entityId: c.id,
+            entityType: 'Case',
+            reason: 'User created new case'
+          });
+        }
+      } catch (error) {
+        console.warn("⚠️ Backend sync failed, data remains in local storage", error);
+      }
+    }
+  }, [cases, isBackendConnected]);
 
   const deleteCase = useCallback((id: string) => {
     setCases(prev => {
@@ -166,8 +207,12 @@ export function useStore() {
   }, []);
 
   const getCaseById = useCallback((id: string): SMECase | undefined => {
-    return cases.find(x => x.id === id);
-  }, [cases]);
+    const found = cases.find(x => x.id === id);
+    if (found && isBackendConnected) {
+      logPHIAccess(id, 'Case', 'User viewed case details');
+    }
+    return found;
+  }, [cases, isBackendConnected]);
 
   // Guidelines
   const saveGuideline = useCallback((g: Guideline) => {
