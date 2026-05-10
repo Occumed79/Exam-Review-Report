@@ -8,6 +8,7 @@
  * - Groq: Ultra-fast LLM inference for instant risk calculations
  * - Claude (via OpenRouter): Advanced reasoning for clinical analysis
  * - Gemini: Multi-modal understanding for document analysis
+ * - Mistral: Elite vision and reasoning models (Pixtral, Mistral Large)
  * - Tavily: Real-time medical research and case law search
  * - Exa: Deep semantic search for clinical evidence
  * - Firecrawl: Intelligent web crawling for regulatory updates
@@ -27,6 +28,8 @@ export interface NuclearWarheadConfig {
   groqApiKey?: string;
   openrouterApiKey?: string;
   geminiApiKey?: string;
+  geminiBackupApiKey?: string; // New: Gemini 1.5 Flash Backup
+  mistralApiKey?: string;      // New: Mistral AI Key
   tavilyApiKey?: string;
   exaApiKey?: string;
   firecrawlApiKey?: string;
@@ -95,16 +98,31 @@ export function initializeNuclearWarheadAgents(config: NuclearWarheadConfig): Re
   }
 
   // Gemini Agent: Multi-modal document analysis
-  if (config.geminiApiKey) {
+  if (config.geminiApiKey || config.geminiBackupApiKey) {
     agents.push({
       name: 'Gemini Vision',
       purpose: 'Document analysis and visual data extraction',
-      apiKey: config.geminiApiKey,
+      apiKey: config.geminiApiKey || config.geminiBackupApiKey || '',
       capabilities: [
         'Medical report OCR and analysis',
         'Chart and graph interpretation',
         'Handwritten note processing',
         'Multi-page document synthesis'
+      ]
+    });
+  }
+
+  // Mistral Agent: Elite vision and reasoning
+  if (config.mistralApiKey) {
+    agents.push({
+      name: 'Mistral Pixtral',
+      purpose: 'Elite vision analysis and clinical reasoning',
+      apiKey: config.mistralApiKey,
+      capabilities: [
+        'Advanced visual document reasoning',
+        'Handwriting analysis',
+        'Complex clinical synthesis',
+        'Multi-step reasoning agents'
       ]
     });
   }
@@ -381,7 +399,8 @@ export function getActiveAgents(config: NuclearWarheadConfig): string[] {
 
   if (config.groqApiKey) activeAgents.push('Groq Lightning');
   if (config.openrouterApiKey) activeAgents.push('Claude Reasoner');
-  if (config.geminiApiKey) activeAgents.push('Gemini Vision');
+  if (config.geminiApiKey || config.geminiBackupApiKey) activeAgents.push('Gemini Vision');
+  if (config.mistralApiKey) activeAgents.push('Mistral Pixtral');
   if (config.tavilyApiKey) activeAgents.push('Tavily Research');
   if (config.exaApiKey) activeAgents.push('Exa Semantic');
   if (config.firecrawlApiKey) activeAgents.push('Firecrawl Spider');
@@ -426,5 +445,5 @@ export async function extractTextFromDocument(
  */
 export function calculateNuclearPowerLevel(config: NuclearWarheadConfig): number {
   const activeAgents = getActiveAgents(config);
-  return Math.min(100, (activeAgents.length / 15) * 100);
+  return Math.min(100, (activeAgents.length / 17) * 100); // Updated to 17 agents
 }
