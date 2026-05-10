@@ -123,22 +123,28 @@ export function useStore() {
     langsearchApiKey: import.meta.env.VITE_LANGSEARCH_KEY,
   }));
 
-  // Initialize with sample data on first load
+  // Initialize with sample data on first load or if empty
   useEffect(() => {
     const initialized = localStorage.getItem(KEYS.initialized);
-    if (!initialized) {
+    const hasData = cases.length > 0 || guidelines.length > 0 || sources.length > 0;
+    
+    if (!initialized || !hasData) {
+      console.log("📦 Seeding store with Elite Sample Data...");
       const initCases = SAMPLE_CASES;
       const initGuidelines = SAMPLE_GUIDELINES;
       const initSources = SAMPLE_SOURCES;
+      
       save(KEYS.cases, initCases);
       save(KEYS.guidelines, initGuidelines);
       save(KEYS.sources, initSources);
+      
       setCases(initCases);
       setGuidelines(initGuidelines);
       setSources(initSources);
+      
       localStorage.setItem(KEYS.initialized, "true");
     }
-  }, []);
+  }, [cases.length, guidelines.length, sources.length]);
 
   // Cases
   const saveCase = useCallback(async (c: SMECase) => {

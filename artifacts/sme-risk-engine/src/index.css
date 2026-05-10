@@ -165,18 +165,24 @@
 .orb-4 { animation: orb-drift-4 32s ease-in-out infinite; }
 .orb-5 { animation: orb-drift-5 24s ease-in-out infinite; }
 
-/* Glass card styles */
+/* Glass card styles - macOS Tahoe Liquid Glass */
 .glass-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.05));
-  backdrop-filter: blur(32px) saturate(175%);
-  -webkit-backdrop-filter: blur(32px) saturate(175%);
-  border: 1px solid rgba(224, 237, 230, 0.20);
-  border-radius: 18px;
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: linear-gradient(165deg, rgba(255,255,255,0.18), rgba(255,255,255,0.03));
+  backdrop-filter: blur(40px) saturate(210%);
+  -webkit-backdrop-filter: blur(40px) saturate(210%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 
+    0 4px 24px -1px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .glass-card:hover {
-  border-color: rgba(180, 215, 208, 0.46);
-  box-shadow: 0 0 36px rgba(180, 215, 208, 0.16), 0 10px 42px rgba(0,0,0,0.48);
+  border-color: rgba(180, 215, 208, 0.6);
+  box-shadow: 
+    0 20px 48px -12px rgba(0, 0, 0, 0.5),
+    0 0 40px rgba(180, 215, 208, 0.2);
+  transform: translateY(-2px) scale(1.005);
 }
 
 .glass-card-active {
