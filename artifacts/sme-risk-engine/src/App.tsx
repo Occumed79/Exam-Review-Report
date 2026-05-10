@@ -2,6 +2,8 @@ import { Switch, Route, Router as WouterRouter, useLocation, useParams } from "w
 import { useStore } from "@/lib/store";
 import AppShell from "@/components/layout/AppShell";
 import Dashboard from "@/pages/Dashboard";
+import SecureIngestion from "@/components/SecureIngestion";
+import { useState, useEffect } from "react";
 import CaseIntake from "@/pages/CaseIntake";
 import CaseHub from "@/pages/CaseHub";
 import Guidelines from "@/pages/Guidelines";
@@ -53,9 +55,26 @@ function NewCaseWrapper({ store }: { store: ReturnType<typeof useStore> }) {
 
 function AppRouter() {
   const store = useStore();
+  const [showIngest, setShowIngest] = useState(false);
+
+  useEffect(() => {
+    const handleOpen = () => setShowIngest(true);
+    window.addEventListener('open-secure-ingest', handleOpen);
+    return () => window.removeEventListener('open-secure-ingest', handleOpen);
+  }, []);
 
   return (
     <AppShell cases={store.cases}>
+      {showIngest && (
+        <SecureIngestion 
+          onClose={() => setShowIngest(false)} 
+          onExtract={(text, data) => {
+            console.log("Extracted Data:", data);
+            // In a real scenario, this would populate the 'New Case' form
+            setShowIngest(false);
+          }}
+        />
+      )}
       <Switch>
         <Route path="/">
           <Dashboard

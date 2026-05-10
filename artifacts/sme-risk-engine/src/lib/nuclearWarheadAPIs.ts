@@ -514,5 +514,9 @@ export async function extractTextFromDocument(
  */
 export function calculateNuclearPowerLevel(config: NuclearWarheadConfig): number {
   const activeAgents = getActiveAgents(config);
-  return Math.min(100, (activeAgents.length / 17) * 100); // Updated to 17 agents
+  // Base power from direct government agents (3) + active paid agents
+  const totalPotentialAgents = 19;
+  const baseAgents = 3; // NIH PubMed, NIH RxNav, OSHA Regulatory
+  const displayCount = activeAgents.length + baseAgents;
+  return Math.min(100, (displayCount / totalPotentialAgents) * 100);
 }

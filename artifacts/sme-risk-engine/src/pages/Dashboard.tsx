@@ -118,15 +118,28 @@ export default function Dashboard({ cases, onDelete, onDuplicate }: DashboardPro
             Occupational Health Risk Intelligence — SME Review Portal
           </p>
         </div>
-        <button
-          className="glow-btn"
-          onClick={() => setLocation(`/case/new`)}
-          data-testid="btn-new-case"
-          style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-        >
-          <Plus size={16} />
-          New Case
-        </button>
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <button
+            className="glow-btn glow-btn-secondary"
+            onClick={() => {
+              // Open Secure Ingestion Modal (we'll mount it in App.tsx or here)
+              window.dispatchEvent(new CustomEvent('open-secure-ingest'));
+            }}
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem", background: "rgba(180, 215, 208, 0.15)", border: "1px solid rgba(180, 215, 208, 0.3)", color: "#b4d7d0" }}
+          >
+            <Shield size={16} />
+            Secure Ingest
+          </button>
+          <button
+            className="glow-btn"
+            onClick={() => setLocation(`/case/new`)}
+            data-testid="btn-new-case"
+            style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+          >
+            <Plus size={16} />
+            New Case
+          </button>
+        </div>
       </div>
 
       {/* Stats */}
