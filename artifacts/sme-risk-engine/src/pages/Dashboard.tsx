@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import {
   Plus, Search, Copy, Trash2, ExternalLink, TrendingUp,
-  FileText, AlertTriangle, CheckCircle, Clock
+  FileText, AlertTriangle, CheckCircle, Clock, Shield
 } from "lucide-react";
 import {
   RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer, Tooltip
