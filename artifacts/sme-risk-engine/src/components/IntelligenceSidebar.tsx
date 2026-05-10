@@ -1,14 +1,71 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Zap, Shield, AlertTriangle, Search, Activity, Cpu, Globe } from 'lucide-react';
+import { Zap, Shield, AlertTriangle, Search, Activity, Cpu, Globe, Pill } from 'lucide-react';
 import { useStore } from '../lib/store';
 import { calculateNuclearPowerLevel, getActiveAgents } from '../lib/nuclearWarheadAPIs';
+import { DIRECT_SOURCE_AGENT_NAMES, fetchDirectSourceIntelligence, type DirectSourceFinding } from '../lib/directSourceIntelligence';
+import type { RiskScore, SMECase } from '../lib/types';
 
-export const IntelligenceSidebar: React.FC = () => {
-  const { cases, activeCaseId, nuclearConfig } = useStore();
-  const activeCase = cases.find(c => c.id === activeCaseId);
+const scoreWeight = (score: RiskScore): number => {
+  if (score === 'U') return 1;
+  return Number(score);
+};
+
+const findingColor = (source: DirectSourceFinding['source'], status: DirectSourceFinding['status']) => {
+  if (status === 'error') return '#ef4444';
+  if (source === 'PubMed') return '#6366f1';
+  if (source === 'RxNav') return '#10b981';
+  return '#b4d7d0';
+};
+
+const sourceIcon = (source: DirectSourceFinding['source']) => {
+  if (source === 'RxNav') return Pill;
+  if (source === 'PubMed') return Search;
+  if (source === 'OSHA') return Shield;
+  return Globe;
+};
+
+interface IntelligenceSidebarProps {
+  activeCase?: SMECase;
+}
+
+export const IntelligenceSidebar: React.FC<IntelligenceSidebarProps> = ({ activeCase }) => {
+  const { nuclearConfig } = useStore();
+  const keyedAgents = getActiveAgents(nuclearConfig);
+  const activeAgents = [...DIRECT_SOURCE_AGENT_NAMES, ...keyedAgents];
   const powerLevel = calculateNuclearPowerLevel(nuclearConfig);
-  const activeAgents = getActiveAgents(nuclearConfig);
+  const [findings, setFindings] = useState<DirectSourceFinding[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [checkedAt, setCheckedAt] = useState<string | null>(null);
+
+  const aggregateScore = useMemo(() => {
+    if (!activeCase?.riskScores.length) return 0;
+    return activeCase.riskScores.reduce((sum, risk) => sum + scoreWeight(risk.score), 0) / activeCase.riskScores.length;
+  }, [activeCase]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!activeCase) {
+      setFindings([]);
+      setCheckedAt(null);
+      return;
+    }
+
+    setIsLoading(true);
+    fetchDirectSourceIntelligence(activeCase)
+      .then((result) => {
+        if (cancelled) return;
+        setFindings(result.findings);
+        setCheckedAt(result.checkedAt);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeCase?.id, activeCase?.updatedAt]);
 
   return (
     <motion.div
@@ -32,12 +89,11 @@ export const IntelligenceSidebar: React.FC = () => {
         zIndex: 40
       }}
     >
-      {/* Nuclear Power Status */}
       <div className="glass-card" style={{ padding: '1rem', background: 'rgba(180, 215, 208, 0.05)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
           <Zap size={16} color="#b4d7d0" />
           <span style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b4d7d0', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-            Nuclear Power Level
+            Source Intelligence Coverage
           </span>
         </div>
         <div style={{ height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '3px', overflow: 'hidden', marginBottom: '0.5rem' }}>
@@ -48,12 +104,11 @@ export const IntelligenceSidebar: React.FC = () => {
           />
         </div>
         <div style={{ fontSize: '0.625rem', color: 'rgba(255,255,255,0.4)', display: 'flex', justifyContent: 'space-between' }}>
-          <span>{activeAgents.length} Agents Active</span>
-          <span>{Math.round(powerLevel)}% Capacity</span>
+          <span>{activeAgents.length} Source Agent(s)</span>
+          <span>{DIRECT_SOURCE_AGENT_NAMES.length} free direct + {keyedAgents.length} keyed</span>
         </div>
       </div>
 
-      {/* Live Intelligence Feed */}
       <div style={{ flex: 1 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
           <Cpu size={16} color="rgba(255,255,255,0.5)" />
@@ -66,8 +121,7 @@ export const IntelligenceSidebar: React.FC = () => {
           <AnimatePresence mode="popLayout">
             {activeCase ? (
               <>
-                {/* Risk Alerts */}
-                {activeCase.riskLevel > 15 && (
+                {aggregateScore >= 2 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -77,65 +131,65 @@ export const IntelligenceSidebar: React.FC = () => {
                     <div style={{ display: 'flex', gap: '0.75rem' }}>
                       <AlertTriangle size={16} color="#ef4444" style={{ marginTop: '0.125rem' }} />
                       <div>
-                        <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#fff', marginBottom: '0.25rem' }}>High Risk Detected</div>
+                        <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#fff', marginBottom: '0.25rem' }}>Risk Review Needed</div>
                         <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>
-                          Case risk level ({activeCase.riskLevel}%) exceeds safety threshold for {activeCase.jobTitle}.
+                          Case risk score average is {aggregateScore.toFixed(1)}/3 for {activeCase.jobTitle || 'this role'}.
                         </div>
                       </div>
                     </div>
                   </motion.div>
                 )}
 
-                {/* Research Insights */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="glass-card"
-                  style={{ padding: '0.875rem', borderLeft: '3px solid #6366f1', background: 'rgba(99, 102, 241, 0.05)' }}
-                >
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <Search size={16} color="#6366f1" style={{ marginTop: '0.125rem' }} />
-                    <div>
-                      <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#fff', marginBottom: '0.25rem' }}>Clinical Research</div>
-                      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>
-                        Tavily found 4 recent studies regarding {activeCase.medicalConditions[0]?.conditionName || 'occupational health'}.
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                {isLoading && (
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>Checking PubMed, RxNav, OSHA, and deployment guidance sources...</div>
+                )}
 
-                {/* Regulatory Updates */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="glass-card"
-                  style={{ padding: '0.875rem', borderLeft: '3px solid #b4d7d0', background: 'rgba(180, 215, 208, 0.05)' }}
-                >
-                  <div style={{ display: 'flex', gap: '0.75rem' }}>
-                    <Globe size={16} color="#b4d7d0" style={{ marginTop: '0.125rem' }} />
-                    <div>
-                      <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#fff', marginBottom: '0.25rem' }}>Regulatory Update</div>
-                      <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>
-                        New OSHA guidelines detected for {activeCase.agencyStandard} compliance.
+                {findings.map((finding) => {
+                  const Icon = sourceIcon(finding.source);
+                  const color = findingColor(finding.source, finding.status);
+                  return (
+                    <motion.a
+                      key={`${finding.source}-${finding.title}`}
+                      href={finding.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="glass-card"
+                      style={{ padding: '0.875rem', borderLeft: `3px solid ${color}`, background: 'rgba(255,255,255,0.03)', textDecoration: 'none', display: 'block' }}
+                    >
+                      <div style={{ display: 'flex', gap: '0.75rem' }}>
+                        <Icon size={16} color={color} style={{ marginTop: '0.125rem', flexShrink: 0 }} />
+                        <div>
+                          <div style={{ fontSize: '0.8125rem', fontWeight: 700, color: '#fff', marginBottom: '0.25rem' }}>{finding.source}: {finding.title}</div>
+                          <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.4 }}>
+                            {finding.summary}
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    </motion.a>
+                  );
+                })}
+
+                {checkedAt && (
+                  <div style={{ fontSize: '0.625rem', color: 'rgba(255,255,255,0.28)', textAlign: 'right' }}>
+                    Checked {new Date(checkedAt).toLocaleString()}
                   </div>
-                </motion.div>
+                )}
               </>
             ) : (
               <div style={{ textAlign: 'center', padding: '2rem', color: 'rgba(255,255,255,0.2)' }}>
                 <Activity size={32} style={{ margin: '0 auto 1rem', opacity: 0.5 }} />
-                <div style={{ fontSize: '0.8125rem' }}>Select a case to view live intelligence</div>
+                <div style={{ fontSize: '0.8125rem' }}>Select a case to view source intelligence</div>
               </div>
             )}
           </AnimatePresence>
         </div>
       </div>
 
-      {/* Active Agents List */}
       <div className="glass-card" style={{ padding: '1rem' }}>
         <div style={{ fontSize: '0.625rem', fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '0.75rem' }}>
-          Active Intelligence Agents
+          Available Intelligence Agents
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
           {activeAgents.map(agent => (
@@ -145,8 +199,8 @@ export const IntelligenceSidebar: React.FC = () => {
                 fontSize: '0.625rem',
                 padding: '0.2rem 0.5rem',
                 borderRadius: '4px',
-                background: 'rgba(255,255,255,0.05)',
-                color: 'rgba(255,255,255,0.6)',
+                background: DIRECT_SOURCE_AGENT_NAMES.includes(agent) ? 'rgba(180,215,208,0.08)' : 'rgba(255,255,255,0.05)',
+                color: DIRECT_SOURCE_AGENT_NAMES.includes(agent) ? '#b4d7d0' : 'rgba(255,255,255,0.6)',
                 border: '1px solid rgba(255,255,255,0.1)'
               }}
             >

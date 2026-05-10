@@ -158,26 +158,27 @@ export function useStore() {
       return updated;
     });
 
-    // 2. Sync with HIPAA Backend
+    // 2. Audit and sync with HIPAA Backend when available. Audit logging always
+    // writes a local immutable fallback even if the backend is unreachable.
+    const exists = cases.some(x => x.id === c.id);
+    await logAuditEntry({
+      action: exists ? 'PHI_MODIFICATION' : 'PHI_ACCESS',
+      entityId: c.id,
+      entityType: 'Case',
+      reason: exists ? 'User updated case details' : 'User created new case',
+      metadata: {
+        status: c.status,
+        source: c.intakeSource || 'manual',
+        hasBackendConnection: isBackendConnected,
+      },
+    });
+
     if (isBackendConnected) {
       try {
-        const exists = cases.some(x => x.id === c.id);
         if (exists) {
           await apiUpdateCase(c.id, c);
-          await logAuditEntry({
-            action: 'PHI_MODIFICATION',
-            entityId: c.id,
-            entityType: 'Case',
-            reason: 'User updated case details'
-          });
         } else {
           await apiCreateCase(c);
-          await logAuditEntry({
-            action: 'PHI_ACCESS',
-            entityId: c.id,
-            entityType: 'Case',
-            reason: 'User created new case'
-          });
         }
       } catch (error) {
         console.warn("⚠️ Backend sync failed, data remains in local storage", error);
@@ -191,7 +192,14 @@ export function useStore() {
       save(KEYS.cases, updated);
       return updated;
     });
-  }, []);
+    void logAuditEntry({
+      action: 'CASE_DELETE',
+      entityId: id,
+      entityType: 'Case',
+      reason: 'User deleted case from local workspace',
+      metadata: { hasBackendConnection: isBackendConnected },
+    });
+  }, [isBackendConnected]);
 
   const duplicateCase = useCallback((id: string) => {
     setCases(prev => {
@@ -209,9 +217,16 @@ export function useStore() {
       };
       const updated = [...prev, newCase];
       save(KEYS.cases, updated);
+      void logAuditEntry({
+        action: 'CASE_DUPLICATE',
+        entityId: newCase.id,
+        entityType: 'Case',
+        reason: 'User duplicated case for derivative review',
+        metadata: { sourceCaseId: id, hasBackendConnection: isBackendConnected },
+      });
       return updated;
     });
-  }, []);
+  }, [isBackendConnected]);
 
   const getCaseById = useCallback((id: string): SMECase | undefined => {
     const found = cases.find(x => x.id === id);
@@ -280,6 +295,13 @@ export function useStore() {
     a.download = `sme-risk-engine-export-${new Date().toISOString().split("T")[0]}.json`;
     a.click();
     URL.revokeObjectURL(url);
+    void logAuditEntry({
+      action: 'CASE_EXPORT',
+      entityId: 'workspace-export',
+      entityType: 'Workspace',
+      reason: 'User exported workspace data',
+      metadata: { caseCount: cases.length, guidelineCount: guidelines.length, sourceCount: sources.length },
+    });
   }, [cases, guidelines, sources]);
 
   const importAll = useCallback((jsonString: string) => {
@@ -295,6 +317,13 @@ export function useStore() {
       setGuidelines(data.guidelines);
       setSources(data.sources);
       localStorage.setItem(KEYS.initialized, "true");
+      void logAuditEntry({
+        action: 'CASE_IMPORT',
+        entityId: 'workspace-import',
+        entityType: 'Workspace',
+        reason: 'User imported workspace data',
+        metadata: { caseCount: data.cases.length, guidelineCount: data.guidelines.length, sourceCount: data.sources.length },
+      });
       return true;
     } catch {
       return false;

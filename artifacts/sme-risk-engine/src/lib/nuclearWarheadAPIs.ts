@@ -399,25 +399,25 @@ export async function fetchRealTimeIntelligence(
   };
 
   try {
-    // Use Tavily for medical research
-    if (config.tavilyApiKey && caseData.medicalProfile?.conditions) {
-      const conditions = caseData.medicalProfile.conditions.join(', ');
+    // Use Tavily for medical research when configured.
+    if (config.tavilyApiKey && caseData.medicalConditions.length) {
+      const conditions = caseData.medicalConditions.map((condition) => condition.conditionName).join(', ');
       intelligence.researchFindings.push(
-        `Research findings for: ${conditions}`
+        `Configured Tavily research query for: ${conditions}`
       );
     }
 
-    // Use Exa for semantic search
-    if (config.exaApiKey && caseData.jobProfile?.title) {
+    // Use Exa for semantic search when configured.
+    if (config.exaApiKey && caseData.jobTitle) {
       intelligence.clinicalEvidence.push(
-        `Clinical evidence for ${caseData.jobProfile.title} occupational demands`
+        `Configured Exa semantic search for ${caseData.jobTitle} occupational demands`
       );
     }
 
-    // Use Firecrawl for regulatory updates
-    if (config.firecrawlApiKey && caseData.geography?.state) {
+    // Use Firecrawl for regulatory updates when configured.
+    if (config.firecrawlApiKey && (caseData.deploymentCountry || caseData.agencyStandard)) {
       intelligence.regulatoryUpdates.push(
-        `Latest regulations for ${caseData.geography.state}`
+        `Configured Firecrawl regulatory check for ${caseData.deploymentCountry || caseData.agencyStandard}`
       );
     }
 
@@ -514,9 +514,9 @@ export async function extractTextFromDocument(
  */
 export function calculateNuclearPowerLevel(config: NuclearWarheadConfig): number {
   const activeAgents = getActiveAgents(config);
-  // Base power from direct government agents (3) + active paid agents
-  const totalPotentialAgents = 19;
-  const baseAgents = 3; // NIH PubMed, NIH RxNav, OSHA Regulatory
+  // Base power from direct source agents + active keyed agents.
+  const totalPotentialAgents = 21;
+  const baseAgents = 5; // NIH PubMed, NIH RxNav, OSHA, CDC Travel, State Department Travel
   const displayCount = activeAgents.length + baseAgents;
   return Math.min(100, (displayCount / totalPotentialAgents) * 100);
 }

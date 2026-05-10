@@ -1,16 +1,17 @@
 import { useState, useRef } from "react";
 import { Upload, AlertCircle, CheckCircle, Shield, Eye, EyeOff, Lock } from "lucide-react";
-import { processDocumentLocally, verifyScrubbed } from "@/lib/localPDFProcessor";
+import { processDocumentLocally, verifyScrubbed, type LocalProcessingResult } from "@/lib/localPDFProcessor";
 
 interface SecureIngestionProps {
-  onExtract?: (scrubbedText: string, clinicalDataPoints: any[]) => void;
+  onExtract?: (scrubbedText: string, result: LocalProcessingResult) => void;
   onClose?: () => void;
 }
 
 export default function SecureIngestion({ onExtract, onClose }: SecureIngestionProps) {
   const [file, setFile] = useState<File | null>(null);
-  const [processingResult, setProcessingResult] = useState<any | null>(null);
+  const [processingResult, setProcessingResult] = useState<LocalProcessingResult | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [processingError, setProcessingError] = useState<string | null>(null);
   const [showRedacted, setShowRedacted] = useState(true);
   const [verificationStatus, setVerificationStatus] = useState<any | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -20,6 +21,7 @@ export default function SecureIngestion({ onExtract, onClose }: SecureIngestionP
     if (!uploadedFile) return;
 
     setFile(uploadedFile);
+    setProcessingError(null);
     setIsProcessing(true);
 
     try {
@@ -32,6 +34,7 @@ export default function SecureIngestion({ onExtract, onClose }: SecureIngestionP
       setVerificationStatus(verification);
     } catch (error) {
       console.error("Error processing file:", error);
+      setProcessingError(error instanceof Error ? error.message : "Unable to process this document locally.");
     } finally {
       setIsProcessing(false);
     }
@@ -39,7 +42,7 @@ export default function SecureIngestion({ onExtract, onClose }: SecureIngestionP
 
   const handleExtract = () => {
     if (processingResult && onExtract) {
-      onExtract(processingResult.scrubbedText, processingResult.clinicalDataPoints);
+      onExtract(processingResult.scrubbedText, processingResult);
     }
   };
 
@@ -134,6 +137,11 @@ export default function SecureIngestion({ onExtract, onClose }: SecureIngestionP
             <p style={{ fontSize: "0.875rem", color: "rgba(255, 255, 255, 0.5)" }}>
               Upload with full PHI. It will be redacted locally in your browser.
             </p>
+            {processingError && (
+              <p style={{ fontSize: "0.8rem", color: "#ef4444", marginTop: "1rem" }}>
+                {processingError}
+              </p>
+            )}
             <input
               ref={fileInputRef}
               type="file"
@@ -191,6 +199,26 @@ export default function SecureIngestion({ onExtract, onClose }: SecureIngestionP
 
         {/* Processing Results */}
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div
+            style={{
+              background: "rgba(34, 197, 94, 0.08)",
+              border: "1px solid rgba(34, 197, 94, 0.2)",
+              borderRadius: "12px",
+              padding: "1rem",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+              gap: "1rem",
+              color: "rgba(255, 255, 255, 0.75)",
+              fontSize: "0.875rem",
+            }}
+          >
+            <div><strong style={{ color: "#b4d7d0" }}>Source:</strong> {processingResult.sourceFileName}</div>
+            <div><strong style={{ color: "#b4d7d0" }}>Extraction:</strong> {processingResult.extractionMethod}</div>
+            <div><strong style={{ color: "#b4d7d0" }}>Structured Items:</strong> {processingResult.clinicalDataPoints.length}</div>
+            <div><strong style={{ color: "#b4d7d0" }}>Redaction Confidence:</strong> {Math.round(processingResult.redactionConfidence * 100)}%</div>
+            {processingResult.warning && <div style={{ gridColumn: "1 / -1", color: "#fbbf24" }}>{processingResult.warning}</div>}
+          </div>
+
           {/* PHI Detection Summary */}
           <div
             style={{
@@ -251,7 +279,7 @@ export default function SecureIngestion({ onExtract, onClose }: SecureIngestionP
                 </div>
                 <div style={{ fontSize: "0.75rem", color: "rgba(255, 255, 255, 0.5)" }}>
                   {verificationStatus.isSafe
-                    ? "No PHI detected in scrubbed version. Ready to send to AI."
+                    ? "No PHI detected in scrubbed version. Ready to create a draft case."
                     : `Found: ${verificationStatus.suspiciousPatterns.join(", ")}`}
                 </div>
               </div>
@@ -354,7 +382,7 @@ export default function SecureIngestion({ onExtract, onClose }: SecureIngestionP
                 fontWeight: 700,
               }}
             >
-              Extract & Populate Case
+              Create Draft Case From Extraction
             </button>
           </div>
         </div>

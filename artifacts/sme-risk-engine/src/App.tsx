@@ -14,6 +14,7 @@ import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
 import ClinicalCalculator from "@/pages/ClinicalCalculator";
 import Citations from "@/pages/Citations";
+import { createCaseFromExtraction } from "@/lib/extractedCaseMapper";
 
 function CaseHubWrapper({ store }: { store: ReturnType<typeof useStore> }) {
   const params = useParams<{ id: string }>();
@@ -55,7 +56,10 @@ function NewCaseWrapper({ store }: { store: ReturnType<typeof useStore> }) {
 
 function AppRouter() {
   const store = useStore();
+  const [location, setLocation] = useLocation();
   const [showIngest, setShowIngest] = useState(false);
+  const activeRouteCaseId = location.match(/^\/case\/([^/]+)/)?.[1];
+  const activeRouteCase = activeRouteCaseId ? store.cases.find(c => c.id === activeRouteCaseId) : undefined;
 
   useEffect(() => {
     const handleOpen = () => setShowIngest(true);
@@ -64,14 +68,15 @@ function AppRouter() {
   }, []);
 
   return (
-    <AppShell cases={store.cases}>
+    <AppShell cases={store.cases} activeCase={activeRouteCase}>
       {showIngest && (
         <SecureIngestion 
           onClose={() => setShowIngest(false)} 
-          onExtract={(text, data) => {
-            console.log("Extracted Data:", data);
-            // In a real scenario, this would populate the 'New Case' form
+          onExtract={(_, data) => {
+            const ingestedCase = createCaseFromExtraction(data);
+            store.saveCase(ingestedCase);
             setShowIngest(false);
+            setLocation(`/case/${ingestedCase.id}`);
           }}
         />
       )}

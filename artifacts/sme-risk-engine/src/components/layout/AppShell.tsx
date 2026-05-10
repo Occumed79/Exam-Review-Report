@@ -7,9 +7,10 @@ import { SMECase } from "@/lib/types";
 interface AppShellProps {
   children: ReactNode;
   cases: SMECase[];
+  activeCase?: SMECase;
 }
 
-export default function AppShell({ children, cases }: AppShellProps) {
+export default function AppShell({ children, cases, activeCase }: AppShellProps) {
   return (
     <div
       style={{
@@ -41,7 +42,7 @@ export default function AppShell({ children, cases }: AppShellProps) {
           {children}
         </main>
 
-        <IntelligenceSidebar />
+        <IntelligenceSidebar activeCase={activeCase} />
       </div>
     </div>
   );
