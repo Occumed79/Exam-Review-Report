@@ -13,6 +13,7 @@ interface SidebarProps {
 const NAV_MAIN = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/aor", label: "AOR Monitor", icon: Globe },
+  { href: "/job-intelligence", label: "Job Intelligence", icon: Briefcase },
   { href: "/matrix", label: "Clearance Matrix", icon: Grid3x3 },
   { href: "/drugs", label: "Drug Checker", icon: Pill },
   { href: "/calculator", label: "Clinical Calculators", icon: Calculator },

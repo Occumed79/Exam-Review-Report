@@ -9,7 +9,9 @@ import CaseHub from "@/pages/CaseHub";
 import Guidelines from "@/pages/Guidelines";
 import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
-import AORUpdates from "@/pages/AORUpdates";
+import AORMonitor from "@/pages/AORMonitor";
+import JobIntelligence from "@/pages/JobIntelligence";
+import GuidelineLibrary from "@/pages/GuidelineLibrary";
 import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
 import ClinicalCalculator from "@/pages/ClinicalCalculator";
@@ -95,7 +97,13 @@ function AppRouter() {
           <CaseHubWrapper store={store} />
         </Route>
         <Route path="/aor">
-          <AORUpdates />
+          <AORMonitor />
+        </Route>
+        <Route path="/job-intelligence">
+          <JobIntelligence />
+        </Route>
+        <Route path="/guidelines">
+          <GuidelineLibrary />
         </Route>
         <Route path="/matrix">
           <ClearanceMatrix cases={store.cases} />
