@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { SMECase, Guideline, Source } from "./types";
 import { NuclearWarheadConfig } from "./nuclearWarheadAPIs";
 import { SAMPLE_CASES, SAMPLE_GUIDELINES, SAMPLE_SOURCES } from "./sampleData";
-import { initializeParseClient, createCase as apiCreateCase, updateCase as apiUpdateCase } from "../../../../backend/parseClient";
+import { initializeParseClient, createCase as apiCreateCase, updateCase as apiUpdateCase } from "./parseClient";
 import { logAuditEntry, logPHIAccess } from "./auditLogger";
 
 type UnknownRecord = Record<string, unknown>;
@@ -347,3 +347,4 @@ export function generateCaseId(): string {
 export function generateId(): string {
   return `id-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }
+
