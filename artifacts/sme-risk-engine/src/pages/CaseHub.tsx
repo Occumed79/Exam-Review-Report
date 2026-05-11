@@ -107,7 +107,6 @@ export default function CaseHub({ caseData, onSave, guidelines }: CaseHubProps) 
       case "injuries": return <InjuryHistory caseData={localCase} onUpdate={updateCase} />;
       case "job-duties": return <JobDuties caseData={localCase} onUpdate={updateCase} />;
       case "essential-functions": return <EssentialFunctions caseData={localCase} onUpdate={updateCase} />;
-      case "standards": return <StandardsTab caseData={localCase} onUpdate={updateCase} />;
       case "country-risk": return <CountryRisk caseData={localCase} onUpdate={updateCase} />;
       case "occupational": return <OccupationalData caseData={localCase} onUpdate={updateCase} />;
       case "health-equity": return <HealthEquity caseData={localCase} onUpdate={updateCase} />;
