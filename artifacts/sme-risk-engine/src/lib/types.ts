@@ -49,6 +49,19 @@ export interface MedicalCondition {
   refrigerationNeeded: boolean;
   specialtyFollowUp: boolean;
   emergencyAccessNeeded: boolean;
+  treatmentContinuity: {
+    dosageFrequency: string;
+    controlledSubstance: boolean;
+    sedatingMedication: boolean;
+    monitoringRequired: boolean;
+    labFollowUpRequired: boolean;
+    pharmacyAccessNeeded: boolean;
+    medicalSuppliesNeeded: boolean;
+    powerRequirement: boolean;
+    rescueMedicationNeeded: boolean;
+    riskIfInterrupted: string;
+    feasibilityConcern: string;
+  };
   notes: string;
 }
 
@@ -79,6 +92,18 @@ export interface JobDuties {
   essentialFunctions: string;
   clientRequirements: string;
   agencyStandardNotes: string;
+  safetySensitiveFlags: {
+    driving: boolean;
+    aviation: boolean;
+    weapons: boolean;
+    emergencyResponse: boolean;
+    workingAlone: boolean;
+    patientCare: boolean;
+    publicSafety: boolean;
+    hazardousMachinery: boolean;
+    heights: boolean;
+    confinedSpaces: boolean;
+  };
 }
 
 export interface CountryRiskProfile {
@@ -177,6 +202,16 @@ export interface ApplicableStandards {
   customNotes: string;
 }
 
+export interface RiskInteraction {
+  id: string;
+  type: "condition-job" | "condition-med" | "condition-country" | "med-job" | "med-country";
+  sourceId: string;
+  targetId: string;
+  description: string;
+  severity: "high" | "moderate" | "low";
+  rationale: string;
+}
+
 export interface SMECase {
   id: string;
   caseId: string;
@@ -207,6 +242,7 @@ export interface SMECase {
   healthEquity: HealthEquityContext | null;
   riskScores: RiskCategoryScore[];
   documentationGaps: DocumentationGap[];
+  riskInteractions: RiskInteraction[];
   smeAssessment: SMEAssessment;
 }
 

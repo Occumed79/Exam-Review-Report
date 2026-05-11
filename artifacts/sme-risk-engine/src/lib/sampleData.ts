@@ -557,7 +557,40 @@ export const SAMPLE_CASES: SMECase[] = [
         refrigerationNeeded: false,
         specialtyFollowUp: true,
         emergencyAccessNeeded: false,
+        treatmentContinuity: {
+          dosageFrequency: "1000mg BID",
+          controlledSubstance: false,
+          sedatingMedication: true,
+          monitoringRequired: true,
+          labFollowUpRequired: true,
+          pharmacyAccessNeeded: true,
+          medicalSuppliesNeeded: false,
+          powerRequirement: false,
+          rescueMedicationNeeded: false,
+          riskIfInterrupted: "High — breakthrough seizure risk",
+          feasibilityConcern: "Low — medication is widely available"
+        },
         notes: "Sudden incapacitation risk is the primary concern in context of safety-sensitive vehicle operation. Medication side effects (fatigue) may also be relevant."
+      }
+    ],
+    riskInteractions: [
+      {
+        id: "ri-001",
+        type: "condition-job",
+        sourceId: "mc-004",
+        targetId: "jd-001",
+        description: "Seizure Disorder + Commercial Driving",
+        severity: "high",
+        rationale: "Sudden incapacitation behind the wheel of a passenger bus poses a critical public safety risk."
+      },
+      {
+        id: "ri-002",
+        type: "med-job",
+        sourceId: "mc-004",
+        targetId: "jd-001",
+        description: "Levetiracetam + Night Shift Driving",
+        severity: "moderate",
+        rationale: "Medication-induced fatigue combined with night shift work may impair situational awareness."
       }
     ],
     injuries: [],
@@ -567,7 +600,19 @@ export const SAMPLE_CASES: SMECase[] = [
       environmentalDemands: [],
       essentialFunctions: "Operates large commercial passenger buses on fixed transit routes. Responsible for passenger safety. Works variable shifts including nights and weekends.",
       clientRequirements: "DOT/FMCSA medical certificate required. Agency requires CME examination.",
-      agencyStandardNotes: "DOT regulations address seizure disorder for commercial drivers."
+      agencyStandardNotes: "DOT regulations address seizure disorder for commercial drivers.",
+      safetySensitiveFlags: {
+        driving: true,
+        aviation: false,
+        weapons: false,
+        emergencyResponse: false,
+        workingAlone: false,
+        patientCare: false,
+        publicSafety: true,
+        hazardousMachinery: true,
+        heights: false,
+        confinedSpaces: false
+      }
     },
     countryRisk: null,
     occupationalData: {
