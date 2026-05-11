@@ -8,6 +8,7 @@ import { SMECase } from "@/lib/types";
 import SMEIntelligenceBrief from "./case-tabs/SMEIntelligenceBrief";
 import RiskInteractionMap from "./case-tabs/RiskInteractionMap";
 import JobDutyMatchMatrix from "./case-tabs/JobDutyMatchMatrix";
+import RiskMatrixDashboard from "./case-tabs/RiskMatrixDashboard";
 import MedicalProfile from "./case-tabs/MedicalProfile";
 import InjuryHistory from "./case-tabs/InjuryHistory";
 import JobDuties from "./case-tabs/JobDuties";
@@ -32,6 +33,7 @@ const TABS = [
   { id: "master", label: "Intelligence Brief", icon: Zap },
   { id: "map", label: "Interaction Map", icon: Activity },
   { id: "matrix", label: "Match Matrix", icon: Shield },
+  { id: "engine", label: "Engine Room", icon: Activity },
   { id: "overview", label: "Overview", icon: BarChart2 },
   { id: "intake", label: "Case Info", icon: FileText },
   { id: "medical", label: "Medical Profile", icon: Heart },
@@ -95,6 +97,7 @@ export default function CaseHub({ caseData, onSave, guidelines }: CaseHubProps) 
       case "master": return <SMEIntelligenceBrief caseData={localCase} />;
       case "map": return <RiskInteractionMap caseData={localCase} />;
       case "matrix": return <JobDutyMatchMatrix caseData={localCase} />;
+      case "engine": return <RiskMatrixDashboard caseData={localCase} />;
       case "overview": return <Overview c={localCase} onTabChange={setActiveTab} />;
       case "intake": return <CaseIntake existingCase={localCase} onSave={(c) => { setLocalCase(c); onSave(c); }} />;
       case "medical": return <MedicalProfile caseData={localCase} onUpdate={updateCase} />;
