@@ -39,12 +39,12 @@ export default function GuidelineLibrary() {
               onClick={() => setSelectedCategory(cat.id)}
               className={`w-full p-4 rounded-2xl flex items-center gap-4 transition-all border ${
                 selectedCategory === cat.id 
-                  ? 'bg-blue-500/10 border-blue-500/50 text-blue-400 shadow-[0_0_30px_rgba(59,130,246,0.1)]' 
+                  ? 'bg-teal-500/10 border-teal-400/40 text-teal-300' 
                   : 'bg-white/5 border-white/5 text-white/40 hover:bg-white/10'
               }`}
             >
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
-                selectedCategory === cat.id ? 'bg-blue-500 text-white' : 'bg-white/5'
+                selectedCategory === cat.id ? 'bg-teal-700/80 text-white' : 'bg-white/5'
               }`}>
                 {cat.icon}
               </div>
@@ -61,7 +61,7 @@ export default function GuidelineLibrary() {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h2 className="text-3xl font-black text-white tracking-tighter uppercase">Seizure Disorder</h2>
-                  <p className="text-blue-400 text-xs font-black uppercase tracking-widest mt-1">Neurologic Intelligence Path</p>
+                  <p className="text-teal-300 text-xs font-black uppercase tracking-widest mt-1">Neurologic Intelligence Path</p>
                 </div>
                 <div className="w-12 h-12 rounded-2xl bg-blue-500 flex items-center justify-center text-white shadow-[0_0_30px_rgba(59,130,246,0.4)]">
                   <Activity size={24} />
@@ -93,8 +93,8 @@ export default function GuidelineLibrary() {
                     <div className="text-[10px] font-black text-red-400 uppercase mb-1">Critical Trigger</div>
                     <div className="text-xs font-bold text-white/80">Breakthrough seizure within 5 years</div>
                   </div>
-                  <div className="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-4">
-                    <div className="text-[10px] font-black text-blue-400 uppercase mb-1">Evidence Strength</div>
+                  <div className="bg-teal-500/5 border border-teal-500/20 rounded-2xl p-4">
+                    <div className="text-[10px] font-black text-teal-300 uppercase mb-1">Evidence Strength</div>
                     <div className="text-xs font-bold text-white/80">High (Regulatory Consensus)</div>
                   </div>
                 </div>
@@ -131,7 +131,7 @@ export default function GuidelineLibrary() {
                     "The examinee has a documented history of seizure disorder, currently managed with anticonvulsant therapy. 
                     The most recent event occurred in [Date], indicating a seizure-free period of [Duration]."
                   </p>
-                  <button className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-blue-400 uppercase">Copy</button>
+                  <button className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-teal-300 uppercase">Copy</button>
                 </div>
                 <div className="p-4 rounded-xl bg-white/5 border border-white/10 relative group">
                   <div className="text-[9px] font-black text-white/20 uppercase mb-2">Risk Synthesis</div>
@@ -139,7 +139,7 @@ export default function GuidelineLibrary() {
                     "In the context of safety-sensitive duties, the primary clinical consideration is the risk of sudden incapacitation. 
                     Regulatory standards (e.g., FMCSA) typically require a specific seizure-free interval for such roles."
                   </p>
-                  <button className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-blue-400 uppercase">Copy</button>
+                  <button className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-black text-teal-300 uppercase">Copy</button>
                 </div>
               </div>
             </div>

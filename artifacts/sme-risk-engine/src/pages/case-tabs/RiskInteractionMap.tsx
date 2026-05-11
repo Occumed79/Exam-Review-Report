@@ -36,7 +36,7 @@ export default function RiskInteractionMap({ caseData }: RiskInteractionMapProps
         color="rgba(248, 113, 113, 0.5)"
       />
       <Node 
-        icon={<Pill className="text-purple-400" />} 
+        icon={<Pill className="text-slate-300" />} 
         label="Medication" 
         value="Levetiracetam" 
         x={200} y={-150} 
@@ -50,7 +50,7 @@ export default function RiskInteractionMap({ caseData }: RiskInteractionMapProps
         color="rgba(251, 191, 36, 0.5)"
       />
       <Node 
-        icon={<Shield className="text-blue-400" />} 
+        icon={<Shield className="text-teal-300" />} 
         label="Standard" 
         value="DOT/FMCSA" 
         x={200} y={150} 

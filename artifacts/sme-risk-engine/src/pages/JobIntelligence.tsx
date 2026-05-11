@@ -160,7 +160,7 @@ export default function JobIntelligence() {
       </div>
 
       {notice && (
-        <div className="glass-card p-3 text-xs font-bold text-cyan-100 border-cyan-400/20 flex justify-between items-center">
+        <div className="glass-card p-3 text-xs font-bold text-teal-100 border-teal-400/20 flex justify-between items-center">
           <span>{notice}</span>
           <button onClick={() => setNotice('')} className="text-white/40 hover:text-white">Dismiss</button>
         </div>
@@ -179,7 +179,7 @@ export default function JobIntelligence() {
                   value={query}
                   onChange={e => setQuery(e.target.value)}
                   placeholder="Search saved duties..."
-                  className="w-72 bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-blue-500/50"
+                  className="w-72 bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-teal-400/40"
                 />
               </div>
 
@@ -200,9 +200,9 @@ export default function JobIntelligence() {
                 value={jobPostingText}
                 onChange={e => setJobPostingText(e.target.value)}
                 placeholder="Paste job description or essential function text here..."
-                className="w-full h-48 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/30 outline-none focus:border-blue-500/50 resize-none"
+                className="w-full h-48 bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder:text-white/30 outline-none focus:border-teal-400/40 resize-none"
               />
-              <button onClick={extractFromPosting} className="mt-4 w-full bg-blue-500 text-white py-3 rounded-xl text-xs font-bold uppercase hover:bg-blue-600 transition-colors">
+              <button onClick={extractFromPosting} className="mt-4 w-full bg-teal-700/80 text-white py-3 rounded-xl text-xs font-bold uppercase hover:bg-teal-600/80 transition-colors">
                 Add Parsed Duties
               </button>
             </div>
@@ -217,18 +217,18 @@ export default function JobIntelligence() {
                 value={form.duty}
                 onChange={e => setForm(prev => ({ ...prev, duty: e.target.value }))}
                 placeholder="Type one essential job function..."
-                className="w-full h-28 bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-blue-500/50 resize-none"
+                className="w-full h-28 bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-white placeholder:text-white/30 outline-none focus:border-teal-400/40 resize-none"
               />
               <input
                 value={form.source}
                 onChange={e => setForm(prev => ({ ...prev, source: e.target.value }))}
                 placeholder="Source, example: SME Entered"
-                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-blue-500/50"
+                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white placeholder:text-white/30 outline-none focus:border-teal-400/40"
               />
               <select
                 value={form.confidence}
                 onChange={e => setForm(prev => ({ ...prev, confidence: e.target.value as SavedDuty['confidence'] }))}
-                className="w-full bg-slate-900/80 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-blue-500/50"
+                className="w-full bg-slate-900/80 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-teal-400/40"
               >
                 <option>Low</option>
                 <option>Moderate</option>
@@ -236,7 +236,7 @@ export default function JobIntelligence() {
               </select>
               <div className="grid grid-cols-2 gap-2">
                 {(['Physical', 'Cognitive', 'Environmental', 'Safety-sensitive'] as DutyType[]).map(type => (
-                  <button key={type} onClick={() => toggleType(type)} className={`p-2 rounded-xl text-[10px] font-black uppercase transition-all ${form.types.includes(type) ? 'bg-cyan-400/20 text-cyan-200 border border-cyan-400/40' : 'bg-white/5 text-white/40 border border-white/10 hover:bg-white/10'}`}>
+                  <button key={type} onClick={() => toggleType(type)} className={`p-2 rounded-xl text-[10px] font-black uppercase transition-all ${form.types.includes(type) ? 'bg-teal-400/15 text-teal-200 border border-teal-400/30' : 'bg-white/5 text-white/40 border border-white/10 hover:bg-white/10'}`}>
                     {type}
                   </button>
                 ))}
@@ -276,7 +276,7 @@ function classifyDuty(text: string): DutyType[] {
 }
 
 function tabClass(active: boolean) {
-  return `px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${active ? 'bg-blue-500 text-white shadow-[0_0_20px_rgba(59,130,246,0.4)]' : 'bg-white/5 text-white/40 hover:bg-white/10'}`;
+  return `px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${active ? 'bg-teal-700/80 text-white shadow-[0_0_16px_rgba(127,157,150,0.35)]' : 'bg-white/5 text-white/40 hover:bg-white/10'}`;
 }
 
 function ReconciliationRow({ duty, onEdit, onDelete }: { duty: SavedDuty; onEdit: (d: SavedDuty) => void; onDelete: (id: string) => void }) {
@@ -289,14 +289,14 @@ function ReconciliationRow({ duty, onEdit, onDelete }: { duty: SavedDuty; onEdit
           <h4 className="text-sm font-bold text-white/90 leading-relaxed">{duty.duty}</h4>
         </div>
         <div className="flex gap-2 shrink-0">
-          <button onClick={() => onEdit(duty)} className="text-[10px] font-black text-blue-300 uppercase bg-blue-400/10 hover:bg-blue-400/20 px-3 py-1 rounded-lg">Edit</button>
+          <button onClick={() => onEdit(duty)} className="text-[10px] font-black text-teal-200 uppercase bg-teal-400/10 hover:bg-teal-400/20 px-3 py-1 rounded-lg">Edit</button>
           <button onClick={() => onDelete(duty.id)} className="text-[10px] font-black text-red-300 uppercase bg-red-400/10 hover:bg-red-400/20 px-3 py-1 rounded-lg flex items-center gap-1"><Trash2 size={11} /> Delete</button>
         </div>
       </div>
       <div className="flex justify-between items-center gap-3">
         <div className="flex flex-wrap gap-2">
           <span className="text-[8px] font-black text-white/40 uppercase bg-white/5 px-2 py-0.5 rounded">{duty.source}</span>
-          {duty.types.map(type => <span key={type} className="text-[8px] font-black text-cyan-300 uppercase bg-cyan-400/10 px-2 py-0.5 rounded">{type}</span>)}
+          {duty.types.map(type => <span key={type} className="text-[8px] font-black text-teal-200 uppercase bg-teal-400/10 px-2 py-0.5 rounded">{type}</span>)}
         </div>
         <div className="text-[10px] text-white/40">Confidence: <span className="text-white/70">{duty.confidence}</span></div>
       </div>

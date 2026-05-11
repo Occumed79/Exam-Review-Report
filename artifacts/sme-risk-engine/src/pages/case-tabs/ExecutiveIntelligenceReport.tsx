@@ -222,7 +222,7 @@ export default function ExecutiveIntelligenceReport({ caseData, onUpdate }: Prop
           </button>
           <button 
             onClick={downloadReport}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-blue-900/20"
+            className="px-4 py-2 bg-teal-700/90 hover:bg-teal-700/80 text-white rounded-lg transition-all flex items-center gap-2 shadow-lg shadow-teal-900/20"
           >
             <Download className="w-4 h-4" />
             Export Intelligence Report
@@ -247,7 +247,7 @@ export default function ExecutiveIntelligenceReport({ caseData, onUpdate }: Prop
           </div>
           <div className="text-4xl font-black text-white">{Math.round(riskAnalysis.injuryProbability * 100)}%</div>
           <div className="w-full bg-white/10 h-1.5 rounded-full mt-3 overflow-hidden">
-            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${riskAnalysis.injuryProbability * 100}%` }} />
+            <div className="h-full bg-teal-400 rounded-full" style={{ width: `${riskAnalysis.injuryProbability * 100}%` }} />
           </div>
         </div>
 
@@ -277,7 +277,7 @@ export default function ExecutiveIntelligenceReport({ caseData, onUpdate }: Prop
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <FileText className="w-5 h-5 text-blue-400" />
+                <FileText className="w-5 h-5 text-teal-300" />
                 Regulatory Compliance Matrix
               </h3>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">

@@ -14,10 +14,10 @@ export default function RiskMatrixDashboard({ caseData }: RiskMatrixDashboardPro
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <ScoreCard label="Support Planning" score={riskAnalysis.supportPlanningNeed} color="text-blue-400" />
+        <ScoreCard label="Support Planning" score={riskAnalysis.supportPlanningNeed} color="text-teal-300" />
         <ScoreCard label="Doc Completion" score={riskAnalysis.documentationConcern} color="text-amber-400" />
-        <ScoreCard label="Treatment Continuity" score={riskAnalysis.treatmentContinuityConcern} color="text-purple-400" />
-        <ScoreCard label="Follow-up Feasibility" score={riskAnalysis.followUpFeasibilityConcern} color="text-cyan-400" />
+        <ScoreCard label="Treatment Continuity" score={riskAnalysis.treatmentContinuityConcern} color="text-slate-300" />
+        <ScoreCard label="Follow-up Feasibility" score={riskAnalysis.followUpFeasibilityConcern} color="text-teal-300" />
       </div>
 
       <div className="glass-card overflow-hidden">
@@ -55,7 +55,7 @@ export default function RiskMatrixDashboard({ caseData }: RiskMatrixDashboardPro
                 </td>
                 <td className="px-6 py-4">
                   <div className="text-white/70">{caseData.agencyStandard}</div>
-                  <div className="text-[10px] text-blue-400 font-bold">Review Required</div>
+                  <div className="text-[10px] text-teal-300 font-bold">Review Required</div>
                 </td>
                 <td className="px-6 py-4">
                   <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase ${

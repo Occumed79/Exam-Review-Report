@@ -63,11 +63,11 @@ export default function JobDutyMatchMatrix({ caseData }: JobDutyMatchMatrixProps
                   <div className="text-[10px] uppercase text-white/30 font-bold mb-2">SME Intelligence Guidance</div>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2 text-xs text-white/60">
-                      <Info size={12} className="mt-0.5 text-blue-400" />
+                      <Info size={12} className="mt-0.5 text-teal-300" />
                       <span>Review longitudinal stability of primary condition.</span>
                     </li>
                     <li className="flex items-start gap-2 text-xs text-white/60">
-                      <Info size={12} className="mt-0.5 text-blue-400" />
+                      <Info size={12} className="mt-0.5 text-teal-300" />
                       <span>Verify medication compliance and side effect profile.</span>
                     </li>
                   </ul>

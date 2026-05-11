@@ -40,6 +40,7 @@ function CaseHubWrapper({ store }: { store: ReturnType<typeof useStore> }) {
     <CaseHub
       caseData={caseData}
       onSave={(c) => store.saveCase(c)}
+      guidelines={store.guidelines}
     />
   );
 }

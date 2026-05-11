@@ -28,7 +28,7 @@ export default function StandardInteractionEngine({ caseData }: StandardInteract
           <h2 className="text-xl font-bold text-white">Standard Interaction Engine</h2>
           <p className="text-sm text-white/40 font-medium">Dynamic interpretation of regulatory and occupational standards</p>
         </div>
-        <div className="bg-blue-400/10 border border-blue-400/30 rounded-xl px-4 py-2 text-[10px] font-black text-blue-400 uppercase">
+        <div className="bg-blue-400/10 border border-blue-400/30 rounded-xl px-4 py-2 text-[10px] font-black text-teal-300 uppercase">
           Active Standard: {selectedStandard}
         </div>
       </div>
@@ -55,7 +55,7 @@ export default function StandardInteractionEngine({ caseData }: StandardInteract
 
       <div className="glass-card p-6 border-l-4 border-blue-400">
         <div className="flex items-center gap-3 mb-4">
-          <Shield className="text-blue-400" size={20} />
+          <Shield className="text-teal-300" size={20} />
           <h3 className="text-sm font-black text-white uppercase tracking-widest">Guideline Relevance Summary</h3>
         </div>
         <p className="text-sm text-white/70 leading-relaxed mb-4">

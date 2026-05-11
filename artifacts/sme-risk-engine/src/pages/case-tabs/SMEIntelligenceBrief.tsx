@@ -62,7 +62,7 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
       {/* Standards & Guidelines */}
       <section className="space-y-4">
         <h3 className="text-sm font-black text-white/60 uppercase tracking-widest flex items-center gap-2">
-          <Shield size={16} className="text-blue-400" />
+          <Shield size={16} className="text-teal-300" />
           Most Relevant Standards
         </h3>
         <div className="glass-card overflow-hidden">
@@ -78,12 +78,12 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
               <tr className="hover:bg-white/5 transition-colors">
                 <td className="px-4 py-4 font-bold text-white">DOT/FMCSA §391.41</td>
                 <td className="px-4 py-4 text-white/70">Seizure-free period requirement</td>
-                <td className="px-4 py-4 text-blue-400 font-medium">Neurology clearance, EEG, Drug levels</td>
+                <td className="px-4 py-4 text-teal-300 font-medium">Neurology clearance, EEG, Drug levels</td>
               </tr>
               <tr className="hover:bg-white/5 transition-colors">
                 <td className="px-4 py-4 font-bold text-white">OSHA 1910.134</td>
                 <td className="px-4 py-4 text-white/70">Respirator use with neurologic meds</td>
-                <td className="px-4 py-4 text-blue-400 font-medium">Provider statement on sedation</td>
+                <td className="px-4 py-4 text-teal-300 font-medium">Provider statement on sedation</td>
               </tr>
             </tbody>
           </table>
@@ -94,7 +94,7 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="glass-card p-6 space-y-4">
           <h3 className="text-xs font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
-            <Pill size={14} className="text-purple-400" />
+            <Pill size={14} className="text-slate-300" />
             Medication Continuity
           </h3>
           <div className="space-y-3">
@@ -115,7 +115,7 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
 
         <div className="glass-card p-6 space-y-4">
           <h3 className="text-xs font-black text-white/40 uppercase tracking-widest flex items-center gap-2">
-            <Globe size={14} className="text-cyan-400" />
+            <Globe size={14} className="text-teal-300" />
             Deployment Modifiers
           </h3>
           <div className="space-y-3">
