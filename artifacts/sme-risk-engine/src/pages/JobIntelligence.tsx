@@ -242,7 +242,7 @@ export default function JobIntelligence() {
                 ))}
               </div>
               <div className="flex gap-2">
-                <button onClick={handleSaveDuty} className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 text-white py-3 rounded-xl text-xs font-bold uppercase hover:bg-emerald-600 transition-colors">
+                <button onClick={handleSaveDuty} className="flex-1 flex items-center justify-center gap-2 bg-teal-700/80 text-white py-3 rounded-xl text-xs font-bold uppercase hover:bg-teal-600/80 transition-colors">
                   <Save size={14} /> Save
                 </button>
                 {editingId && <button onClick={resetForm} className="px-4 bg-white/10 text-white/70 rounded-xl text-xs font-bold uppercase hover:bg-white/15">Cancel</button>}
@@ -285,7 +285,7 @@ function ReconciliationRow({ duty, onEdit, onDelete }: { duty: SavedDuty; onEdit
     <div className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/20 transition-all group">
       <div className="flex justify-between items-start mb-3 gap-4">
         <div className="flex items-start gap-3">
-          <div className={`mt-1.5 w-2 h-2 rounded-full ${safetySensitive ? 'bg-red-400 animate-pulse' : 'bg-emerald-400'}`} />
+          <div className={`mt-1.5 w-2 h-2 rounded-full ${safetySensitive ? 'bg-red-400 animate-pulse' : 'bg-teal-400'}`} />
           <h4 className="text-sm font-bold text-white/90 leading-relaxed">{duty.duty}</h4>
         </div>
         <div className="flex gap-2 shrink-0">

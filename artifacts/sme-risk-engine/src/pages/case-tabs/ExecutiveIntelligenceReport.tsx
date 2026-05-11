@@ -207,7 +207,7 @@ export default function ExecutiveIntelligenceReport({ caseData, onUpdate }: Prop
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <Zap className="w-6 h-6 text-yellow-400" />
+            <Zap className="w-6 h-6 text-amber-300" />
             Executive Intelligence Report
           </h2>
           <p className="text-white/60 text-sm mt-1">Advanced risk analytics and regulatory compliance matrix</p>
@@ -287,7 +287,7 @@ export default function ExecutiveIntelligenceReport({ caseData, onUpdate }: Prop
                     <div className={`text-[10px] font-bold px-2 py-1 rounded-md inline-block ${
                       val.status === "compliant" ? "bg-green-500/20 text-green-400" :
                       val.status === "non-compliant" ? "bg-red-500/20 text-red-400" :
-                      val.status === "waiver-required" ? "bg-yellow-500/20 text-yellow-400" :
+                      val.status === "waiver-required" ? "bg-yellow-500/20 text-amber-300" :
                       "bg-white/10 text-white/40"
                     }`}>
                       {val.status.toUpperCase()}
@@ -299,7 +299,7 @@ export default function ExecutiveIntelligenceReport({ caseData, onUpdate }: Prop
 
             <div className="bg-white/5 border border-white/10 rounded-2xl p-6 backdrop-blur-md">
               <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <Zap className="w-5 h-5 text-yellow-400" />
+                <Zap className="w-5 h-5 text-amber-300" />
                 Intelligence Explainability
               </h3>
               <div className="space-y-3">
@@ -344,7 +344,7 @@ export default function ExecutiveIntelligenceReport({ caseData, onUpdate }: Prop
               </h3>
               <div className="space-y-3">
                 {riskAnalysis.recommendations.map((r, idx) => (
-                  <div key={idx} className="text-xs font-bold p-3 bg-yellow-500/10 border-l-4 border-yellow-500 text-yellow-200 rounded-r-lg">
+                  <div key={idx} className="text-xs font-bold p-3 bg-amber-500/10 border-l-4 border-amber-500/60 text-amber-200 rounded-r-lg">
                     {r}
                   </div>
                 ))}

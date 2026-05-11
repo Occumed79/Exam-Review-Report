@@ -19,7 +19,7 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-black text-white tracking-tighter flex items-center gap-3">
-            <Zap className="text-yellow-400 fill-yellow-400" size={32} />
+            <Zap className="text-amber-300 fill-amber-300" size={32} />
             SME INTELLIGENCE BRIEF
           </h1>
           <p className="text-white/40 font-medium mt-1 uppercase tracking-widest text-xs">
@@ -30,10 +30,10 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
           <div className="text-[10px] text-white/30 font-black uppercase">Evidence Strength</div>
           <div className="flex gap-1 mt-1">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className={`h-1.5 w-6 rounded-full ${i <= 4 ? 'bg-emerald-400' : 'bg-white/10'}`} />
+              <div key={i} className={`h-1.5 w-6 rounded-full ${i <= 4 ? 'bg-teal-400' : 'bg-white/10'}`} />
             ))}
           </div>
-          <div className="text-[10px] text-emerald-400 font-bold mt-1">HIGH (82%)</div>
+          <div className="text-[10px] text-teal-300 font-bold mt-1">HIGH (82%)</div>
         </div>
       </div>
 
@@ -100,11 +100,11 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <span className="text-xs text-white/60">Refrigeration Required</span>
-              <span className="text-xs font-bold text-emerald-400">NO</span>
+              <span className="text-xs font-bold text-teal-300">NO</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-xs text-white/60">Controlled Substance</span>
-              <span className="text-xs font-bold text-emerald-400">NO</span>
+              <span className="text-xs font-bold text-teal-300">NO</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-xs text-white/60">Sedating Potential</span>
