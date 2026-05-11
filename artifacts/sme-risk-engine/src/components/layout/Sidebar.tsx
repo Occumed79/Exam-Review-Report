@@ -2,7 +2,7 @@ import { Link, useLocation } from "wouter";
 import {
   LayoutDashboard, BookOpen, Database, Settings, ChevronRight,
   Shield, FileText, Globe, Grid3x3, Pill,
-  Calculator, BookMarked
+  Calculator, BookMarked, Briefcase
 } from "lucide-react";
 import { SMECase } from "@/lib/types";
 

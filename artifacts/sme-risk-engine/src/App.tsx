@@ -117,7 +117,7 @@ function AppRouter() {
         <Route path="/citations">
           <Citations />
         </Route>
-        <Route path="/guidelines">
+        <Route path="/guideline-editor">
           <Guidelines
             guidelines={store.guidelines}
             onSave={store.saveGuideline}
