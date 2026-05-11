@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Activity, Pill, Shield, Brain, Bone, ChevronRight, Search, Copy, CheckCircle2 } from 'lucide-react';
 import { useStore } from '@/lib/store';
+import { fetchPubMedArticles } from '@/lib/directSourceIntelligence';
 import type { ConditionCategory } from '@/lib/types';
 
 // ─── Rich condition intelligence data ───────────────────────────────────────
@@ -186,6 +187,21 @@ export default function GuidelineLibrary() {
     setCopied(key);
     setTimeout(() => setCopied(null), 2000);
   };
+
+  const [pubmedArticles, setPubmedArticles] = React.useState<Array<{pmid: string; title: string; journal: string; year: string; url: string}>>([]);
+  const [pubmedLoading, setPubmedLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!cond) return;
+    let cancelled = false;
+    setPubmedLoading(true);
+    setPubmedArticles([]);
+    const query = `${cond.name} occupational medicine fitness for duty`;
+    fetchPubMedArticles(query, 4).then(articles => {
+      if (!cancelled) { setPubmedArticles(articles); setPubmedLoading(false); }
+    });
+    return () => { cancelled = true; };
+  }, [selectedCat, selectedCondIdx]);
 
   const filteredCategories = Object.entries(CONDITION_INTEL).filter(([, v]) =>
     !search || v.label.toLowerCase().includes(search.toLowerCase()) ||

@@ -30,6 +30,41 @@ function medications(caseData: SMECase): string[] {
   return Array.from(new Set(values)).slice(0, 4);
 }
 
+
+/**
+ * Fetch PubMed articles WITH titles for richer display
+ */
+async function fetchPubMedArticles(query: string, maxResults: number = 4): Promise<Array<{pmid: string; title: string; journal: string; year: string; url: string}>> {
+  const PUBMED_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
+  try {
+    const encoded = encodeURIComponent(query);
+    const searchRes = await fetch(`${PUBMED_BASE}/esearch.fcgi?db=pubmed&retmode=json&retmax=${maxResults}&sort=relevance&term=${encoded}`);
+    if (!searchRes.ok) return [];
+    const searchData = await searchRes.json();
+    const ids: string[] = searchData?.esearchresult?.idlist || [];
+    if (!ids.length) return [];
+    
+    const summaryRes = await fetch(`${PUBMED_BASE}/esummary.fcgi?db=pubmed&id=${ids.join(',')}&retmode=json`);
+    if (!summaryRes.ok) return ids.map(id => ({ pmid: id, title: `PMID ${id}`, journal: '', year: '', url: `https://pubmed.ncbi.nlm.nih.gov/${id}/` }));
+    const summaryData = await summaryRes.json();
+    
+    return ids.map(pmid => {
+      const item = summaryData?.result?.[pmid];
+      return {
+        pmid,
+        title: item?.title || `PMID ${pmid}`,
+        journal: item?.source || '',
+        year: item?.pubdate?.substring(0, 4) || '',
+        url: `https://pubmed.ncbi.nlm.nih.gov/${pmid}/`,
+      };
+    });
+  } catch {
+    return [];
+  }
+}
+
+export { fetchPubMedArticles };
+
 async function fetchPubMed(caseData: SMECase): Promise<DirectSourceFinding> {
   const condition = firstCondition(caseData);
   const query = encodeURIComponent(`${condition?.conditionName || 'occupational medicine'} fitness for duty occupational health`);
