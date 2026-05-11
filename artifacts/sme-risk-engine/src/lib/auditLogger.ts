@@ -5,9 +5,7 @@
  * to ensure compliance with HIPAA audit trail requirements.
  */
 
-import { initializeParseClient } from '../../../../backend/parseClient';
 
-import Parse from 'parse';
 
 export type AuditAction = 
   | 'PHI_ACCESS' 
@@ -72,30 +70,8 @@ export function getLocalAuditTrail(): StoredAuditEntry[] {
 export async function logAuditEntry(entry: AuditEntry): Promise<void> {
   const localRecord = appendLocalAuditEntry(entry, 'pending');
 
-  try {
-    // Ensure Parse is initialized before use. If Parse is not configured or reachable,
-    // the local audit record above remains the durable fallback.
-    initializeParseClient();
-    
-    const AuditLog = Parse.Object.extend('AuditLog');
-    const log = new AuditLog();
-
-    log.set('action', entry.action);
-    log.set('entityId', entry.entityId);
-    log.set('entityType', entry.entityType);
-    log.set('reason', entry.reason);
-    log.set('metadata', { ...(entry.metadata || {}), localAuditId: localRecord?.id });
-    log.set('user', Parse.User.current());
-    log.set('timestamp', new Date());
-    log.set('ipAddress', 'Client-Side');
-
-    await log.save();
-    appendLocalAuditEntry({ ...entry, metadata: { ...(entry.metadata || {}), backendSynced: true } }, 'synced');
-    console.log(`🛡️ HIPAA Audit Logged: ${entry.action} on ${entry.entityType} (${entry.entityId})`);
-  } catch (error) {
-    appendLocalAuditEntry({ ...entry, metadata: { ...(entry.metadata || {}), backendSyncError: error instanceof Error ? error.message : String(error) } }, 'failed');
-    console.warn('⚠️ Backend audit unavailable; PHI action retained in local audit trail:', error);
-  }
+  // Backend sync skipped in local-only mode; local audit trail is the durable record.
+  console.log(`🛡️ Local Audit: ${entry.action} on ${entry.entityType} (${entry.entityId})`);
 }
 
 /**
