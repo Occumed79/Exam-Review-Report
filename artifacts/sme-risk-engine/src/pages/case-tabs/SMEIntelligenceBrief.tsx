@@ -160,7 +160,7 @@ export default function SMEIntelligenceBrief({ caseData }: SMEIntelligenceBriefP
             <FileText size={12} /> MISSING: NEUROLOGY CLEARANCE LETTER
           </div>
           <div className="bg-amber-400/10 border border-amber-400/30 rounded-full px-4 py-1.5 text-[10px] font-bold text-amber-400 flex items-center gap-2">
-            <FileText size={12} /> OUTDATED: EEG RESULTS (>6 MONTHS)
+            <FileText size={12} /> OUTDATED: EEG RESULTS (&gt;6 MONTHS)
           </div>
         </div>
       </section>
