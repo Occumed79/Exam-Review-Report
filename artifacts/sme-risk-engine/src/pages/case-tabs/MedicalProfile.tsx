@@ -5,8 +5,8 @@ import { generateId } from "@/lib/store";
 
 const CAT_COLORS: Record<ConditionCategory, string> = {
   cardiovascular: "#ef4444", respiratory: "#06b6d4", "endocrine-metabolic": "#f59e0b",
-  neurologic: "#a78bfa", psychiatric: "#ec4899", orthopedic: "#fb923c",
-  "sleep-disorder": "#6366f1", renal: "#22d3ee", gastrointestinal: "#84cc16",
+  neurologic: "#9badc4", psychiatric: "#c4a5b8", orthopedic: "#fb923c",
+  "sleep-disorder": "#9badc4", renal: "#7fc8d4", gastrointestinal: "#84cc16",
   hematologic: "#f43f5e", "infectious-disease": "#10b981", immunologic: "#8b5cf6",
   dermatologic: "#fbbf24", "vision-hearing": "#60a5fa", other: "#94a3b8"
 };
@@ -145,8 +145,8 @@ export default function MedicalProfile({ caseData, onUpdate }: Props) {
 
                 <div style={{ marginTop: "0.75rem" }}>
                   <label style={lbl}>Provider Documentation Quote</label>
-                  <textarea className="glass-input" style={{ ...inp, minHeight: "80px", resize: "vertical", borderColor: "rgba(0,212,255,0.2)" }} value={mc.providerQuote} onChange={e => updateCondition(mc.id, "providerQuote", e.target.value)} placeholder='"Provider documentation states: [direct quote from treating provider]..."' data-testid={`textarea-provider-quote-${mc.id}`} />
-                  <div style={{ fontSize: "0.6875rem", color: "rgba(0,212,255,0.5)", marginTop: "0.25rem" }}>Quote verbatim from provider documentation. Will appear in report labeled as: "Provider documentation states:"</div>
+                  <textarea className="glass-input" style={{ ...inp, minHeight: "80px", resize: "vertical", borderColor: "rgba(180,215,208,0.2)" }} value={mc.providerQuote} onChange={e => updateCondition(mc.id, "providerQuote", e.target.value)} placeholder='"Provider documentation states: [direct quote from treating provider]..."' data-testid={`textarea-provider-quote-${mc.id}`} />
+                  <div style={{ fontSize: "0.6875rem", color: "rgba(180,215,208,0.5)", marginTop: "0.25rem" }}>Quote verbatim from provider documentation. Will appear in report labeled as: "Provider documentation states:"</div>
                 </div>
 
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginTop: "0.75rem" }}>
@@ -167,8 +167,8 @@ export default function MedicalProfile({ caseData, onUpdate }: Props) {
                     ["specialtyFollowUp", "Specialty Follow-Up Required"],
                     ["emergencyAccessNeeded", "Emergency Access Needed"],
                   ] as [keyof MedicalCondition, string][]).map(([field, label]) => (
-                    <label key={field} style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", padding: "0.5rem 0.75rem", borderRadius: "8px", background: mc[field] ? "rgba(0,212,255,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${mc[field] ? "rgba(0,212,255,0.25)" : "rgba(255,255,255,0.07)"}`, fontSize: "0.8125rem", color: mc[field] ? "#00d4ff" : "rgba(255,255,255,0.55)", fontWeight: 500 }} data-testid={`checkbox-${field}-${mc.id}`}>
-                      <input type="checkbox" checked={!!mc[field]} onChange={e => updateCondition(mc.id, field, e.target.checked)} style={{ accentColor: "#00d4ff" }} />
+                    <label key={field} style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", padding: "0.5rem 0.75rem", borderRadius: "8px", background: mc[field] ? "rgba(180,215,208,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${mc[field] ? "rgba(180,215,208,0.25)" : "rgba(255,255,255,0.07)"}`, fontSize: "0.8125rem", color: mc[field] ? "#b4d7d0" : "rgba(255,255,255,0.55)", fontWeight: 500 }} data-testid={`checkbox-${field}-${mc.id}`}>
+                      <input type="checkbox" checked={!!mc[field]} onChange={e => updateCondition(mc.id, field, e.target.checked)} style={{ accentColor: "#b4d7d0" }} />
                       {label}
                     </label>
                   ))}

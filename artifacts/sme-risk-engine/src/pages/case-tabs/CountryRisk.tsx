@@ -78,7 +78,7 @@ export default function CountryRisk({ caseData, onUpdate }: Props) {
     <div>
       <div style={{ marginBottom: "1.25rem" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.25rem" }}>
-          <Globe size={20} style={{ color: "#00d4ff" }} />
+          <Globe size={20} style={{ color: "#b4d7d0" }} />
           <h2 style={{ fontSize: "1.125rem", fontWeight: 700, color: "#fff" }}>Deployment Country Risk Module</h2>
         </div>
         <p style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>
@@ -101,7 +101,7 @@ export default function CountryRisk({ caseData, onUpdate }: Props) {
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div className="glass-card" style={{ padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Country Information</div>
+              <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Country Information</div>
               <div style={{ marginBottom: "0.75rem" }}>
                 <label style={lbl}>Country</label>
                 <select className="glass-input" style={inp} value={cr.country} onChange={e => upd("country", e.target.value)} data-testid="select-country">
@@ -168,7 +168,7 @@ export default function CountryRisk({ caseData, onUpdate }: Props) {
 
           <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
             <div className="glass-card" style={{ padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Deployment Health Details</div>
+              <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Deployment Health Details</div>
               {[
                 ["vaccineRequirements", "Vaccine Requirements/Recommendations", "textarea"],
                 ["medicationAvailability", "Medication Availability Concerns", "textarea"],

@@ -448,7 +448,7 @@ function FieldInput({
           width: "100%",
           padding: "0.5rem 0.75rem",
           background: "rgba(255,255,255,0.05)",
-          border: `1px solid ${extracted && !value ? "rgba(0,212,255,0.3)" : "rgba(255,255,255,0.1)"}`,
+          border: `1px solid ${extracted && !value ? "rgba(180,215,208,0.3)" : "rgba(255,255,255,0.1)"}`,
           borderRadius: "7px",
           color: "#fff",
           fontSize: "0.875rem",
@@ -530,8 +530,8 @@ export default function ClinicalCalculator() {
           </div>
         </div>
         {/* Disclaimer */}
-        <div style={{ padding: "0.5rem 0.875rem", background: "rgba(0,212,255,0.06)", border: "1px solid rgba(0,212,255,0.18)", borderRadius: "8px", fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
-          <Info size={13} style={{ color: "#00d4ff", flexShrink: 0, marginTop: "1px" }} />
+        <div style={{ padding: "0.5rem 0.875rem", background: "rgba(180,215,208,0.06)", border: "1px solid rgba(180,215,208,0.18)", borderRadius: "8px", fontSize: "0.75rem", color: "rgba(255,255,255,0.65)", display: "flex", gap: "0.5rem", alignItems: "flex-start" }}>
+          <Info size={13} style={{ color: "#b4d7d0", flexShrink: 0, marginTop: "1px" }} />
           <span>These calculators provide <strong>decision-support estimates only</strong>. Results must be verified by a qualified clinician before being used in fitness determinations.</span>
         </div>
       </div>
@@ -557,14 +557,14 @@ export default function ClinicalCalculator() {
                     alignItems: "flex-start",
                     gap: "0.5rem",
                     padding: "0.625rem 0.75rem",
-                    background: active ? "rgba(0,212,255,0.08)" : "transparent",
+                    background: active ? "rgba(180,215,208,0.08)" : "transparent",
                     border: "none",
-                    borderLeft: active ? "2px solid #00d4ff" : "2px solid transparent",
+                    borderLeft: active ? "2px solid #b4d7d0" : "2px solid transparent",
                     cursor: "pointer",
                     textAlign: "left",
                   }}
                 >
-                  <Icon size={14} style={{ color: active ? "#00d4ff" : "rgba(255,255,255,0.35)", marginTop: "2px", flexShrink: 0 }} />
+                  <Icon size={14} style={{ color: active ? "#b4d7d0" : "rgba(255,255,255,0.35)", marginTop: "2px", flexShrink: 0 }} />
                   <div>
                     <div style={{ fontSize: "0.8125rem", fontWeight: 600, color: active ? "#fff" : "rgba(255,255,255,0.55)" }}>{c.label}</div>
                     <div style={{ fontSize: "0.625rem", color: "rgba(255,255,255,0.3)", lineHeight: 1.4 }}>{c.desc}</div>
@@ -586,10 +586,10 @@ export default function ClinicalCalculator() {
                 style={{
                   width: "100%",
                   padding: "0.625rem",
-                  border: "1px dashed rgba(0,212,255,0.3)",
+                  border: "1px dashed rgba(180,215,208,0.3)",
                   borderRadius: "8px",
-                  background: ocr.status === "running" ? "rgba(0,212,255,0.05)" : "transparent",
-                  color: "#00d4ff",
+                  background: ocr.status === "running" ? "rgba(180,215,208,0.05)" : "transparent",
+                  color: "#b4d7d0",
                   fontSize: "0.8125rem",
                   cursor: "pointer",
                   display: "flex",
@@ -621,7 +621,7 @@ export default function ClinicalCalculator() {
                   {Object.entries(ocr.extracted).map(([k, v]) => (
                     <div key={k} style={{ display: "flex", justifyContent: "space-between", fontSize: "0.75rem", padding: "0.125rem 0", color: "rgba(255,255,255,0.6)" }}>
                       <span style={{ color: "rgba(255,255,255,0.35)" }}>{k}</span>
-                      <span style={{ color: "#00d4ff", fontWeight: 600 }}>{v}</span>
+                      <span style={{ color: "#b4d7d0", fontWeight: 600 }}>{v}</span>
                     </div>
                   ))}
                 </div>
@@ -643,8 +643,8 @@ export default function ClinicalCalculator() {
           {/* Calculator form */}
           <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)", borderRadius: "12px", padding: "1.25rem" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "1rem" }}>
-              <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <ActiveIcon size={16} style={{ color: "#00d4ff" }} />
+              <div style={{ width: "32px", height: "32px", borderRadius: "8px", background: "rgba(180,215,208,0.1)", border: "1px solid rgba(180,215,208,0.2)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <ActiveIcon size={16} style={{ color: "#b4d7d0" }} />
               </div>
               <div>
                 <div style={{ fontSize: "1rem", fontWeight: 700, color: "#fff" }}>{activeCalcMeta.label}</div>
@@ -673,9 +673,9 @@ export default function ClinicalCalculator() {
                   gap: "0.375rem",
                   padding: "0.625rem 1.25rem",
                   borderRadius: "8px",
-                  background: "rgba(0,212,255,0.15)",
-                  border: "1px solid rgba(0,212,255,0.35)",
-                  color: "#00d4ff",
+                  background: "rgba(180,215,208,0.15)",
+                  border: "1px solid rgba(180,215,208,0.35)",
+                  color: "#b4d7d0",
                   fontSize: "0.875rem",
                   fontWeight: 700,
                   cursor: "pointer",

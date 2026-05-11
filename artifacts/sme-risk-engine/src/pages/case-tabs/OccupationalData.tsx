@@ -122,7 +122,7 @@ const RISK_FIELDS: { key: keyof OD; label: string; color: string }[] = [
   { key: "heatIllnessRisk", label: "Heat Illness", color: "#ef4444" },
   { key: "respiratoryRisk", label: "Respiratory", color: "#06b6d4" },
   { key: "transportationRisk", label: "Transportation", color: "#f59e0b" },
-  { key: "violenceRisk", label: "Violence", color: "#ec4899" },
+  { key: "violenceRisk", label: "Violence", color: "#c4a5b8" },
   { key: "slipsTripsFalls", label: "Slips/Falls", color: "#a78bfa" },
   { key: "overexertion", label: "Overexertion", color: "#f97316" },
   { key: "hazardousExposure", label: "Hazardous Exp.", color: "#10b981" },
@@ -174,7 +174,7 @@ export default function OccupationalData({ caseData, onUpdate }: Props) {
       {!od ? (
         <div>
           <div className="glass-card" style={{ padding: "1.5rem", marginBottom: "1.25rem" }}>
-            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem" }}>Select Job Category to Load Preset Data</div>
+            <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem" }}>Select Job Category to Load Preset Data</div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "0.5rem" }}>
               {JOB_CATEGORIES.map(cat => (
                 <button key={cat} className="glow-btn glow-btn-secondary" onClick={() => initOD(cat)} data-testid={`btn-load-preset-${cat.replace(/\s+/g,"-").toLowerCase()}`} style={{ padding: "0.625rem 0.75rem", fontSize: "0.8125rem", textAlign: "left" }}>
@@ -218,7 +218,7 @@ export default function OccupationalData({ caseData, onUpdate }: Props) {
               ))}
             </div>
             <div className="glass-card" style={{ padding: "1.25rem" }}>
-              <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Specific Risk Categories</div>
+              <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Specific Risk Categories</div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
                 {RISK_FIELDS.map(f => (
                   <div key={f.key}>
@@ -244,7 +244,7 @@ export default function OccupationalData({ caseData, onUpdate }: Props) {
                   <Tooltip formatter={(v) => {
                     const levels = ["None","Low","Moderate","Moderate-High","High","Extreme"];
                     return [levels[Math.round(Number(v))] || v, "Risk Level"];
-                  }} contentStyle={{ background: "rgba(10,15,30,0.9)", border: "1px solid rgba(0,212,255,0.2)", borderRadius: "8px", fontSize: "0.75rem", color: "#fff" }} />
+                  }} contentStyle={{ background: "rgba(10,15,30,0.9)", border: "1px solid rgba(180,215,208,0.2)", borderRadius: "8px", fontSize: "0.75rem", color: "#fff" }} />
                   <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                     {chartData.map((entry, i) => <Cell key={i} fill={entry.color} fillOpacity={0.85} />)}
                   </Bar>

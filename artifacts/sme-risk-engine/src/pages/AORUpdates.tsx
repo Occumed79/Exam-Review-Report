@@ -634,7 +634,7 @@ export default function AORUpdates() {
         {(filterRegion !== "All Regions" || filterCategory !== "all" || filterRisk !== "all") && (
           <button
             onClick={() => { setFilterRegion("All Regions"); setFilterCategory("all"); setFilterRisk("all"); }}
-            style={{ fontSize: "0.75rem", color: "#00d4ff", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
+            style={{ fontSize: "0.75rem", color: "#b4d7d0", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}
           >
             Clear filters
           </button>
@@ -777,7 +777,7 @@ export default function AORUpdates() {
           {/* Stats bar */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: "0.5rem" }}>
             {[
-              { label: "Active", value: AOR_EVENTS.length, color: "#00d4ff" },
+              { label: "Active", value: AOR_EVENTS.length, color: "#b4d7d0" },
               { label: "Critical", value: criticalCount, color: "#ef4444" },
               { label: "High", value: highCount, color: "#f59e0b" },
             ].map(({ label, value, color }) => (

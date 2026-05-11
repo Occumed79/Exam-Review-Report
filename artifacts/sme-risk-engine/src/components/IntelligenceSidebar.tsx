@@ -13,8 +13,8 @@ const scoreWeight = (score: RiskScore): number => {
 
 const findingColor = (source: DirectSourceFinding['source'], status: DirectSourceFinding['status']) => {
   if (status === 'error') return '#ef4444';
-  if (source === 'PubMed') return '#6366f1';
-  if (source === 'RxNav') return '#10b981';
+  if (source === 'PubMed') return '#9badc4';
+  if (source === 'RxNav') return '#7f9d96';
   return '#b4d7d0';
 };
 
@@ -100,7 +100,7 @@ export const IntelligenceSidebar: React.FC<IntelligenceSidebarProps> = ({ active
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${powerLevel}%` }}
-            style={{ height: '100%', background: 'linear-gradient(90deg, #b4d7d0, #6366f1)', borderRadius: '3px' }}
+            style={{ height: '100%', background: 'linear-gradient(90deg, #7f9d96, #b4d7d0)', borderRadius: '3px' }}
           />
         </div>
         <div style={{ fontSize: '0.625rem', color: 'rgba(255,255,255,0.4)', display: 'flex', justifyContent: 'space-between' }}>

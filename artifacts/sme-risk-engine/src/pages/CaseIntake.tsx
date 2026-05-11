@@ -264,7 +264,7 @@ export default function CaseIntake({ existingCase, onSave }: CaseIntakeProps) {
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginBottom: "0.875rem" }}>
             {STANDARD_OPTIONS.map(s => (
-              <label key={s} style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", padding: "0.4rem 0.5rem", borderRadius: "8px", background: form.standards.selected.includes(s) ? "rgba(0,212,255,0.08)" : "transparent", border: `1px solid ${form.standards.selected.includes(s) ? "rgba(0,212,255,0.25)" : "transparent"}`, transition: "all 0.15s" }} data-testid={`checkbox-standard-${s.replace(/\s+/g, "-").toLowerCase()}`}>
+              <label key={s} style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer", padding: "0.4rem 0.5rem", borderRadius: "8px", background: form.standards.selected.includes(s) ? "rgba(180,215,208,0.08)" : "transparent", border: `1px solid ${form.standards.selected.includes(s) ? "rgba(180,215,208,0.25)" : "transparent"}`, transition: "all 0.15s" }} data-testid={`checkbox-standard-${s.replace(/\s+/g, "-").toLowerCase()}`}>
                 <input type="checkbox" checked={form.standards.selected.includes(s)} onChange={() => toggleStandard(s)} style={{ accentColor: "#b4d7d0" }} />
                 <span style={{ fontSize: "0.8125rem", color: form.standards.selected.includes(s) ? "#b4d7d0" : "rgba(255,255,255,0.6)", fontWeight: 500 }}>{s}</span>
               </label>

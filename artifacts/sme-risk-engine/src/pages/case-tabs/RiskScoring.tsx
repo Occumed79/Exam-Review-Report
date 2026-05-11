@@ -186,7 +186,7 @@ export default function RiskScoring({ caseData, onUpdate }: Props) {
             { label: "High Risk (3)", count: highCount, color: "#ef4444" },
             { label: "Moderate (2)", count: modCount, color: "#f59e0b" },
             { label: "Unknown/U", count: unknownCount, color: "#9ca3af" },
-            { label: "Total Scored", count: caseData.riskScores.length, color: "#00d4ff" },
+            { label: "Total Scored", count: caseData.riskScores.length, color: "#b4d7d0" },
           ].map(({ label, count, color }) => (
             <div key={label} className="glass-card" style={{ padding: "1rem", flex: 1 }}>
               <div style={{ fontSize: "0.625rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.375rem" }}>{label}</div>

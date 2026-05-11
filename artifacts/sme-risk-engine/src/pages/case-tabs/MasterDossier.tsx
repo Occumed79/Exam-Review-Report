@@ -118,14 +118,14 @@ export const MasterDossier: React.FC<MasterDossierProps> = ({ caseData }) => {
 
           <motion.div variants={item} className="glass-card" style={{ padding: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
-              <Briefcase size={18} color="#6366f1" />
+              <Briefcase size={18} color="#9badc4" />
               <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff' }}>Occupational Demands</h3>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem' }}>
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'rgba(99, 102, 241, 0.05)', border: '1px solid rgba(99, 102, 241, 0.1)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.25rem' }}>Essential Functions</div>
                 <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>{uniqueJobDuties.length}</div>
-                <div style={{ fontSize: '0.75rem', color: '#6366f1', marginTop: '0.25rem' }}>Demands Identified</div>
+                <div style={{ fontSize: '0.75rem', color: '#9badc4', marginTop: '0.25rem' }}>Demands Identified</div>
               </div>
               <div style={{ padding: '1rem', borderRadius: '12px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
                 <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.25rem' }}>Safety Sensitivity</div>

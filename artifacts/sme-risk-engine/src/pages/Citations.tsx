@@ -588,7 +588,7 @@ function CitationCard({ c, highlight }: { c: Citation; highlight?: string }) {
     return (
       <>
         {text.slice(0, idx)}
-        <mark style={{ background: "rgba(0,212,255,0.25)", color: "#fff", borderRadius: "2px", padding: "0 1px" }}>
+        <mark style={{ background: "rgba(180,215,208,0.25)", color: "#fff", borderRadius: "2px", padding: "0 1px" }}>
           {text.slice(idx, idx + highlight.length)}
         </mark>
         {text.slice(idx + highlight.length)}
@@ -618,7 +618,7 @@ function CitationCard({ c, highlight }: { c: Citation; highlight?: string }) {
           textAlign: "left",
         }}
       >
-        <BookOpen size={14} style={{ color: "rgba(0,212,255,0.6)", flexShrink: 0, marginTop: "2px" }} />
+        <BookOpen size={14} style={{ color: "rgba(180,215,208,0.6)", flexShrink: 0, marginTop: "2px" }} />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#fff", lineHeight: 1.4, marginBottom: "0.15rem" }}>
             {hl(c.title)}
@@ -795,7 +795,7 @@ export default function Citations() {
           { label: "Categories", value: CATEGORIES.length - 1 },
           { label: "Shown", value: filtered.length },
         ].map(s => (
-          <div key={s.label} style={{ padding: "0.5rem 0.875rem", borderRadius: "8px", background: "rgba(0,212,255,0.07)", border: "1px solid rgba(0,212,255,0.15)" }}>
+          <div key={s.label} style={{ padding: "0.5rem 0.875rem", borderRadius: "8px", background: "rgba(180,215,208,0.07)", border: "1px solid rgba(180,215,208,0.15)" }}>
                   <span style={{ fontSize: "1.125rem", fontWeight: 800, color: "#b4d7d0" }}>{s.value}</span>
             <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.45)", marginLeft: "0.375rem" }}>{s.label}</span>
           </div>
@@ -817,7 +817,7 @@ export default function Citations() {
                   padding: "0.35rem 0.65rem",
                   borderRadius: "999px",
                   border: "1px solid rgba(255,255,255,0.1)",
-                  background: updateFilter === v ? "rgba(0,212,255,0.12)" : "rgba(255,255,255,0.03)",
+                  background: updateFilter === v ? "rgba(180,215,208,0.12)" : "rgba(255,255,255,0.03)",
                   color: updateFilter === v ? "#b4d7d0" : "rgba(255,255,255,0.55)",
                   cursor: "pointer",
                   fontSize: "0.7rem",
@@ -902,7 +902,7 @@ export default function Citations() {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "0.5rem 0.75rem",
-                    background: active ? "rgba(0,212,255,0.08)" : "transparent",
+                    background: active ? "rgba(180,215,208,0.08)" : "transparent",
                     border: "none",
                     borderLeft: active ? "2px solid #b4d7d0" : "2px solid transparent",
                     cursor: "pointer",

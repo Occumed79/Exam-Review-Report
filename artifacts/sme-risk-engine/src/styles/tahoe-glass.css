@@ -12,14 +12,14 @@
   
   /* Luminous Colors */
   --luminous-white: #ffffff;
-  --luminous-blue: #0084ff;
-  --luminous-green: #00d084;
-  --luminous-purple: #a855f7;
-  --luminous-pink: #ec4899;
+  --luminous-blue: #b4d7d0;
+  --luminous-green: #7f9d96;
+  --luminous-purple: #9badc4;
+  --luminous-pink: #d6c8aa;
   
   /* Dark Background */
-  --bg-dark: #0a0e27;
-  --bg-darker: #050812;
+  --bg-dark: #041113;
+  --bg-darker: #020b0d;
   
   /* Glassmorphism Blur */
   --glass-blur: blur(20px);
@@ -31,7 +31,7 @@
    ============================================ */
 
 body {
-  background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1428 100%);
+  background: linear-gradient(180deg, #041113 0%, #071416 50%, #050b0d 100%);
   background-attachment: fixed;
   color: #ffffff;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;

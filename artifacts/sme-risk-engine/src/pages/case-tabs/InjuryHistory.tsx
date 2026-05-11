@@ -76,7 +76,7 @@ export default function InjuryHistory({ caseData, onUpdate }: Props) {
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#fff" }}>{inj.injuryType || `Injury/Surgery ${idx + 1}`}</div>
                 <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.25rem", flexWrap: "wrap" }}>
-                  {inj.bodyRegion && <span style={{ fontSize: "0.6875rem", color: "#00d4ff", fontWeight: 500 }}>{inj.bodyRegion}</span>}
+                  {inj.bodyRegion && <span style={{ fontSize: "0.6875rem", color: "#b4d7d0", fontWeight: 500 }}>{inj.bodyRegion}</span>}
                   {inj.dateOfInjury && <span style={{ fontSize: "0.6875rem", color: "rgba(255,255,255,0.4)" }}>{inj.dateOfInjury}</span>}
                   <span style={{ fontSize: "0.6875rem", padding: "0.1rem 0.4rem", borderRadius: "4px", background: `${confColor}15`, color: confColor, fontWeight: 600 }}>{inj.documentationConfidence}</span>
                   {inj.residualPain > 0 && <span style={{ fontSize: "0.6875rem", color: inj.residualPain >= 5 ? "#ef4444" : "#f59e0b" }}>Pain: {inj.residualPain}/10</span>}
@@ -115,7 +115,7 @@ export default function InjuryHistory({ caseData, onUpdate }: Props) {
                   <div><label style={lbl}>Reinjury Risk</label><select className="glass-input" style={inp} value={inj.reinjuryRisk} onChange={e => upd(inj.id, "reinjuryRisk", e.target.value)} data-testid={`select-reinjury-risk-${inj.id}`}><option value="High">High</option><option value="Moderate">Moderate</option><option value="Low">Low</option><option value="Unclear">Unclear</option></select></div>
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <label style={{ ...lbl, margin: 0 }}>PT Received</label>
-                    <input type="checkbox" checked={inj.ptReceived} onChange={e => upd(inj.id, "ptReceived", e.target.checked)} style={{ accentColor: "#00d4ff", width: "16px", height: "16px" }} data-testid={`checkbox-pt-${inj.id}`} />
+                    <input type="checkbox" checked={inj.ptReceived} onChange={e => upd(inj.id, "ptReceived", e.target.checked)} style={{ accentColor: "#b4d7d0", width: "16px", height: "16px" }} data-testid={`checkbox-pt-${inj.id}`} />
                   </div>
                 </div>
 
@@ -126,7 +126,7 @@ export default function InjuryHistory({ caseData, onUpdate }: Props) {
 
                 <div style={{ marginTop: "0.75rem" }}>
                   <label style={lbl}>Provider Documentation Quote</label>
-                  <textarea className="glass-input" style={{ ...inp, minHeight: "80px", resize: "vertical", borderColor: "rgba(0,212,255,0.2)" }} value={inj.providerQuote} onChange={e => upd(inj.id, "providerQuote", e.target.value)} placeholder='"Provider documentation states: [direct quote from treating provider]..."' data-testid={`textarea-injury-quote-${inj.id}`} />
+                  <textarea className="glass-input" style={{ ...inp, minHeight: "80px", resize: "vertical", borderColor: "rgba(180,215,208,0.2)" }} value={inj.providerQuote} onChange={e => upd(inj.id, "providerQuote", e.target.value)} placeholder='"Provider documentation states: [direct quote from treating provider]..."' data-testid={`textarea-injury-quote-${inj.id}`} />
                 </div>
               </div>
             )}

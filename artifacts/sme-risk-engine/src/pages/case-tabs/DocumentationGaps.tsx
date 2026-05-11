@@ -122,7 +122,7 @@ export default function DocumentationGaps({ caseData, onUpdate }: Props) {
           { label: "High Priority", count: high.length, color: "#ef4444" },
           { label: "Moderate", count: mod.length, color: "#f59e0b" },
           { label: "Low Priority", count: low.length, color: "#22c55e" },
-          { label: "Total Gaps", count: caseData.documentationGaps.length, color: "#00d4ff" },
+          { label: "Total Gaps", count: caseData.documentationGaps.length, color: "#b4d7d0" },
         ].map(({ label, count, color }) => (
           <div key={label} className="glass-card" style={{ padding: "0.875rem 1.25rem", flex: 1 }}>
             <div style={{ fontSize: "0.625rem", color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "0.25rem" }}>{label}</div>
@@ -188,8 +188,8 @@ export default function DocumentationGaps({ caseData, onUpdate }: Props) {
                           </div>
                         )}
                         <div style={{ marginTop: gap.custom ? 0 : "0.625rem" }}>
-                          <label style={{ ...lbl, color: "#00d4ff" }}>Suggested Provider Question / Follow-Up Action</label>
-                          <textarea className="glass-input" style={{ ...inp, minHeight: "70px", resize: "vertical", borderColor: "rgba(0,212,255,0.2)" }} value={gap.providerQuestion} onChange={e => upd(gap.id, "providerQuestion", e.target.value)} placeholder="Provider question or follow-up action..." data-testid={`gap-question-${gap.id}`} />
+                          <label style={{ ...lbl, color: "#b4d7d0" }}>Suggested Provider Question / Follow-Up Action</label>
+                          <textarea className="glass-input" style={{ ...inp, minHeight: "70px", resize: "vertical", borderColor: "rgba(180,215,208,0.2)" }} value={gap.providerQuestion} onChange={e => upd(gap.id, "providerQuestion", e.target.value)} placeholder="Provider question or follow-up action..." data-testid={`gap-question-${gap.id}`} />
                         </div>
                       </div>
                       <button className="glow-btn glow-btn-secondary" onClick={() => remove(gap.id)} data-testid={`btn-remove-gap-${gap.id}`} style={{ padding: "0.3rem 0.5rem", flexShrink: 0 }}><Trash2 size={12} /></button>

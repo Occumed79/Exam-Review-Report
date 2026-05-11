@@ -61,7 +61,7 @@ export default function JobDuties({ caseData, onUpdate }: Props) {
 
       {/* Summary badges */}
       <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.25rem", flexWrap: "wrap" }}>
-        <span style={{ fontSize: "0.8125rem", background: "rgba(0,212,255,0.1)", color: "#00d4ff", border: "1px solid rgba(0,212,255,0.2)", padding: "0.3rem 0.75rem", borderRadius: "6px", fontWeight: 600 }}>
+        <span style={{ fontSize: "0.8125rem", background: "rgba(180,215,208,0.1)", color: "#b4d7d0", border: "1px solid rgba(180,215,208,0.2)", padding: "0.3rem 0.75rem", borderRadius: "6px", fontWeight: 600 }}>
           {jd.physicalDemands.length} Physical Demands
         </span>
         <span style={{ fontSize: "0.8125rem", background: "rgba(139,92,246,0.1)", color: "#a78bfa", border: "1px solid rgba(139,92,246,0.2)", padding: "0.3rem 0.75rem", borderRadius: "6px", fontWeight: 600 }}>
@@ -73,7 +73,7 @@ export default function JobDuties({ caseData, onUpdate }: Props) {
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1rem", marginBottom: "1.25rem" }}>
-        {renderDemandGroup("Physical Demands", PHYSICAL_DEMANDS, jd.physicalDemands, "physicalDemands", "#00d4ff")}
+        {renderDemandGroup("Physical Demands", PHYSICAL_DEMANDS, jd.physicalDemands, "physicalDemands", "#b4d7d0")}
         {renderDemandGroup("Cognitive & Safety-Sensitive Demands", COGNITIVE_DEMANDS, jd.cognitiveDemands, "cognitiveDemands", "#a78bfa")}
         {renderDemandGroup("Environmental & Deployment Demands", ENV_DEMANDS, jd.environmentalDemands, "environmentalDemands", "#f59e0b")}
       </div>

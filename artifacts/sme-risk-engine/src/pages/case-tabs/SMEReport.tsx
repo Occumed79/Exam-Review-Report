@@ -257,7 +257,7 @@ export default function SMEReport({ caseData, onUpdate }: Props) {
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.25rem", marginBottom: "1.25rem" }}>
         <div className="glass-card" style={{ padding: "1.25rem" }}>
-          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Clinical Assessment</div>
+          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Clinical Assessment</div>
           <div style={{ marginBottom: "0.75rem" }}>
             <label style={lbl}>Clinical Interpretation</label>
             <textarea className="glass-input" style={{ ...inp, minHeight: "100px", resize: "vertical" }} value={sa.clinicalInterpretation} onChange={e => updSA("clinicalInterpretation", e.target.value)} placeholder="SME clinical interpretation of the reviewed documentation..." data-testid="textarea-clinical-interpretation" />
@@ -293,7 +293,7 @@ export default function SMEReport({ caseData, onUpdate }: Props) {
         </div>
 
         <div className="glass-card" style={{ padding: "1.25rem" }}>
-          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Recommendation & Records</div>
+          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Recommendation & Records</div>
           <div style={{ marginBottom: "0.75rem" }}>
             <label style={lbl}>Additional Records Needed</label>
             <textarea className="glass-input" style={{ ...inp, minHeight: "80px", resize: "vertical" }} value={sa.additionalRecordsNeeded} onChange={e => updSA("additionalRecordsNeeded", e.target.value)} placeholder="List specific outstanding records or studies needed..." data-testid="textarea-additional-records" />
@@ -312,7 +312,7 @@ export default function SMEReport({ caseData, onUpdate }: Props) {
         </div>
 
         <div className="glass-card" style={{ padding: "1.25rem" }}>
-          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>SME Review Notes</div>
+          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>SME Review Notes</div>
           <div style={{ marginBottom: "0.75rem" }}>
             <label style={lbl}>Internal SME Notes (not in report export)</label>
             <textarea className="glass-input" style={{ ...inp, minHeight: "100px", resize: "vertical" }} value={sa.smeReviewNotes} onChange={e => updSA("smeReviewNotes", e.target.value)} placeholder="Internal notes for SME reference — these will appear in the report as SME notes..." data-testid="textarea-sme-notes" />
@@ -329,7 +329,7 @@ export default function SMEReport({ caseData, onUpdate }: Props) {
         </div>
 
         <div className="glass-card" style={{ padding: "1.25rem" }}>
-          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#00d4ff", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Documents Reviewed</div>
+          <div style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1rem", textTransform: "uppercase", letterSpacing: "0.07em" }}>Documents Reviewed</div>
           <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
             <input
               className="glass-input"

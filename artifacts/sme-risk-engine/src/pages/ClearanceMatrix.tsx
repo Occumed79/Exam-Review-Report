@@ -206,8 +206,8 @@ export default function ClearanceMatrix({ cases }: Props) {
         <div
           style={{
             padding: "0.5rem 0.875rem",
-            background: "rgba(0,212,255,0.06)",
-            border: "1px solid rgba(0,212,255,0.18)",
+            background: "rgba(180,215,208,0.06)",
+            border: "1px solid rgba(180,215,208,0.18)",
             borderRadius: "8px",
             fontSize: "0.75rem",
             color: "rgba(255,255,255,0.72)",
@@ -376,7 +376,7 @@ export default function ClearanceMatrix({ cases }: Props) {
                         onClick={() => setSelectedCase(isSelected ? null : c)}
                         style={{
                           background: isSelected
-                            ? "rgba(0,212,255,0.05)"
+                            ? "rgba(180,215,208,0.05)"
                             : idx % 2 === 0
                             ? "transparent"
                             : "rgba(255,255,255,0.015)",
@@ -444,8 +444,8 @@ export default function ClearanceMatrix({ cases }: Props) {
               <div
                 style={{
                   padding: "1.25rem 1.25rem",
-                  borderTop: "1px solid rgba(0,212,255,0.2)",
-                  background: "rgba(0,212,255,0.03)",
+                  borderTop: "1px solid rgba(180,215,208,0.2)",
+                  background: "rgba(180,215,208,0.03)",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "1rem" }}>
