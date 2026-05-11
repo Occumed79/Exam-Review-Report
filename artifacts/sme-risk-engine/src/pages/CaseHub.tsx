@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import {
   ArrowLeft, Heart, Bone, Briefcase, Shield, Globe, BarChart2,
-  Users, TrendingUp, FileSearch, FileText, ChevronRight, Zap
+  Users, TrendingUp, FileSearch, FileText, ChevronRight, Zap, Activity
 } from "lucide-react";
 import { SMECase } from "@/lib/types";
 import SMEIntelligenceBrief from "./case-tabs/SMEIntelligenceBrief";
