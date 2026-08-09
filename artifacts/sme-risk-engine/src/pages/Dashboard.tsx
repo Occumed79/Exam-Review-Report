@@ -1,5 +1,6 @@
 import { useLocation } from "wouter";
 import {
+  Activity,
   BookOpen,
   Briefcase,
   Calculator,
@@ -42,8 +43,15 @@ const TOOL_GROUPS = [
   },
   {
     label: "Understand the job and environment",
-    description: "Add context without rebuilding the examinee's file inside the app.",
+    description: "One small input should return a disproportionate amount of occupational context.",
     tools: [
+      {
+        href: "/injury-intelligence",
+        title: "Injury Intelligence",
+        icon: Activity,
+        question: "What tends to go wrong in this job?",
+        description: "Type a job title to surface injury patterns, prominent body regions, mechanisms, severe-injury context, and optional finding-to-job review questions.",
+      },
       {
         href: "/job-intelligence",
         title: "Job Intelligence",
