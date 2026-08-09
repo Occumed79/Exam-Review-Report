@@ -1,11 +1,7 @@
-import { Switch, Route, Router as WouterRouter, useLocation, useParams } from "wouter";
+import { Switch, Route, Router as WouterRouter } from "wouter";
 import { useStore } from "@/lib/store";
 import AppShell from "@/components/layout/AppShell";
 import Dashboard from "@/pages/Dashboard";
-import SecureIngestion from "@/components/SecureIngestion";
-import { useState, useEffect } from "react";
-import CaseIntake from "@/pages/CaseIntake";
-import CaseHub from "@/pages/CaseHub";
 import Guidelines from "@/pages/Guidelines";
 import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
@@ -16,86 +12,19 @@ import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
 import ClinicalCalculator from "@/pages/ClinicalCalculator";
 import Citations from "@/pages/Citations";
-import { createCaseFromExtraction } from "@/lib/extractedCaseMapper";
-
-function CaseHubWrapper({ store }: { store: ReturnType<typeof useStore> }) {
-  const params = useParams<{ id: string }>();
-  const [, setLocation] = useLocation();
-  const caseData = store.getCaseById(params.id);
-
-  if (!caseData) {
-    return (
-      <div style={{ textAlign: "center", padding: "4rem" }}>
-        <div style={{ fontSize: "1.125rem", color: "rgba(255,255,255,0.5)", marginBottom: "1.25rem" }}>
-          Case not found: {params.id}
-        </div>
-        <button className="glow-btn" onClick={() => setLocation("/")} data-testid="btn-go-home">
-          Return to Dashboard
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <CaseHub
-      caseData={caseData}
-      onSave={(c) => store.saveCase(c)}
-      guidelines={store.guidelines}
-    />
-  );
-}
-
-function NewCaseWrapper({ store }: { store: ReturnType<typeof useStore> }) {
-  const [, setLocation] = useLocation();
-  return (
-    <CaseIntake
-      onSave={(c) => {
-        store.saveCase(c);
-        setLocation(`/case/${c.id}`);
-      }}
-    />
-  );
-}
+import DocumentAssistant from "@/pages/DocumentAssistant";
 
 function AppRouter() {
   const store = useStore();
-  const [location, setLocation] = useLocation();
-  const [showIngest, setShowIngest] = useState(false);
-  const activeRouteCaseId = location.match(/^\/case\/([^/]+)/)?.[1];
-  const activeRouteCase = activeRouteCaseId ? store.cases.find(c => c.id === activeRouteCaseId) : undefined;
-
-  useEffect(() => {
-    const handleOpen = () => setShowIngest(true);
-    window.addEventListener('open-secure-ingest', handleOpen);
-    return () => window.removeEventListener('open-secure-ingest', handleOpen);
-  }, []);
 
   return (
-    <AppShell cases={store.cases} activeCase={activeRouteCase}>
-      {showIngest && (
-        <SecureIngestion 
-          onClose={() => setShowIngest(false)} 
-          onExtract={(_, data) => {
-            const ingestedCase = createCaseFromExtraction(data);
-            store.saveCase(ingestedCase);
-            setShowIngest(false);
-            setLocation(`/case/${ingestedCase.id}`);
-          }}
-        />
-      )}
+    <AppShell>
       <Switch>
         <Route path="/">
-          <Dashboard
-            cases={store.cases}
-            onDelete={store.deleteCase}
-            onDuplicate={store.duplicateCase}
-          />
+          <Dashboard />
         </Route>
-        <Route path="/case/new">
-          <NewCaseWrapper store={store} />
-        </Route>
-        <Route path="/case/:id">
-          <CaseHubWrapper store={store} />
+        <Route path="/document-assistant">
+          <DocumentAssistant />
         </Route>
         <Route path="/aor">
           <AORMonitor />
@@ -107,7 +36,7 @@ function AppRouter() {
           <GuidelineLibrary />
         </Route>
         <Route path="/matrix">
-          <ClearanceMatrix cases={store.cases} />
+          <ClearanceMatrix cases={[]} />
         </Route>
         <Route path="/drugs">
           <DrugChecker />
@@ -134,7 +63,7 @@ function AppRouter() {
         </Route>
         <Route path="/settings">
           <Settings
-            caseCount={store.cases.length}
+            caseCount={0}
             guidelineCount={store.guidelines.length}
             sourceCount={store.sources.length}
             onExport={store.exportAll}
@@ -144,7 +73,7 @@ function AppRouter() {
         </Route>
         <Route>
           <div style={{ textAlign: "center", padding: "4rem" }}>
-            <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "rgba(255,255,255,0.4)" }}>Page not found</div>
+            <div style={{ fontSize: "1.5rem", fontWeight: 700, color: "rgba(255,255,255,0.4)" }}>Tool not found</div>
           </div>
         </Route>
       </Switch>
@@ -154,7 +83,7 @@ function AppRouter() {
 
 function App() {
   return (
-    <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}> 
+    <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
       <AppRouter />
     </WouterRouter>
   );
