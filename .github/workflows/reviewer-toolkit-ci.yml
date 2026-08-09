@@ -44,3 +44,38 @@ jobs:
 
       - name: Build API server
         run: pnpm --filter @workspace/api-server run build
+
+      - name: Runtime smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT=4173 NODE_ENV=production pnpm --filter @workspace/api-server run start > /tmp/reviewer-toolkit-server.log 2>&1 &
+          SERVER_PID=$!
+          cleanup() {
+            kill "$SERVER_PID" 2>/dev/null || true
+            wait "$SERVER_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:4173/api/health > /tmp/health.json; then
+              READY=1
+              break
+            fi
+            sleep 0.5
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/reviewer-toolkit-server.log
+            exit 1
+          fi
+
+          grep -q '"ok":true' /tmp/health.json
+          curl --fail --silent --show-error http://127.0.0.1:4173/api/intelligence/status | grep -q '"ok":true'
+          curl --fail --silent --show-error http://127.0.0.1:4173/ > /tmp/root.html
+          curl --fail --silent --show-error http://127.0.0.1:4173/injury-intelligence > /tmp/injury.html
+          curl --fail --silent --show-error http://127.0.0.1:4173/job-intelligence > /tmp/job.html
+          grep -q 'id="root"' /tmp/root.html
+          grep -q 'id="root"' /tmp/injury.html
+          grep -q 'id="root"' /tmp/job.html
