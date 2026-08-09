@@ -11,7 +11,7 @@ import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
 import ConditionReference from "@/pages/ConditionReference";
 import ClearanceMatrix from "@/pages/ClearanceMatrix";
-import DrugChecker from "@/pages/DrugChecker";
+import DrugChecker from "@/pages/DrugCheckerV2";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV2";
 import Citations from "@/pages/Citations";
 
