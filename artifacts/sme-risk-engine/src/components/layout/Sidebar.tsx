@@ -1,12 +1,13 @@
 import { Link, useLocation } from "wouter";
 import {
-  LayoutGrid, BookOpen, Database, Settings, Globe, Grid3x3, Pill,
+  Activity, LayoutGrid, BookOpen, Database, Settings, Globe, Grid3x3, Pill,
   Calculator, BookMarked, Briefcase, ShieldCheck
 } from "lucide-react";
 
 const NAV_MAIN = [
   { href: "/", label: "Reviewer Tools", icon: LayoutGrid },
   { href: "/job-intelligence", label: "Job Intelligence", icon: Briefcase },
+  { href: "/injury-intelligence", label: "Injury Intelligence", icon: Activity },
   { href: "/guidelines", label: "Guideline Library", icon: BookOpen },
   { href: "/matrix", label: "Standards Matrix", icon: Grid3x3 },
   { href: "/drugs", label: "Drug Checker", icon: Pill },
