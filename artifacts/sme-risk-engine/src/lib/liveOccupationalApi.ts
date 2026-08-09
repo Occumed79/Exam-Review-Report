@@ -10,7 +10,7 @@ export type IntelligenceStatus = {
   ok: boolean;
   onet: { configured: boolean; source: string };
   bls: { configured: boolean; authMode: string; source: string; note: string; measuredTables?: boolean };
-  osha: { importEnabled: boolean; dataDirConfigured: boolean; note: string };
+  osha: { publicSevereInjuryData: boolean; source: string; note: string };
 };
 
 export type InjuryMetric = { label: string; value: number };
@@ -127,8 +127,8 @@ export async function fetchIntelligenceStatus(): Promise<IntelligenceStatus> {
       measuredTables: asBoolean(bls.measuredTables),
     },
     osha: {
-      importEnabled: asBoolean(osha.importEnabled),
-      dataDirConfigured: asBoolean(osha.dataDirConfigured),
+      publicSevereInjuryData: asBoolean(osha.publicSevereInjuryData),
+      source: asString(osha.source, 'OSHA Severe Injury Reports'),
       note: asString(osha.note),
     },
   };
