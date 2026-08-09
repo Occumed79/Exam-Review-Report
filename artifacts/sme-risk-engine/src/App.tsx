@@ -36,7 +36,7 @@ function AppRouter() {
           <GuidelineLibrary />
         </Route>
         <Route path="/matrix">
-          <ClearanceMatrix cases={[]} />
+          <ClearanceMatrix />
         </Route>
         <Route path="/drugs">
           <DrugChecker />
