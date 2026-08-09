@@ -18,7 +18,7 @@ export type InjuryMetric = { label: string; value: number };
 export type InjuryDataset = {
   id: string;
   label: string;
-  dimension: 'nature' | 'body-part' | 'source' | 'event' | 'fatal-event' | 'fatal-rate';
+  dimension: 'nature' | 'body-part' | 'source' | 'event' | 'industry' | 'fatal-event' | 'fatal-rate';
   measure: 'count' | 'rate';
   unit: string;
   referencePeriod: string;
@@ -39,6 +39,7 @@ export type OccupationInjuryEvidence = {
   matchedOccupation: string | null;
   checkedAt: string;
   datasets: InjuryDataset[];
+  suggestedNaicsSectors: string[];
   source: {
     agency: string;
     program: string;
@@ -46,6 +47,22 @@ export type OccupationInjuryEvidence = {
     fatalLandingPage: string;
   };
   caveats: string[];
+};
+
+export type OshaSevereInjuryContext = {
+  ok: boolean;
+  sectors: string[];
+  coverage: string;
+  reportCount: number;
+  hospitalized: number;
+  amputations: number;
+  eyeLoss: number;
+  topEvents: InjuryMetric[];
+  topSources: InjuryMetric[];
+  topNatures: InjuryMetric[];
+  topBodyParts: InjuryMetric[];
+  source: { agency: string; landingPage: string; downloadUrl: string };
+  caveat: string;
 };
 
 type JsonRecord = Record<string, unknown>;
@@ -164,7 +181,7 @@ function parseDataset(value: unknown): InjuryDataset | null {
   const dimension = asString(record.dimension) as InjuryDataset['dimension'];
   const measure = asString(record.measure) as InjuryDataset['measure'];
   const status = asString(record.status) as InjuryDataset['status'];
-  if (!id || !['nature','body-part','source','event','fatal-event','fatal-rate'].includes(dimension)) return null;
+  if (!id || !['nature','body-part','source','event','industry','fatal-event','fatal-rate'].includes(dimension)) return null;
   if (!['count','rate'].includes(measure) || !['available','unavailable'].includes(status)) return null;
   const top = (Array.isArray(record.top) ? record.top : []).map(parseMetric).filter((item): item is InjuryMetric => Boolean(item));
   return {
@@ -198,6 +215,7 @@ export async function fetchOccupationInjuryEvidence(code: string): Promise<Occup
     matchedOccupation: asString(payload.matchedOccupation) || null,
     checkedAt: asString(payload.checkedAt),
     datasets,
+    suggestedNaicsSectors: asStringArray(payload.suggestedNaicsSectors),
     source: {
       agency: asString(source.agency, 'U.S. Bureau of Labor Statistics'),
       program: asString(source.program, 'SOII / CFOI'),
@@ -205,5 +223,32 @@ export async function fetchOccupationInjuryEvidence(code: string): Promise<Occup
       fatalLandingPage: asString(source.fatalLandingPage, 'https://www.bls.gov/iif/fatal-injuries-tables.htm'),
     },
     caveats: asStringArray(payload.caveats),
+  };
+}
+
+export async function fetchOshaSevereInjuryContext(sectors: string[]): Promise<OshaSevereInjuryContext> {
+  const clean = [...new Set(sectors.filter((sector) => /^\d{2}$/.test(sector)))];
+  if (!clean.length) throw new Error('No valid NAICS sectors were available for OSHA context.');
+  const payload = await json(`/api/injuries/osha-severe?sectors=${encodeURIComponent(clean.join(','))}`);
+  const source = asRecord(payload.source);
+  const parseMetrics = (value: unknown) => (Array.isArray(value) ? value : []).map(parseMetric).filter((item): item is InjuryMetric => Boolean(item));
+  return {
+    ok: asBoolean(payload.ok),
+    sectors: asStringArray(payload.sectors),
+    coverage: asString(payload.coverage),
+    reportCount: asNumber(payload.reportCount) ?? 0,
+    hospitalized: asNumber(payload.hospitalized) ?? 0,
+    amputations: asNumber(payload.amputations) ?? 0,
+    eyeLoss: asNumber(payload.eyeLoss) ?? 0,
+    topEvents: parseMetrics(payload.topEvents),
+    topSources: parseMetrics(payload.topSources),
+    topNatures: parseMetrics(payload.topNatures),
+    topBodyParts: parseMetrics(payload.topBodyParts),
+    source: {
+      agency: asString(source.agency, 'Occupational Safety and Health Administration'),
+      landingPage: asString(source.landingPage, 'https://www.osha.gov/severe-injury-reports'),
+      downloadUrl: asString(source.downloadUrl),
+    },
+    caveat: asString(payload.caveat),
   };
 }
