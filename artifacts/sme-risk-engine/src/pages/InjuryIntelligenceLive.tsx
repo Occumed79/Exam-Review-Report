@@ -19,9 +19,12 @@ import {
 import {
   fetchIntelligenceStatus,
   fetchLiveOccupation,
+  fetchOccupationInjuryEvidence,
   searchLiveOccupations,
   type IntelligenceStatus,
+  type InjuryDataset,
   type LiveOccupationMatch,
+  type OccupationInjuryEvidence,
 } from '@/lib/liveOccupationalApi';
 import './injury-workbench.css';
 
@@ -48,6 +51,58 @@ function SourceState({ active, label, detail }: { active: boolean; label: string
   );
 }
 
+function formatMetric(value: number): string {
+  return Number.isInteger(value)
+    ? value.toLocaleString('en-US')
+    : value.toLocaleString('en-US', { maximumFractionDigits: 1 });
+}
+
+function DatasetCard({ dataset }: { dataset: InjuryDataset }) {
+  const available = dataset.status === 'available';
+  return (
+    <article className={`injury-measured-card${available ? '' : ' unavailable'}`}>
+      <div className="injury-measured-card-head">
+        <div>
+          <span>{dataset.id}</span>
+          <strong>{dataset.label}</strong>
+        </div>
+        {available && dataset.matchLevel && (
+          <small data-match={dataset.matchLevel}>{dataset.matchLevel === 'exact' ? 'exact SOC' : 'major-group fallback'}</small>
+        )}
+      </div>
+
+      {!available ? (
+        <p className="injury-measured-unavailable">{dataset.error || 'This BLS table did not publish a usable value for this occupation.'}</p>
+      ) : (
+        <>
+          <div className="injury-measured-meta">
+            <span>{dataset.referencePeriod}</span>
+            <span>{dataset.unit}</span>
+            {dataset.matchedSocCode && <span>SOC {dataset.matchedSocCode}</span>}
+          </div>
+          {dataset.total !== undefined && (
+            <div className="injury-measured-total">
+              <strong>{formatMetric(dataset.total)}</strong>
+              <span>{dataset.measure === 'rate' ? dataset.unit : 'published total'}</span>
+            </div>
+          )}
+          <div className="injury-measured-list">
+            {dataset.top.slice(0, 6).map((metric) => (
+              <div key={`${dataset.id}-${metric.label}`}>
+                <span>{metric.label}</span>
+                <strong>{formatMetric(metric.value)}</strong>
+              </div>
+            ))}
+            {dataset.top.length === 0 && <p>No publishable breakdown values were returned.</p>}
+          </div>
+        </>
+      )}
+
+      <a href={dataset.sourceUrl} target="_blank" rel="noreferrer">BLS table <ExternalLink size={10} /></a>
+    </article>
+  );
+}
+
 export default function InjuryIntelligenceLive() {
   const [status, setStatus] = useState<IntelligenceStatus | null>(null);
   const [jobSearch, setJobSearch] = useState('');
@@ -58,6 +113,9 @@ export default function InjuryIntelligenceLive() {
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [sourceMode, setSourceMode] = useState<'live-onet' | 'local-fallback' | null>(null);
   const [notice, setNotice] = useState('');
+  const [measured, setMeasured] = useState<OccupationInjuryEvidence | null>(null);
+  const [measuredLoading, setMeasuredLoading] = useState(false);
+  const [measuredError, setMeasuredError] = useState('');
 
   useEffect(() => {
     fetchIntelligenceStatus().then(setStatus).catch(() => setStatus(null));
@@ -88,6 +146,26 @@ export default function InjuryIntelligenceLive() {
 
     return () => window.clearTimeout(timer);
   }, [jobSearch, selectedJob]);
+
+  useEffect(() => {
+    if (!selectedJob) {
+      setMeasured(null);
+      setMeasuredError('');
+      setMeasuredLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setMeasured(null);
+    setMeasuredError('');
+    setMeasuredLoading(true);
+    fetchOccupationInjuryEvidence(selectedJob.socCode)
+      .then((evidence) => { if (!cancelled) setMeasured(evidence); })
+      .catch((error) => {
+        if (!cancelled) setMeasuredError(error instanceof Error ? error.message : 'Measured BLS evidence is unavailable right now.');
+      })
+      .finally(() => { if (!cancelled) setMeasuredLoading(false); });
+    return () => { cancelled = true; };
+  }, [selectedJob]);
 
   const profile = useMemo(
     () => (selectedJob ? buildOccupationalInjuryProfile(selectedJob) : null),
@@ -144,12 +222,12 @@ export default function InjuryIntelligenceLive() {
         <div>
           <div className="injury-kicker"><Activity size={14} /> OCCUPATIONAL INJURY INTELLIGENCE</div>
           <h1>Injury Intelligence</h1>
-          <p>Search an occupation to surface injury patterns, body regions, mechanisms, and job-demand context without building a case record.</p>
+          <p>Measured BLS surveillance plus occupation demands and reviewer context. Counts/rates and derived signals are kept visibly separate.</p>
         </div>
         <div className="injury-source-stack">
           <SourceState active={Boolean(status?.onet?.configured)} label="O*NET" detail={status?.onet?.configured ? 'live' : 'fallback'} />
-          <SourceState active={Boolean(status?.bls?.configured)} label="BLS" detail={status?.bls?.configured ? 'registered' : 'public'} />
-          <SourceState active={Boolean(status?.osha?.importEnabled || status?.osha?.dataDirConfigured)} label="OSHA" detail={status?.osha?.importEnabled ? 'import enabled' : 'source ready'} />
+          <SourceState active={Boolean(status?.bls?.measuredTables || status?.bls?.configured)} label="BLS" detail={status?.bls?.measuredTables ? 'measured tables' : 'public'} />
+          <SourceState active={Boolean(status?.osha?.importEnabled || status?.osha?.dataDirConfigured)} label="OSHA" detail={status?.osha?.importEnabled ? 'import enabled' : 'context source'} />
         </div>
       </header>
 
@@ -157,36 +235,20 @@ export default function InjuryIntelligenceLive() {
         <div className="injury-field primary">
           <label>Occupation</label>
           <div className="injury-input-wrap">
-            {searching || loadingProfile
-              ? <Loader2 size={16} className="animate-spin" />
-              : <Search size={16} />}
-            <input
-              value={jobSearch}
-              onChange={(event) => resetOccupation(event.target.value)}
-              placeholder="Search job title or occupation…"
-              autoComplete="off"
-            />
+            {searching || loadingProfile ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+            <input value={jobSearch} onChange={(event) => resetOccupation(event.target.value)} placeholder="Search job title or occupation…" autoComplete="off" />
           </div>
         </div>
         <div className="injury-field">
           <label>Finding <span>optional</span></label>
-          <input
-            className="injury-input"
-            value={finding}
-            disabled={!selectedJob}
-            onChange={(event) => setFinding(event.target.value)}
-            placeholder="Shoulder surgery, seizure, OSA…"
-          />
+          <input className="injury-input" value={finding} disabled={!selectedJob} onChange={(event) => setFinding(event.target.value)} placeholder="Shoulder surgery, seizure, OSA…" />
         </div>
 
         {!selectedJob && matches.length > 0 && (
           <div className="injury-match-list">
             {matches.map((match) => (
               <button key={`${match.code}-${match.title}`} onClick={() => void chooseOccupation(match)}>
-                <span>
-                  <strong>{match.title}</strong>
-                  <small>SOC {match.code}</small>
-                </span>
+                <span><strong>{match.title}</strong><small>SOC {match.code}</small></span>
                 <ArrowRight size={15} />
               </button>
             ))}
@@ -198,16 +260,8 @@ export default function InjuryIntelligenceLive() {
       {!selectedJob && (
         <section className="injury-empty-state">
           <div className="injury-empty-number">01</div>
-          <div>
-            <strong>Start with the position.</strong>
-            <p>The search resolves the occupation first. Everything else on this page is generated from that occupation context.</p>
-          </div>
-          <div className="injury-empty-examples">
-            <span>Firefighter</span>
-            <span>Electrician</span>
-            <span>Aircraft mechanic</span>
-            <span>Truck driver</span>
-          </div>
+          <div><strong>Search an occupation.</strong><p>The occupation drives both measured BLS surveillance lookup and the separate O*NET-derived review context.</p></div>
+          <div className="injury-empty-examples"><span>Firefighter</span><span>Electrician</span><span>Aircraft mechanic</span><span>Truck driver</span></div>
         </section>
       )}
 
@@ -225,29 +279,45 @@ export default function InjuryIntelligenceLive() {
             </div>
           </section>
 
+          <section className="injury-measured-section">
+            <div className="injury-measured-heading">
+              <div>
+                <span>MEASURED SURVEILLANCE</span>
+                <h3>BLS occupation injury evidence</h3>
+              </div>
+              <small>SOII 2023–2024 · CFOI 2024</small>
+            </div>
+            {measuredLoading && <div className="injury-measured-loading"><Loader2 size={16} className="animate-spin" /> Loading published BLS occupation tables…</div>}
+            {measuredError && <div className="injury-measured-error"><AlertTriangle size={14} /> {measuredError}</div>}
+            {measured && (
+              <>
+                <div className="injury-measured-grid">
+                  {measured.datasets.map((dataset) => <DatasetCard key={dataset.id} dataset={dataset} />)}
+                </div>
+                <div className="injury-measured-caveat">
+                  <Database size={13} />
+                  <span>{measured.caveats[0] || 'BLS estimates may be suppressed when publication criteria are not met.'}</span>
+                  <a href={measured.source.landingPage} target="_blank" rel="noreferrer">BLS SOII <ExternalLink size={10} /></a>
+                  <a href={measured.source.fatalLandingPage} target="_blank" rel="noreferrer">BLS CFOI <ExternalLink size={10} /></a>
+                </div>
+              </>
+            )}
+          </section>
+
           <div className="injury-main-grid">
             <section className="injury-panel injury-signal-panel">
               <div className="injury-panel-heading">
-                <div>
-                  <span>RANKED REVIEW SIGNALS</span>
-                  <h3>Injury and hazard pattern</h3>
-                </div>
-                <small>review prominence, not incidence rate</small>
+                <div><span>DERIVED REVIEW SIGNALS</span><h3>Demand-derived injury and hazard pattern</h3></div>
+                <small>context only · not incidence</small>
               </div>
-
               <div className="injury-signal-table">
                 {rankedSignals.map((signal, index) => (
                   <div className="injury-signal-row" key={signal.label}>
                     <div className="injury-signal-rank">{String(index + 1).padStart(2, '0')}</div>
                     <div className="injury-signal-copy">
-                      <div className="injury-signal-title">
-                        <strong>{signal.label}</strong>
-                        <span data-prominence={signal.prominence}>{signal.prominence}</span>
-                      </div>
+                      <div className="injury-signal-title"><strong>{signal.label}</strong><span data-prominence={signal.prominence}>{signal.prominence}</span></div>
                       <p>{signal.reviewerWhy}</p>
-                      <div className="injury-signal-tags">
-                        {signal.bodyRegions.map((region) => <span key={region}>{region}</span>)}
-                      </div>
+                      <div className="injury-signal-tags">{signal.bodyRegions.map((region) => <span key={region}>{region}</span>)}</div>
                       <small>{signal.mechanisms.join(' · ')}</small>
                     </div>
                   </div>
@@ -257,23 +327,19 @@ export default function InjuryIntelligenceLive() {
 
             <aside className="injury-side-column">
               <section className="injury-panel">
-                <div className="injury-mini-heading"><Target size={15} /> BODY REGIONS</div>
-                <div className="injury-chip-grid">
-                  {profile.dominantBodyRegions.map((region) => <span key={region}>{region}</span>)}
-                </div>
+                <div className="injury-mini-heading"><Target size={15} /> DERIVED BODY-REGION CONTEXT</div>
+                <div className="injury-chip-grid">{profile.dominantBodyRegions.map((region) => <span key={region}>{region}</span>)}</div>
               </section>
-
               <section className="injury-panel">
-                <div className="injury-mini-heading"><ShieldCheck size={15} /> JOB-DEMAND EVIDENCE</div>
+                <div className="injury-mini-heading"><ShieldCheck size={15} /> O*NET JOB-DEMAND EVIDENCE</div>
                 <div className="injury-demand-list">
                   {selectedJob.physicalDemands.slice(0, 6).map((demand) => <div key={demand}>{demand}</div>)}
                   {selectedJob.physicalDemands.length === 0 && <div>No physical-demand detail returned for this occupation.</div>}
                 </div>
               </section>
-
               <section className="injury-panel injury-source-note">
                 <div className="injury-mini-heading"><Database size={15} /> SOURCE BOUNDARY</div>
-                <p>Measured BLS counts/rates will only display when the verified occupation-level surveillance mapping is available. This page does not invent prevalence.</p>
+                <p>BLS cards above are measured published estimates. This lower section is derived from occupation demands and is intentionally not presented as prevalence or incidence.</p>
               </section>
             </aside>
           </div>
@@ -281,23 +347,13 @@ export default function InjuryIntelligenceLive() {
           {findingMatch && (
             <section className="injury-finding-panel">
               <div className="injury-finding-head">
-                <div>
-                  <span>FINDING × OCCUPATION</span>
-                  <h3>{findingMatch.finding} <ArrowRight size={16} /> {selectedJob.title}</h3>
-                </div>
+                <div><span>FINDING × OCCUPATION</span><h3>{findingMatch.finding} <ArrowRight size={16} /> {selectedJob.title}</h3></div>
                 <strong data-relevance={findingMatch.relevance}>{findingMatch.relevance}</strong>
               </div>
               <p>{findingMatch.explanation}</p>
               <div className="injury-finding-grid">
-                <div>
-                  <span>POTENTIALLY AFFECTED DEMANDS</span>
-                  {findingMatch.affectedDemands.map((item) => <div key={item}>{item}</div>)}
-                  {findingMatch.affectedDemands.length === 0 && <div>No direct demand match found in the occupation profile.</div>}
-                </div>
-                <div>
-                  <span>QUESTIONS TO RESOLVE</span>
-                  {findingMatch.reviewQuestions.map((item) => <div key={item}>{item}</div>)}
-                </div>
+                <div><span>POTENTIALLY AFFECTED DEMANDS</span>{findingMatch.affectedDemands.map((item) => <div key={item}>{item}</div>)}{findingMatch.affectedDemands.length === 0 && <div>No direct demand match found in the occupation profile.</div>}</div>
+                <div><span>QUESTIONS TO RESOLVE</span>{findingMatch.reviewQuestions.map((item) => <div key={item}>{item}</div>)}</div>
               </div>
             </section>
           )}
