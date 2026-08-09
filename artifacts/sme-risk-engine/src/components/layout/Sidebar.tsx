@@ -38,7 +38,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/drugs", label: "Drug Checker", icon: Pill },
       { href: "/calculator", label: "Clinical Calculators", icon: Calculator },
-      { href: "/guidelines", label: "Guideline Library", icon: BookOpen },
+      { href: "/guidelines", label: "Condition Reference", icon: BookOpen },
       { href: "/matrix", label: "Standards Matrix", icon: Grid3x3 },
       { href: "/aor", label: "AOR / Deployment", icon: Globe },
     ],
