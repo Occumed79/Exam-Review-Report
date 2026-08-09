@@ -6,10 +6,13 @@ function apiKey(): string | undefined {
 
 export function getBlsStatus() {
   return {
-    configured: Boolean(apiKey()),
-    authMode: apiKey() ? "registered-v2" : "public-v1",
-    source: "U.S. Bureau of Labor Statistics Public Data API",
-    note: "Exact occupation-level injury rates require verified BLS series/table mappings before display.",
+    configured: true,
+    authMode: apiKey() ? "registered-v2" : "public-release-files",
+    source: "U.S. Bureau of Labor Statistics SOII/CFOI public data",
+    measuredTables: true,
+    note: apiKey()
+      ? "Measured occupation injury tables use BLS public release files; the configured API key remains available for time-series requests."
+      : "Measured occupation injury tables use BLS public release files and do not require a BLS API key.",
   };
 }
 
