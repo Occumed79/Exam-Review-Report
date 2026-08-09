@@ -36,7 +36,7 @@ const CATEGORIES: Record<string, Category> = {
     label: 'Cardiovascular',
     subtitle: 'Cardiac review reference',
     icon: Heart,
-    standards: ['NFPA 1582', 'DOT / FMCSA cardiovascular standard', 'FAA medical guidance', 'Program-specific requirements'],
+    standards: ['NFPA 1580 (2025) occupational-medical chapters', 'FMCSA Medical Examiner’s Handbook 2024 + 49 CFR Part 391', 'FAA AME Guide — current revision', 'Program-specific requirements'],
     conditions: [
       {
         name: 'Coronary Artery Disease',
@@ -60,7 +60,7 @@ const CATEGORIES: Record<string, Category> = {
     label: 'Respiratory',
     subtitle: 'Pulmonary review reference',
     icon: Activity,
-    standards: ['NFPA 1582', 'OSHA respiratory protection', 'DOT / FMCSA respiratory standard', 'Program-specific respirator requirements'],
+    standards: ['NFPA 1580 (2025) occupational-medical chapters', 'OSHA respiratory protection', 'FMCSA Medical Examiner’s Handbook 2024 + 49 CFR Part 391', 'Program-specific respirator requirements'],
     conditions: [
       {
         name: 'Asthma / Reactive Airway Disease',
@@ -84,7 +84,7 @@ const CATEGORIES: Record<string, Category> = {
     label: 'Neurologic',
     subtitle: 'Neurologic review reference',
     icon: Brain,
-    standards: ['DOT / FMCSA neurologic standard', 'FAA neurologic guidance', 'NFPA 1582', 'Program-specific safety-sensitive requirements'],
+    standards: ['FMCSA Medical Examiner’s Handbook 2024 + 49 CFR Part 391', 'FAA AME Guide — current revision', 'NFPA 1580 (2025) occupational-medical chapters', 'Program-specific safety-sensitive requirements'],
     conditions: [
       {
         name: 'Seizure Disorder',
@@ -108,7 +108,7 @@ const CATEGORIES: Record<string, Category> = {
     label: 'Endocrine / Metabolic',
     subtitle: 'Metabolic review reference',
     icon: Pill,
-    standards: ['DOT / FMCSA diabetes standard', 'NFPA 1582', 'FAA diabetes guidance', 'Deployment medication-access requirements'],
+    standards: ['FMCSA Medical Examiner’s Handbook 2024 + 49 CFR Part 391', 'NFPA 1580 (2025) occupational-medical chapters', 'FAA AME Guide — current revision', 'Deployment medication-access requirements'],
     conditions: [
       {
         name: 'Diabetes Requiring Insulin',
@@ -124,7 +124,7 @@ const CATEGORIES: Record<string, Category> = {
     label: 'Orthopedic',
     subtitle: 'Musculoskeletal review reference',
     icon: Bone,
-    standards: ['Job-specific essential functions', 'Functional capacity evidence when needed', 'NFPA 1582 where applicable', 'Program-specific physical requirements'],
+    standards: ['Job-specific essential functions', 'Functional capacity evidence when needed', 'NFPA 1580 (2025) where applicable', 'Program-specific physical requirements'],
     conditions: [
       {
         name: 'Lumbar Spine Disorder',
@@ -148,7 +148,7 @@ const CATEGORIES: Record<string, Category> = {
     label: 'Behavioral Health',
     subtitle: 'Behavioral-health review reference',
     icon: Shield,
-    standards: ['Role-specific behavioral-health requirements', 'FAA psychiatric guidance', 'DOT / FMCSA mental-health standard', 'Deployment / program requirements'],
+    standards: ['Role-specific behavioral-health requirements', 'FAA AME Guide — current revision', 'FMCSA Medical Examiner’s Handbook 2024 + 49 CFR Part 391', 'Deployment / program requirements'],
     conditions: [
       {
         name: 'PTSD / Trauma-Related Disorder',
