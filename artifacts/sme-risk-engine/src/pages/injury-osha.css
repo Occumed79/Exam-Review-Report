@@ -1,0 +1,136 @@
+.injury-osha-section {
+  margin-top: 0.9rem;
+  overflow: hidden;
+  border: 1px solid rgba(203, 184, 143, 0.16);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(27, 25, 20, 0.82), rgba(8, 18, 24, 0.98));
+}
+
+.injury-osha-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 0.82rem 0.9rem;
+  border-bottom: 1px solid rgba(203, 184, 143, 0.1);
+}
+
+.injury-osha-heading span {
+  color: #cbb88f;
+  font: 700 0.52rem/1.2 var(--app-font-mono);
+  letter-spacing: 0.1em;
+}
+
+.injury-osha-heading h3 {
+  margin: 0.28rem 0 0;
+  color: rgba(242, 246, 244, 0.9);
+  font-size: 0.86rem;
+}
+
+.injury-osha-heading small {
+  color: rgba(222, 225, 218, 0.27);
+  font: 500 0.53rem/1 var(--app-font-mono);
+}
+
+.injury-osha-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid rgba(203, 184, 143, 0.08);
+}
+
+.injury-osha-summary > div {
+  padding: 0.72rem 0.85rem;
+  border-right: 1px solid rgba(203, 184, 143, 0.08);
+}
+
+.injury-osha-summary > div:last-child { border-right: 0; }
+.injury-osha-summary span { display: block; color: rgba(222, 225, 218, 0.3); font: 700 0.48rem/1 var(--app-font-mono); letter-spacing: 0.08em; }
+.injury-osha-summary strong { display: block; margin-top: 0.28rem; color: #d9c69e; font-size: 1.05rem; font-weight: 760; }
+
+.injury-osha-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid rgba(203, 184, 143, 0.07);
+  color: rgba(221, 226, 222, 0.3);
+  font: 500 0.51rem/1.25 var(--app-font-mono);
+}
+
+.injury-osha-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(203, 184, 143, 0.07);
+}
+
+.injury-osha-list {
+  min-height: 155px;
+  padding: 0.7rem 0.78rem;
+  background: rgba(8, 20, 27, 0.97);
+}
+
+.injury-osha-list > span {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: rgba(203, 184, 143, 0.62);
+  font: 700 0.49rem/1 var(--app-font-mono);
+  letter-spacing: 0.07em;
+}
+
+.injury-osha-list > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.45rem;
+  align-items: baseline;
+  padding: 0.22rem 0;
+}
+
+.injury-osha-list small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(220, 227, 224, 0.39);
+  font-size: 0.54rem;
+}
+
+.injury-osha-list strong {
+  color: rgba(239, 241, 234, 0.72);
+  font: 700 0.55rem/1 var(--app-font-mono);
+}
+
+.injury-osha-list p,
+.injury-osha-empty {
+  color: rgba(220, 227, 224, 0.32);
+  font-size: 0.57rem;
+  line-height: 1.45;
+}
+
+.injury-osha-empty { padding: 0.9rem; }
+
+.injury-osha-caveat {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.62rem 0.82rem;
+  border-top: 1px solid rgba(203, 184, 143, 0.09);
+  color: rgba(222, 226, 221, 0.32);
+  font-size: 0.54rem;
+  line-height: 1.4;
+}
+
+.injury-osha-caveat > span { flex: 1; }
+.injury-osha-caveat svg { flex-shrink: 0; color: #cbb88f; }
+.injury-osha-caveat a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  color: rgba(210, 191, 151, 0.72);
+  text-decoration: none;
+}
+
+@media (max-width: 1250px) {
+  .injury-osha-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
