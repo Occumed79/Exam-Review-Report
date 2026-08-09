@@ -95,11 +95,6 @@ export default function Sidebar() {
           </div>
         ))}
       </nav>
-
-      <div className="sidebar-footer">
-        <div className="sidebar-footer-rule">MINIMUM INPUT</div>
-        <div>Use only the fact needed for the question.</div>
-      </div>
     </aside>
   );
 }
