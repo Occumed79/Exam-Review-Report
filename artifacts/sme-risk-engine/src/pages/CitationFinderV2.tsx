@@ -35,7 +35,7 @@ export default function CitationFinderV2() {
   const savedMatches = useMemo(() => {
     const clean = submittedQuery.trim().toLowerCase();
     if (!clean) return sources.slice(0, 8);
-    return sources.filter((source) => `${source.sourceName} ${source.agency} ${source.notes} ${source.sourceType}`.toLowerCase().includes(clean)).slice(0, 8);
+    return sources.filter((source) => `${source.title} ${source.organization} ${source.summary} ${source.notes} ${source.relevantConditions} ${source.relevantJobs} ${source.relevantCountries}`.toLowerCase().includes(clean)).slice(0, 8);
   }, [sources, submittedQuery]);
 
   useEffect(() => {
@@ -99,7 +99,7 @@ export default function CitationFinderV2() {
 
           <section>
             <div className="citation-side-head"><span>SAVED SOURCE LIBRARY</span><small>{savedMatches.length}</small></div>
-            {savedMatches.length === 0 ? <p className="citation-side-empty">No saved sources match this search.</p> : <div className="citation-saved-list">{savedMatches.map((source) => <div key={source.id}><Database size={11} /><div><strong>{source.sourceName || 'Untitled source'}</strong><small>{source.agency || source.sourceType || 'Saved source'}</small>{source.sourceLink && <a href={source.sourceLink} target="_blank" rel="noreferrer">Open <ExternalLink size={9} /></a>}</div></div>)}</div>}
+            {savedMatches.length === 0 ? <p className="citation-side-empty">No saved sources match this search.</p> : <div className="citation-saved-list">{savedMatches.map((source) => <div key={source.id}><Database size={11} /><div><strong>{source.title || 'Untitled source'}</strong><small>{source.organization || source.sourceReliability || 'Saved source'}</small>{source.url && <a href={source.url} target="_blank" rel="noreferrer">Open <ExternalLink size={9} /></a>}</div></div>)}</div>}
           </section>
         </aside>
       </div>
