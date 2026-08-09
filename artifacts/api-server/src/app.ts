@@ -40,18 +40,16 @@ app.head("/api/health", (_req, res) => {
 
 app.use("/api", router);
 
-if (process.env.NODE_ENV === "production") {
-  const frontendDir = path.resolve(import.meta.dirname, "../../sme-risk-engine/dist/public");
-  app.use(express.static(frontendDir));
-  app.use((req, res, next) => {
-    if (req.method !== "GET" || req.path.startsWith("/api/")) {
-      next();
-      return;
-    }
-    res.sendFile(path.join(frontendDir, "index.html"), (error) => {
-      if (error) next(error);
-    });
+const frontendDir = path.resolve(import.meta.dirname, "../../sme-risk-engine/dist/public");
+app.use(express.static(frontendDir));
+app.use((req, res, next) => {
+  if (req.method !== "GET" || req.path.startsWith("/api/")) {
+    next();
+    return;
+  }
+  res.sendFile(path.join(frontendDir, "index.html"), (error) => {
+    if (error) next(error);
   });
-}
+});
 
 export default app;
