@@ -7,7 +7,7 @@ import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
 import AORMonitor from "@/pages/AORMonitor";
 import JobIntelligence from "@/pages/JobIntelligence";
-import InjuryIntelligence from "@/pages/InjuryIntelligence";
+import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
 import GuidelineLibrary from "@/pages/GuidelineLibrary";
 import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
