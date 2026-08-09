@@ -5,42 +5,42 @@ import './standards-matrix.css';
 const FRAMEWORKS = [
   {
     id: 'firefighter',
-    label: 'Firefighter',
-    standard: 'NFPA 1582',
+    label: 'Firefighter / Emergency Responder',
+    standard: 'NFPA 1580 (2025)',
     icon: Flame,
-    source: 'NFPA',
-    sourceUrl: 'https://www.nfpa.org/codes-and-standards/nfpa-1582-standard-development/1582',
-    useFor: 'Fire-service medical review and duty-specific occupational demands.',
-    topics: ['Sudden incapacitation', 'Extreme exertion', 'SCBA / respirator', 'Heat stress', 'Emergency response'],
+    source: 'NFPA 1580 — occupational medical chapters',
+    sourceUrl: 'https://link.nfpa.org/all-publications/1580/2025',
+    useFor: 'Current NFPA emergency-responder health and wellness framework; occupational-medical chapters consolidate content formerly published in NFPA 1582.',
+    topics: ['Essential job tasks', 'Occupational medical evaluation', 'Annual fitness evaluation', 'SCBA / respirator', 'Heat / emergency response'],
   },
   {
     id: 'dot',
     label: 'Commercial Driver',
-    standard: 'DOT / FMCSA',
+    standard: 'FMCSA Medical Examiner’s Handbook — 2024',
     icon: Truck,
-    source: 'FMCSA medical requirements',
-    sourceUrl: 'https://www.fmcsa.dot.gov/medical/driver-medical-requirements/driver-medical-fitness-duty',
-    useFor: 'Commercial motor-vehicle medical qualification and safety-sensitive driving.',
+    source: 'FMCSA current handbook',
+    sourceUrl: 'https://www.fmcsa.dot.gov/regulations/medical/driver-medical-requirements/medical-examiners-handbook-2024-edition',
+    useFor: 'Current FMCSA guidance used with the physical qualification standards and Medical Advisory Criteria for interstate commercial drivers.',
     topics: ['Loss of consciousness', 'Vision / hearing', 'Medication effects', 'Sleep / alertness', 'Cardiovascular'],
   },
   {
     id: 'aviation',
     label: 'Aviation',
-    standard: 'FAA AME Guide',
+    standard: 'FAA AME Guide — current revision',
     icon: Plane,
     source: 'FAA Guide for Aviation Medical Examiners',
     sourceUrl: 'https://www.faa.gov/ame_guide',
-    useFor: 'Aviation medical review and condition-specific certification guidance.',
+    useFor: 'FAA’s continuously updated condition-specific aviation medical certification guidance.',
     topics: ['Incapacitation', 'Cognition', 'Medication acceptability', 'Neurologic stability', 'Vision / hearing'],
   },
   {
     id: 'law-enforcement',
     label: 'Law Enforcement',
-    standard: 'Agency / POST',
+    standard: 'Agency / POST / jurisdiction',
     icon: Shield,
     source: 'Jurisdiction / agency specific',
     sourceUrl: '',
-    useFor: 'Law-enforcement duties where medical criteria vary by jurisdiction and agency.',
+    useFor: 'Law-enforcement duties where controlling medical criteria vary by jurisdiction, POST body, employer, and job classification.',
     topics: ['Emergency driving', 'Use of force', 'Weapon handling', 'Stress tolerance', 'Physical confrontation'],
   },
   {
@@ -50,7 +50,7 @@ const FRAMEWORKS = [
     icon: Briefcase,
     source: 'Program specific',
     sourceUrl: '',
-    useFor: 'Remote, international, austere, or contract-specific medical requirements.',
+    useFor: 'Remote, international, austere, or contract-specific medical requirements where the actual program document controls.',
     topics: ['Medical access', 'Medication continuity', 'Evacuation', 'Climate', 'Specialty follow-up'],
   },
 ];
@@ -69,7 +69,7 @@ export default function StandardsMatrixV2() {
         <div>
           <div className="standards-kicker">REFERENCE / STANDARDS</div>
           <h1>Standards Matrix</h1>
-          <p>Quick starting points for the occupational frameworks reviewers repeatedly need to locate. No scoring and no clearance output.</p>
+          <p>Current source starting points for occupational frameworks reviewers repeatedly need to locate. No scoring and no clearance output.</p>
         </div>
         <div className="standards-search"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Framework, topic, standard…" /></div>
       </header>
@@ -91,7 +91,7 @@ export default function StandardsMatrixV2() {
         })}
         {filtered.length === 0 && <div className="standards-empty">No framework matches that search.</div>}
       </div>
-      <div className="standards-footnote">Use these as source starting points. Verify the current controlling version and any client-, agency-, or jurisdiction-specific requirement before applying criteria.</div>
+      <div className="standards-footnote">Verify the current controlling version and any client-, agency-, employer-, contract-, or jurisdiction-specific requirement before applying criteria. Source pages can change independently of this app.</div>
     </div>
   );
 }
