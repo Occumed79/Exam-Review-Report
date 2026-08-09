@@ -12,7 +12,7 @@ import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
 import GuidelineLibrary from "@/pages/GuidelineLibrary";
 import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
-import ClinicalCalculator from "@/pages/ClinicalCalculator";
+import ClinicalCalculator from "@/pages/ClinicalCalculatorV2";
 import Citations from "@/pages/Citations";
 
 function AppRouter() {
