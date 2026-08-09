@@ -1,8 +1,29 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Search, Plus, Trash2, ExternalLink, CheckCircle2, ChevronDown, ChevronRight, Zap, BookOpen, AlertTriangle } from 'lucide-react';
-import { searchONetJobs, ONET_JOB_DATABASE, type ONetJob } from '@/lib/onetJobDatabase';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  AlertTriangle,
+  BookOpen,
+  Check,
+  ClipboardCopy,
+  ExternalLink,
+  FileText,
+  Loader2,
+  Plus,
+  Search,
+  Trash2,
+  X,
+} from 'lucide-react';
+import { getJobByCode, searchONetJobs, type ONetJob } from '@/lib/onetJobDatabase';
+import {
+  fetchIntelligenceStatus,
+  fetchLiveOccupation,
+  searchLiveOccupations,
+  type IntelligenceStatus,
+  type LiveOccupationMatch,
+} from '@/lib/liveOccupationalApi';
+import './job-workbench.css';
 
 type DutyType = 'Physical' | 'Cognitive' | 'Environmental' | 'Safety-sensitive';
+type View = 'lookup' | 'workspace' | 'paste';
 
 type SavedDuty = {
   id: string;
@@ -15,395 +36,401 @@ type SavedDuty = {
 const STORAGE_KEY = 'sme_job_intelligence_duties';
 const SELECTED_JOB_KEY = 'sme_selected_job';
 
-function loadDuties(): SavedDuty[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
-  } catch { return []; }
-}
-
-function saveDuties(duties: SavedDuty[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(duties));
-}
-
 const blankDuty: Omit<SavedDuty, 'id'> = {
   duty: '',
-  source: 'SME Entered',
+  source: 'Reviewer entered',
   confidence: 'Moderate',
   types: ['Physical'],
 };
 
+function loadDuties(): SavedDuty[] {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function loadSavedJob(): ONetJob | null {
+  try {
+    const raw = localStorage.getItem(SELECTED_JOB_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as ONetJob;
+    return parsed && typeof parsed.title === 'string' && typeof parsed.socCode === 'string' ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function localMatches(query: string): LiveOccupationMatch[] {
+  return searchONetJobs(query)
+    .slice(0, 12)
+    .map((job) => ({ title: job.title, code: job.socCode }));
+}
+
 function classifyDuty(text: string): DutyType[] {
-  const t = text.toLowerCase();
+  const value = text.toLowerCase();
   const types: DutyType[] = [];
-  if (/lift|carry|climb|stand|walk|push|pull|bend|stoop|kneel|squat|reach|physical|strength|endur|run|sprint|wear|don|doff/.test(t)) types.push('Physical');
-  if (/decision|think|memory|alert|attention|cognitive|read|write|communicate|nav|comput|judg|assess/.test(t)) types.push('Cognitive');
-  if (/chemical|heat|cold|noise|dust|fume|radiation|outdoor|weather|toxic|hazard|exposure/.test(t)) types.push('Environmental');
-  if (/drive|operat|pilot|firearm|weapon|safety.sensitive|safety sensitive|emergency|critical|public safety/.test(t)) types.push('Safety-sensitive');
+  if (/lift|carry|climb|stand|walk|push|pull|bend|stoop|kneel|squat|reach|strength|endur|run|sprint|wear|don|doff/.test(value)) types.push('Physical');
+  if (/decision|memory|alert|attention|read|write|communicat|navig|comput|judg|assess|reason/.test(value)) types.push('Cognitive');
+  if (/chemical|heat|cold|noise|dust|fume|radiation|outdoor|weather|toxic|hazard|exposure|confined/.test(value)) types.push('Environmental');
+  if (/drive|operat|pilot|firearm|weapon|emergency|critical|public safety|high place|hazardous equipment/.test(value)) types.push('Safety-sensitive');
   return types.length ? types : ['Physical'];
 }
 
-export default function JobIntelligence() {
-  const [view, setView] = useState<'lookup' | 'duties' | 'paste'>('lookup');
-  const [duties, setDuties] = useState<SavedDuty[]>(loadDuties);
-  const [selectedJob, setSelectedJob] = useState<ONetJob | null>(() => {
-    try { const raw = localStorage.getItem(SELECTED_JOB_KEY); return raw ? JSON.parse(raw) : null; } catch { return null; }
-  });
-  const [jobSearch, setJobSearch] = useState('');
-  const [form, setForm] = useState<Omit<SavedDuty, 'id'>>(blankDuty);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [dutySearch, setDutySearch] = useState('');
-  const [notice, setNotice] = useState('');
-  const [pasteText, setPasteText] = useState('');
-  const [showAddForm, setShowAddForm] = useState(false);
+function occupationDuties(job: ONetJob): SavedDuty[] {
+  const seen = new Set<string>();
+  const result: SavedDuty[] = [];
+  const add = (duty: string, source: string, types?: DutyType[]) => {
+    const clean = duty.trim();
+    const key = clean.toLowerCase();
+    if (!clean || seen.has(key)) return;
+    seen.add(key);
+    result.push({
+      id: `occupation-${job.socCode}-${result.length}`,
+      duty: clean,
+      source,
+      confidence: 'High',
+      types: types?.length ? types : classifyDuty(clean),
+    });
+  };
 
-  useEffect(() => { saveDuties(duties); }, [duties]);
+  job.essentialFunctions.forEach((value) => add(value, `O*NET ${job.socCode}`));
+  job.physicalDemands.forEach((value) => add(value, `O*NET ${job.socCode} · physical`, ['Physical', ...classifyDuty(value).filter((type) => type !== 'Physical')]));
+  job.cognitiveRequirements.forEach((value) => add(value, `O*NET ${job.socCode} · cognitive`, ['Cognitive']));
+  job.environmentalExposures.forEach((value) => add(value, `O*NET ${job.socCode} · environment`, ['Environmental', ...classifyDuty(value).filter((type) => type !== 'Environmental')]));
+  return result;
+}
+
+export default function JobIntelligence() {
+  const [view, setView] = useState<View>('lookup');
+  const [status, setStatus] = useState<IntelligenceStatus | null>(null);
+  const [selectedJob, setSelectedJob] = useState<ONetJob | null>(loadSavedJob);
+  const [sourceMode, setSourceMode] = useState<'live-onet' | 'local-fallback' | null>(null);
+  const [query, setQuery] = useState('');
+  const [matches, setMatches] = useState<LiveOccupationMatch[]>(() => localMatches(''));
+  const [searching, setSearching] = useState(false);
+  const [loadingProfile, setLoadingProfile] = useState(false);
+  const [notice, setNotice] = useState('');
+  const [duties, setDuties] = useState<SavedDuty[]>(loadDuties);
+  const [dutySearch, setDutySearch] = useState('');
+  const [showAdd, setShowAdd] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [form, setForm] = useState<Omit<SavedDuty, 'id'>>(blankDuty);
+  const [pasteText, setPasteText] = useState('');
+
+  useEffect(() => {
+    fetchIntelligenceStatus().then(setStatus).catch(() => setStatus(null));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(duties));
+  }, [duties]);
+
   useEffect(() => {
     if (selectedJob) localStorage.setItem(SELECTED_JOB_KEY, JSON.stringify(selectedJob));
     else localStorage.removeItem(SELECTED_JOB_KEY);
   }, [selectedJob]);
 
-  const jobResults = useMemo(() => searchONetJobs(jobSearch), [jobSearch]);
+  useEffect(() => {
+    const clean = query.trim();
+    if (selectedJob && clean === selectedJob.title) return;
+    if (clean.length < 2) {
+      setMatches(localMatches(clean));
+      return;
+    }
+
+    const timer = window.setTimeout(async () => {
+      setSearching(true);
+      try {
+        const live = await searchLiveOccupations(clean);
+        setMatches(live.length ? live : localMatches(clean));
+        if (!live.length) setNotice('No live O*NET matches returned. Showing local fallback matches.');
+      } catch {
+        setMatches(localMatches(clean));
+        setNotice('Live O*NET search is unavailable. Local occupation fallback is active.');
+      } finally {
+        setSearching(false);
+      }
+    }, 260);
+
+    return () => window.clearTimeout(timer);
+  }, [query, selectedJob]);
 
   const filteredDuties = useMemo(() => {
-    const q = dutySearch.trim().toLowerCase();
-    if (!q) return duties;
-    return duties.filter(d => [d.duty, d.source, d.confidence, ...d.types].join(' ').toLowerCase().includes(q));
+    const clean = dutySearch.trim().toLowerCase();
+    if (!clean) return duties;
+    return duties.filter((item) => `${item.duty} ${item.source} ${item.types.join(' ')}`.toLowerCase().includes(clean));
   }, [duties, dutySearch]);
 
   const summary = useMemo(() => ({
     total: duties.length,
-    physical: duties.filter(d => d.types.includes('Physical')).length,
-    cognitive: duties.filter(d => d.types.includes('Cognitive')).length,
-    safety: duties.filter(d => d.types.includes('Safety-sensitive')).length,
-    environmental: duties.filter(d => d.types.includes('Environmental')).length,
+    physical: duties.filter((item) => item.types.includes('Physical')).length,
+    cognitive: duties.filter((item) => item.types.includes('Cognitive')).length,
+    environmental: duties.filter((item) => item.types.includes('Environmental')).length,
+    safety: duties.filter((item) => item.types.includes('Safety-sensitive')).length,
   }), [duties]);
 
-  const toast = (msg: string) => { setNotice(msg); setTimeout(() => setNotice(''), 3000); };
-
-  const loadJobFromONet = (job: ONetJob) => {
-    setSelectedJob(job);
-    const newDuties: SavedDuty[] = [];
-    job.essentialFunctions.forEach(fn => {
-      newDuties.push({ id: `onet-ef-${Date.now()}-${Math.random()}`, duty: fn, source: `O*NET ${job.socCode}`, confidence: 'High', types: classifyDuty(fn) });
-    });
-    job.physicalDemands.forEach(pd => {
-      if (!job.essentialFunctions.some(ef => ef.toLowerCase().includes(pd.toLowerCase().substring(0, 20)))) {
-        newDuties.push({ id: `onet-pd-${Date.now()}-${Math.random()}`, duty: pd, source: `O*NET ${job.socCode} (Physical)`, confidence: 'High', types: ['Physical', ...(classifyDuty(pd).filter(t => t !== 'Physical'))] });
+  async function chooseOccupation(match: LiveOccupationMatch) {
+    setLoadingProfile(true);
+    setNotice('');
+    try {
+      const live = await fetchLiveOccupation(match.code);
+      setSelectedJob(live);
+      setSourceMode('live-onet');
+      setQuery(live.title);
+      setMatches([]);
+    } catch {
+      const fallback = getJobByCode(match.code) ?? searchONetJobs(match.title)[0];
+      if (fallback) {
+        setSelectedJob(fallback);
+        setSourceMode('local-fallback');
+        setQuery(fallback.title);
+        setMatches([]);
+        setNotice('Live occupation detail was unavailable. Using the local fallback profile.');
+      } else {
+        setNotice('Unable to load that occupation. Try a broader title.');
       }
-    });
-    job.cognitiveRequirements.forEach(cr => {
-      newDuties.push({ id: `onet-cog-${Date.now()}-${Math.random()}`, duty: cr, source: `O*NET ${job.socCode} (Cognitive)`, confidence: 'High', types: ['Cognitive'] });
-    });
-    setDuties(prev => {
-      const existingNonOnet = prev.filter(d => !d.source.startsWith('O*NET'));
-      return [...newDuties, ...existingNonOnet];
-    });
-    setView('duties');
-    toast(`✓ Loaded ${newDuties.length} functions from O*NET for ${job.title}`);
-  };
+    } finally {
+      setLoadingProfile(false);
+    }
+  }
 
-  const handleSaveDuty = () => {
-    if (!form.duty.trim()) { toast('Enter a duty first.'); return; }
+  function resetQuery(value: string) {
+    setQuery(value);
+    if (selectedJob && value !== selectedJob.title) {
+      setSelectedJob(null);
+      setSourceMode(null);
+    }
+  }
+
+  function loadFunctions() {
+    if (!selectedJob) return;
+    const generated = occupationDuties(selectedJob);
+    setDuties((current) => {
+      const custom = current.filter((item) => !item.id.startsWith('occupation-'));
+      return [...generated, ...custom];
+    });
+    setView('workspace');
+    setNotice(`${generated.length} occupation functions loaded.`);
+  }
+
+  function saveDuty() {
+    const duty = form.duty.trim();
+    if (!duty) return;
     if (editingId) {
-      setDuties(prev => prev.map(d => d.id === editingId ? { ...form, id: editingId, duty: form.duty.trim() } : d));
-      toast('Duty updated.');
-      setEditingId(null);
+      setDuties((current) => current.map((item) => item.id === editingId ? { ...item, ...form, duty } : item));
     } else {
-      setDuties(prev => [{ ...form, id: `custom-${Date.now()}`, duty: form.duty.trim() }, ...prev]);
-      toast('Duty added.');
+      setDuties((current) => [{ ...form, duty, id: `custom-${Date.now()}` }, ...current]);
     }
     setForm(blankDuty);
-    setShowAddForm(false);
-  };
+    setEditingId(null);
+    setShowAdd(false);
+  }
 
-  const handleDelete = (id: string) => {
-    setDuties(prev => prev.filter(d => d.id !== id));
-  };
+  function editDuty(item: SavedDuty) {
+    setForm({ duty: item.duty, source: item.source, confidence: item.confidence, types: item.types });
+    setEditingId(item.id);
+    setShowAdd(true);
+  }
 
-  const toggleType = (type: DutyType) => {
-    setForm(prev => {
-      const exists = prev.types.includes(type);
-      const next = exists ? prev.types.filter(t => t !== type) : [...prev.types, type];
-      return { ...prev, types: next.length ? next : [type] };
+  function toggleType(type: DutyType) {
+    setForm((current) => {
+      const exists = current.types.includes(type);
+      const next = exists ? current.types.filter((item) => item !== type) : [...current.types, type];
+      return { ...current, types: next.length ? next : [type] };
     });
-  };
+  }
 
-  const parsePaste = () => {
-    const lines = pasteText.split(/[\n.]/).map(l => l.trim()).filter(l => l.length > 12).slice(0, 12);
-    if (!lines.length) { toast('No usable lines found. Paste job description text first.'); return; }
-    const extracted: SavedDuty[] = lines.map((line, i) => ({
-      id: `paste-${Date.now()}-${i}`, duty: line, source: 'Pasted JD', confidence: 'Moderate', types: classifyDuty(line),
+  function parsePaste() {
+    const lines = pasteText
+      .split(/\n|(?<=[.!?])\s+/)
+      .map((line) => line.replace(/^[-•\d.)\s]+/, '').trim())
+      .filter((line) => line.length >= 12)
+      .slice(0, 30);
+    if (!lines.length) {
+      setNotice('No usable duty lines detected.');
+      return;
+    }
+    const extracted = lines.map((duty, index): SavedDuty => ({
+      id: `paste-${Date.now()}-${index}`,
+      duty,
+      source: 'Pasted job description',
+      confidence: 'Moderate',
+      types: classifyDuty(duty),
     }));
-    setDuties(prev => [...extracted, ...prev]);
+    setDuties((current) => [...extracted, ...current]);
     setPasteText('');
-    setView('duties');
-    toast(`Added ${extracted.length} duties from pasted text.`);
-  };
+    setView('workspace');
+    setNotice(`${extracted.length} draft functions extracted.`);
+  }
 
-  const TYPE_COLORS: Record<string, string> = {
-    'Physical': '#b4d7d0', 'Cognitive': '#d6c8aa', 'Safety-sensitive': '#ef4444', 'Environmental': '#7f9d96'
-  };
+  async function copyFunctions() {
+    const text = filteredDuties.map((item) => `• ${item.duty}`).join('\n');
+    if (!text) return;
+    try {
+      await navigator.clipboard.writeText(text);
+      setNotice('Visible functions copied.');
+    } catch {
+      setNotice('Clipboard access was blocked by the browser.');
+    }
+  }
+
+  const sourceLabel = sourceMode === 'live-onet' ? 'LIVE O*NET' : sourceMode === 'local-fallback' ? 'LOCAL FALLBACK' : 'NOT SELECTED';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', height: '100%' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+    <div className="job-workbench" data-testid="job-intelligence">
+      <header className="job-header">
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 900, color: '#f4efdc', letterSpacing: '-0.03em', margin: 0 }}>JOB INTELLIGENCE ENGINE</h1>
-          <p style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.35)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.12em', margin: 0 }}>
-            Auto-populated from O*NET · BLS · DOL
-          </p>
+          <div className="job-kicker">OCCUPATION / JOB INTELLIGENCE</div>
+          <h1>Job Intelligence</h1>
+          <p>Resolve a job title to occupational functions and demands, then keep only the functions useful to the review.</p>
         </div>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          {(['lookup', 'duties', 'paste'] as const).map(v => (
-            <button key={v} onClick={() => setView(v)} className={v === view ? 'tab-btn active-tab' : 'tab-btn'} style={{ fontSize: '0.75rem', textTransform: 'capitalize' }}>
-              {v === 'lookup' ? '🔍 O*NET Lookup' : v === 'duties' ? `📋 Functions (${duties.length})` : '📋 Paste JD'}
-            </button>
-          ))}
+        <div className="job-source-status">
+          <span className={status?.onet.configured ? 'active' : ''} />
+          <div><strong>O*NET</strong><small>{status?.onet.configured ? 'live API configured' : 'local fallback available'}</small></div>
         </div>
+      </header>
+
+      <div className="job-tabs" role="tablist" aria-label="Job Intelligence views">
+        <button className={view === 'lookup' ? 'active' : ''} onClick={() => setView('lookup')}><Search size={14} /> Lookup</button>
+        <button className={view === 'workspace' ? 'active' : ''} onClick={() => setView('workspace')}><BookOpen size={14} /> Function Workspace <span>{duties.length}</span></button>
+        <button className={view === 'paste' ? 'active' : ''} onClick={() => setView('paste')}><FileText size={14} /> Paste JD</button>
       </div>
 
-      {/* Toast */}
       {notice && (
-        <div className="glass-card" style={{ padding: '0.625rem 1rem', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', background: 'rgba(180,215,208,0.12)', borderColor: 'rgba(180,215,208,0.25)' }}>
-          <span style={{ fontSize: '0.8125rem', color: '#b4d7d0', fontWeight: 600 }}>{notice}</span>
-          <button onClick={() => setNotice('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>Dismiss</button>
-        </div>
+        <div className="job-notice"><span>{notice}</span><button onClick={() => setNotice('')}><X size={13} /></button></div>
       )}
 
-      {/* O*NET LOOKUP VIEW */}
       {view === 'lookup' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.875rem', flex: 1, minHeight: 0, overflow: 'hidden' }}>
-          {selectedJob && (
-            <div className="glass-card" style={{ borderRadius: '12px', padding: '0.875rem 1.125rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderColor: 'rgba(180,215,208,0.30)', background: 'rgba(180,215,208,0.08)' }}>
-              <div>
-                <div style={{ fontSize: '0.6875rem', color: '#b4d7d0', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.2rem' }}>Currently Loaded</div>
-                <div style={{ fontSize: '1rem', fontWeight: 700, color: '#f4efdc' }}>{selectedJob.title}
-                  <span style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.4)', fontWeight: 400, marginLeft: '0.5rem' }}>{selectedJob.socCode}</span>
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)' }}>{selectedJob.category} · {selectedJob.safetySensitive ? '⚠ Safety-Sensitive' : 'Non-Safety-Sensitive'}</div>
-              </div>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <a href={selectedJob.onetUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.6875rem', color: '#b4d7d0', textDecoration: 'none', padding: '0.375rem 0.75rem', background: 'rgba(180,215,208,0.10)', borderRadius: '8px', border: '1px solid rgba(180,215,208,0.20)' }}>
-                  O*NET <ExternalLink size={11} />
-                </a>
-                <a href={selectedJob.blsUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.6875rem', color: '#d6c8aa', textDecoration: 'none', padding: '0.375rem 0.75rem', background: 'rgba(214,200,170,0.10)', borderRadius: '8px', border: '1px solid rgba(214,200,170,0.20)' }}>
-                  BLS <ExternalLink size={11} />
-                </a>
-              </div>
-            </div>
-          )}
-
-          {/* Search */}
-          <div className="glass-card" style={{ padding: '0.625rem 1rem', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-            <Search size={16} style={{ color: 'rgba(255,255,255,0.35)', flexShrink: 0 }} />
-            <input
-              autoFocus
-              value={jobSearch}
-              onChange={e => setJobSearch(e.target.value)}
-              placeholder="Search job title, category, or SOC code..."
-              style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: '0.875rem', color: '#f4efdc', width: '100%' }}
-            />
-            {jobSearch && <button onClick={() => setJobSearch('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.4)' }}>✕</button>}
-          </div>
-
-          {/* Results */}
-          <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            {jobResults.length === 0 && (
-              <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.35)' }}>No matching jobs found. Try "firefighter", "driver", "nurse"…</div>
-            )}
-            {jobResults.map(job => (
-              <div key={job.socCode} className="glass-card" style={{ borderRadius: '12px', padding: '0.875rem 1.125rem', cursor: 'pointer', transition: 'all 0.15s' }}
-                onClick={() => loadJobFromONet(job)}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
-                  <div>
-                    <div style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#f4efdc' }}>{job.title}</div>
-                    <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{job.category} · SOC {job.socCode}</div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.375rem', alignItems: 'center' }}>
-                    {job.safetySensitive && (
-                      <span style={{ fontSize: '0.625rem', fontWeight: 700, padding: '0.2rem 0.5rem', borderRadius: '5px', background: 'rgba(239,68,68,0.12)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.25)', textTransform: 'uppercase' }}>Safety-Sensitive</span>
-                    )}
-                    <button
-                      onClick={e => { e.stopPropagation(); loadJobFromONet(job); }}
-                      style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.75rem', fontWeight: 700, padding: '0.375rem 0.875rem', background: 'rgba(180,215,208,0.15)', border: '1px solid rgba(180,215,208,0.30)', borderRadius: '8px', cursor: 'pointer', color: '#b4d7d0' }}
-                    >
-                      <Zap size={12} /> Load Functions
-                    </button>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
-                  {job.essentialFunctions.slice(0, 3).map((f, i) => (
-                    <span key={i} style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.55)', padding: '0.2rem 0.5rem', background: 'rgba(255,255,255,0.05)', borderRadius: '4px' }}>{f.substring(0, 60)}{f.length > 60 ? '…' : ''}</span>
-                  ))}
-                  {job.essentialFunctions.length > 3 && (
-                    <span style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.35)', padding: '0.2rem 0.5rem' }}>+{job.essentialFunctions.length - 3} more</span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* DUTIES VIEW */}
-      {view === 'duties' && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '1rem', flex: 1, minHeight: 0 }}>
-          {/* Duties List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflow: 'hidden' }}>
-            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-              <div className="glass-card" style={{ flex: 1, padding: '0.5rem 0.875rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderRadius: '10px' }}>
-                <Search size={14} style={{ color: 'rgba(255,255,255,0.35)' }} />
-                <input value={dutySearch} onChange={e => setDutySearch(e.target.value)} placeholder="Filter duties..."
-                  style={{ background: 'transparent', border: 'none', outline: 'none', fontSize: '0.8125rem', color: '#f4efdc', width: '100%' }} />
-              </div>
-              <button onClick={() => { setShowAddForm(true); setEditingId(null); setForm(blankDuty); }}
-                className="glow-btn" style={{ display: 'flex', alignItems: 'center', gap: '0.375rem', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
-                <Plus size={13} /> Add Custom
-              </button>
+        <>
+          <section className="job-search-panel">
+            <label>JOB TITLE / SOC</label>
+            <div className="job-search-input">
+              {searching || loadingProfile ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}
+              <input value={query} onChange={(event) => resetQuery(event.target.value)} placeholder="Firefighter, aircraft mechanic, electrician, nurse…" autoFocus />
+              {query && <button onClick={() => resetQuery('')} aria-label="Clear job search"><X size={14} /></button>}
             </div>
 
-            {/* Add/Edit Form */}
-            {showAddForm && (
-              <div className="glass-card" style={{ borderRadius: '12px', padding: '1rem' }}>
-                <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#b4d7d0', marginBottom: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{editingId ? 'Edit Function' : 'Add Custom Function'}</div>
-                <textarea value={form.duty} onChange={e => setForm(p => ({ ...p, duty: e.target.value }))} placeholder="Describe the essential job function..."
-                  style={{ width: '100%', minHeight: '70px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '8px', padding: '0.5rem 0.75rem', fontSize: '0.8125rem', color: '#f4efdc', resize: 'vertical', outline: 'none', boxSizing: 'border-box', marginBottom: '0.5rem' }} />
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <input value={form.source} onChange={e => setForm(p => ({ ...p, source: e.target.value }))} placeholder="Source"
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '8px', padding: '0.45rem 0.75rem', fontSize: '0.8125rem', color: '#f4efdc', outline: 'none' }} />
-                  <select value={form.confidence} onChange={e => setForm(p => ({ ...p, confidence: e.target.value as SavedDuty['confidence'] }))}
-                    style={{ background: 'rgba(20,28,38,0.95)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '8px', padding: '0.45rem 0.75rem', fontSize: '0.8125rem', color: '#f4efdc', outline: 'none' }}>
-                    <option>Low</option><option>Moderate</option><option>High</option>
-                  </select>
-                </div>
-                <div style={{ display: 'flex', gap: '0.375rem', marginBottom: '0.75rem' }}>
-                  {(['Physical', 'Cognitive', 'Environmental', 'Safety-sensitive'] as DutyType[]).map(type => (
-                    <button key={type} onClick={() => toggleType(type)}
-                      style={{ fontSize: '0.6875rem', fontWeight: 700, padding: '0.25rem 0.625rem', borderRadius: '6px', cursor: 'pointer', transition: 'all 0.15s', background: form.types.includes(type) ? `${TYPE_COLORS[type]}25` : 'rgba(255,255,255,0.04)', border: `1px solid ${form.types.includes(type) ? TYPE_COLORS[type] + '50' : 'rgba(255,255,255,0.10)'}`, color: form.types.includes(type) ? TYPE_COLORS[type] : 'rgba(255,255,255,0.5)' }}>
-                      {type}
-                    </button>
-                  ))}
-                </div>
-                <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                  <button onClick={() => { setShowAddForm(false); setEditingId(null); }} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '8px', padding: '0.5rem 1rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)', cursor: 'pointer' }}>Cancel</button>
-                  <button onClick={handleSaveDuty} className="glow-btn" style={{ fontSize: '0.75rem' }}>Save</button>
-                </div>
+            {!selectedJob && matches.length > 0 && (
+              <div className="job-match-list">
+                {matches.map((match) => (
+                  <button key={match.code} onClick={() => void chooseOccupation(match)}>
+                    <div><strong>{match.title}</strong><small>SOC {match.code}</small></div>
+                    <span>Open</span>
+                  </button>
+                ))}
               </div>
             )}
+          </section>
 
-            {/* Duty list */}
-            <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-              {filteredDuties.length === 0 && (
-                <div style={{ padding: '2rem', textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '0.875rem' }}>
-                  {duties.length === 0 ? 'No functions loaded yet. Use O*NET Lookup or paste a job description.' : 'No matches for your filter.'}
+          {!selectedJob ? (
+            <section className="job-empty-state">
+              <div className="job-empty-index">01</div>
+              <div><strong>Search an occupation.</strong><p>The reviewer enters only the title. Live O*NET is used when available; the curated local library is the fallback.</p></div>
+              <div className="job-example-list"><span>Firefighter</span><span>Truck Driver</span><span>Electrician</span><span>Aircraft Mechanic</span></div>
+            </section>
+          ) : (
+            <section className="job-profile">
+              <div className="job-profile-strip">
+                <div>
+                  <span>{sourceLabel}</span>
+                  <h2>{selectedJob.title}</h2>
+                  <p>{selectedJob.category} · SOC {selectedJob.socCode}</p>
+                </div>
+                <div className="job-profile-actions">
+                  {selectedJob.safetySensitive && <span className="job-safety"><AlertTriangle size={13} /> Safety-sensitive</span>}
+                  <a href={selectedJob.onetUrl} target="_blank" rel="noreferrer">Official O*NET <ExternalLink size={11} /></a>
+                  <button onClick={loadFunctions}><Check size={14} /> Load functions</button>
+                </div>
+              </div>
+
+              <div className="job-profile-grid">
+                <ProfileColumn title="Essential functions" values={selectedJob.essentialFunctions} empty="No task detail returned." />
+                <ProfileColumn title="Physical demands" values={selectedJob.physicalDemands} empty="No physical-demand detail returned." />
+                <ProfileColumn title="Cognitive requirements" values={selectedJob.cognitiveRequirements} empty="No cognitive detail returned." />
+                <ProfileColumn title="Environmental exposure" values={selectedJob.environmentalExposures} empty="No exposure detail returned." />
+              </div>
+
+              {selectedJob.relevantStandards.length > 0 && (
+                <div className="job-standards">
+                  <span>REFERENCE LENSES</span>
+                  <div>{selectedJob.relevantStandards.map((item) => <span key={item}>{item}</span>)}</div>
                 </div>
               )}
-              {filteredDuties.map(duty => (
-                <div key={duty.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '0.75rem 0.875rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                    <div style={{ flex: 1, marginRight: '0.75rem' }}>
-                      <p style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.80)', lineHeight: 1.5, margin: '0 0 0.375rem' }}>{duty.duty}</p>
-                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.3rem', alignItems: 'center' }}>
-                        {duty.types.map(type => (
-                          <span key={type} style={{ fontSize: '0.625rem', fontWeight: 700, padding: '0.15rem 0.5rem', borderRadius: '4px', textTransform: 'uppercase', background: `${TYPE_COLORS[type]}18`, color: TYPE_COLORS[type], border: `1px solid ${TYPE_COLORS[type]}35` }}>{type}</span>
-                        ))}
-                        <span style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.35)' }}>{duty.source}</span>
-                        <span style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.25)' }}>· {duty.confidence}</span>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', gap: '0.375rem', flexShrink: 0 }}>
-                      <button onClick={() => { setEditingId(duty.id); setForm({ duty: duty.duty, source: duty.source, confidence: duty.confidence, types: duty.types }); setShowAddForm(true); }}
-                        style={{ fontSize: '0.6875rem', fontWeight: 700, color: '#b4d7d0', background: 'rgba(180,215,208,0.10)', border: '1px solid rgba(180,215,208,0.20)', borderRadius: '6px', padding: '0.2rem 0.5rem', cursor: 'pointer' }}>Edit</button>
-                      <button onClick={() => handleDelete(duty.id)}
-                        style={{ fontSize: '0.6875rem', color: '#ef4444', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', borderRadius: '6px', padding: '0.2rem 0.375rem', cursor: 'pointer' }}>
-                        <Trash2 size={10} />
-                      </button>
-                    </div>
+            </section>
+          )}
+        </>
+      )}
+
+      {view === 'workspace' && (
+        <div className="job-workspace-grid">
+          <section className="job-duty-panel">
+            <div className="job-duty-toolbar">
+              <div className="job-filter"><Search size={14} /><input value={dutySearch} onChange={(event) => setDutySearch(event.target.value)} placeholder="Filter loaded functions…" /></div>
+              <button onClick={() => void copyFunctions()}><ClipboardCopy size={14} /> Copy visible</button>
+              <button onClick={() => { setShowAdd(true); setEditingId(null); setForm(blankDuty); }}><Plus size={14} /> Add custom</button>
+            </div>
+
+            {showAdd && (
+              <div className="job-duty-editor">
+                <textarea value={form.duty} onChange={(event) => setForm((current) => ({ ...current, duty: event.target.value }))} placeholder="Describe the job function…" />
+                <div className="job-editor-row">
+                  <input value={form.source} onChange={(event) => setForm((current) => ({ ...current, source: event.target.value }))} placeholder="Source" />
+                  <select value={form.confidence} onChange={(event) => setForm((current) => ({ ...current, confidence: event.target.value as SavedDuty['confidence'] }))}><option>Low</option><option>Moderate</option><option>High</option></select>
+                </div>
+                <div className="job-type-row">
+                  {(['Physical', 'Cognitive', 'Environmental', 'Safety-sensitive'] as DutyType[]).map((type) => <button key={type} className={form.types.includes(type) ? 'active' : ''} onClick={() => toggleType(type)}>{type}</button>)}
+                </div>
+                <div className="job-editor-actions"><button onClick={() => { setShowAdd(false); setEditingId(null); }}>Cancel</button><button className="primary" onClick={saveDuty}>Save function</button></div>
+              </div>
+            )}
+
+            <div className="job-duty-list">
+              {filteredDuties.length === 0 && <div className="job-duty-empty">{duties.length ? 'No functions match this filter.' : 'No functions loaded. Choose an occupation or paste a job description.'}</div>}
+              {filteredDuties.map((item) => (
+                <div className="job-duty-row" key={item.id}>
+                  <div>
+                    <p>{item.duty}</p>
+                    <div className="job-duty-meta">{item.types.map((type) => <span key={type}>{type}</span>)}<small>{item.source} · {item.confidence}</small></div>
                   </div>
+                  <div className="job-duty-actions"><button onClick={() => editDuty(item)}>Edit</button><button className="danger" onClick={() => setDuties((current) => current.filter((duty) => duty.id !== item.id))}><Trash2 size={12} /></button></div>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
 
-          {/* Right: Summary + Standards */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', overflowY: 'auto' }}>
-            {/* Summary */}
-            <div className="glass-card" style={{ borderRadius: '14px', padding: '1rem' }}>
-              <div className="section-label" style={{ marginBottom: '0.625rem' }}>Duty Summary</div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
-                {[
-                  { label: 'Total', val: summary.total, color: '#f4efdc' },
-                  { label: 'Safety-Sensitive', val: summary.safety, color: '#ef4444' },
-                  { label: 'Physical', val: summary.physical, color: '#b4d7d0' },
-                  { label: 'Cognitive', val: summary.cognitive, color: '#d6c8aa' },
-                  { label: 'Environmental', val: summary.environmental, color: '#7f9d96' },
-                ].map(({ label, val, color }) => (
-                  <div key={label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '8px', padding: '0.625rem' }}>
-                    <div style={{ fontSize: '1.5rem', fontWeight: 800, color, lineHeight: 1 }}>{val}</div>
-                    <div style={{ fontSize: '0.6875rem', color: 'rgba(255,255,255,0.4)' }}>{label}</div>
-                  </div>
-                ))}
-              </div>
+          <aside className="job-summary-panel">
+            <div className="job-summary-title">FUNCTION MIX</div>
+            <div className="job-summary-grid">
+              <Metric label="Total" value={summary.total} />
+              <Metric label="Physical" value={summary.physical} />
+              <Metric label="Cognitive" value={summary.cognitive} />
+              <Metric label="Environmental" value={summary.environmental} />
+              <Metric label="Safety-sensitive" value={summary.safety} />
             </div>
-
-            {/* Relevant Standards from loaded job */}
-            {selectedJob && selectedJob.relevantStandards.length > 0 && (
-              <div className="glass-card" style={{ borderRadius: '14px', padding: '1rem' }}>
-                <div className="section-label" style={{ marginBottom: '0.625rem' }}>Relevant Standards</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                  {selectedJob.relevantStandards.map(std => (
-                    <div key={std} style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.75)', padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.04)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.07)' }}>
-                      {std}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Selected job environmental exposures */}
-            {selectedJob && selectedJob.environmentalExposures.length > 0 && (
-              <div className="glass-card" style={{ borderRadius: '14px', padding: '1rem' }}>
-                <div className="section-label" style={{ marginBottom: '0.625rem' }}>Environmental Exposures</div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.375rem' }}>
-                  {selectedJob.environmentalExposures.map(exp => (
-                    <div key={exp} style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.65)', padding: '0.4rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                      <AlertTriangle size={12} style={{ color: '#f59e0b', marginTop: '1px', flexShrink: 0 }} />
-                      {exp}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Clear / Reset */}
-            {duties.length > 0 && (
-              <button onClick={() => { if (confirm('Clear all functions?')) { setDuties([]); setSelectedJob(null); toast('Functions cleared.'); } }}
-                style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.20)', borderRadius: '10px', padding: '0.625rem', fontSize: '0.75rem', color: '#ef4444', cursor: 'pointer', fontWeight: 600 }}>
-                Clear All Functions
-              </button>
-            )}
-          </div>
+            {selectedJob && <div className="job-summary-job"><span>LOADED OCCUPATION</span><strong>{selectedJob.title}</strong><small>SOC {selectedJob.socCode}</small></div>}
+            {duties.length > 0 && <button className="job-clear" onClick={() => { setDuties([]); setNotice('Function workspace cleared.'); }}>Clear function workspace</button>}
+          </aside>
         </div>
       )}
 
-      {/* PASTE JD VIEW */}
       {view === 'paste' && (
-        <div className="glass-card" style={{ borderRadius: '14px', padding: '1.5rem', flex: 1 }}>
-          <h2 style={{ fontSize: '1.125rem', fontWeight: 800, color: '#f4efdc', margin: '0 0 0.5rem' }}>Paste Job Description</h2>
-          <p style={{ fontSize: '0.8125rem', color: 'rgba(255,255,255,0.45)', marginBottom: '1rem' }}>
-            Paste job posting text below. The system will extract sentences as draft duties and classify them automatically.
-          </p>
-          <textarea value={pasteText} onChange={e => setPasteText(e.target.value)} placeholder="Paste job description or essential function text here..."
-            style={{ width: '100%', minHeight: '200px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.10)', borderRadius: '10px', padding: '0.875rem', fontSize: '0.875rem', color: '#f4efdc', resize: 'vertical', outline: 'none', marginBottom: '0.75rem', boxSizing: 'border-box' }} />
-          <button onClick={parsePaste} className="glow-btn" style={{ width: '100%' }}>
-            Extract & Add Duties
-          </button>
-        </div>
+        <section className="job-paste-panel">
+          <div><span>PASTE JOB DESCRIPTION</span><h2>Turn existing job text into a draft function list.</h2><p>This is optional. Nothing is uploaded; the text is parsed in the browser and added to the local function workspace.</p></div>
+          <textarea value={pasteText} onChange={(event) => setPasteText(event.target.value)} placeholder="Paste duties, essential functions, or a job posting here…" />
+          <button onClick={parsePaste}>Extract draft functions</button>
+        </section>
       )}
     </div>
   );
+}
+
+function ProfileColumn({ title, values, empty }: { title: string; values: string[]; empty: string }) {
+  return <div className="job-profile-column"><span>{title}</span>{values.length ? values.slice(0, 8).map((value) => <p key={value}>{value}</p>) : <p className="muted">{empty}</p>}</div>;
+}
+
+function Metric({ label, value }: { label: string; value: number }) {
+  return <div className="job-metric"><strong>{value}</strong><span>{label}</span></div>;
 }
