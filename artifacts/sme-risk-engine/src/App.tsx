@@ -10,7 +10,7 @@ import AORMonitor from "@/pages/AORMonitor";
 import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
 import ConditionReference from "@/pages/ConditionReference";
-import ClearanceMatrix from "@/pages/ClearanceMatrix";
+import StandardsMatrix from "@/pages/StandardsMatrixV2";
 import DrugChecker from "@/pages/DrugCheckerV2";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV2";
 import Citations from "@/pages/Citations";
@@ -39,7 +39,7 @@ function AppRouter() {
             <ConditionReference />
           </Route>
           <Route path="/matrix">
-            <ClearanceMatrix />
+            <StandardsMatrix />
           </Route>
           <Route path="/drugs">
             <DrugChecker />
