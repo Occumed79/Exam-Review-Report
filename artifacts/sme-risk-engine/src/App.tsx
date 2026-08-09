@@ -6,7 +6,7 @@ import Dashboard from "@/pages/Dashboard";
 import Guidelines from "@/pages/Guidelines";
 import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
-import AORMonitor from "@/pages/AORMonitor";
+import AORMonitor from "@/pages/DeploymentReferenceV2";
 import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
 import ConditionReference from "@/pages/ConditionReference";
