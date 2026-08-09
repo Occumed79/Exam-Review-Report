@@ -1,6 +1,8 @@
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import {
   Activity,
+  ArrowRight,
   BookOpen,
   Briefcase,
   Calculator,
@@ -10,175 +12,239 @@ import {
   Pill,
   Search,
   ShieldCheck,
-  Sparkles,
+  BookMarked,
 } from "lucide-react";
 
-const TOOL_GROUPS = [
+type Tool = {
+  href: string;
+  title: string;
+  short: string;
+  icon: typeof Activity;
+  keywords: string;
+  tier: "intelligence" | "review" | "evidence";
+};
+
+const TOOLS: Tool[] = [
   {
-    label: "Answer the question in front of you",
-    description: "Fast tools that ask for only the minimum fact needed to be useful.",
-    tools: [
-      {
-        href: "/drugs",
-        title: "Drug Checker",
-        icon: Pill,
-        question: "Does this medication matter for the job?",
-        description: "Type a medication name and investigate drug class, interactions, and occupational relevance. No case record required.",
-      },
-      {
-        href: "/calculator",
-        title: "Clinical Calculators",
-        icon: Calculator,
-        question: "Can I calculate this instead of eyeballing it?",
-        description: "Enter only the values needed for the calculation you are using. No packet transcription or duplicate case entry.",
-      },
-      {
-        href: "/guidelines",
-        title: "Guideline Library",
-        icon: BookOpen,
-        question: "What guidance applies to this condition?",
-        description: "Search by condition or topic and jump straight to relevant review considerations and sources.",
-      },
-    ],
+    href: "/injury-intelligence",
+    title: "Injury Intelligence",
+    short: "Measured BLS injury surveillance, OSHA severe-injury context, occupation demands, and finding-to-job context.",
+    icon: Activity,
+    keywords: "injury history occupation body part mechanism prevalence incidence bls osha job finding shoulder back knee",
+    tier: "intelligence",
   },
   {
-    label: "Understand the job and environment",
-    description: "One small input should return a disproportionate amount of occupational context.",
-    tools: [
-      {
-        href: "/injury-intelligence",
-        title: "Injury Intelligence",
-        icon: Activity,
-        question: "What tends to go wrong in this job?",
-        description: "Type a job title to surface injury patterns, prominent body regions, mechanisms, severe-injury context, and optional finding-to-job review questions.",
-      },
-      {
-        href: "/job-intelligence",
-        title: "Job Intelligence",
-        icon: Briefcase,
-        question: "What does this job actually require?",
-        description: "Type a job title and look up physical, cognitive, safety-sensitive, and environmental demands.",
-      },
-      {
-        href: "/matrix",
-        title: "Standards Matrix",
-        icon: Grid3x3,
-        question: "Which review lenses should I compare?",
-        description: "Compare common occupational review frameworks side-by-side without calculating a case score or clearance outcome.",
-      },
-      {
-        href: "/aor",
-        title: "AOR / Deployment",
-        icon: Globe,
-        question: "Does the location change the concern?",
-        description: "Choose a country or location to review climate, medical access, disease, pharmacy, security, and evacuation context.",
-      },
-    ],
+    href: "/job-intelligence",
+    title: "Job Intelligence",
+    short: "Live O*NET occupation lookup, functions, physical demands, and work context.",
+    icon: Briefcase,
+    keywords: "job occupation onet duties essential functions physical cognitive safety demand",
+    tier: "intelligence",
   },
   {
-    label: "Verify your reasoning",
-    description: "Find the source behind a decision without generating a report.",
-    tools: [
-      {
-        href: "/citations",
-        title: "Citation Finder",
-        icon: Search,
-        question: "What source supports this?",
-        description: "Search for supporting references using the condition, standard, or question you are already reviewing.",
-      },
-      {
-        href: "/sources",
-        title: "Source Library",
-        icon: Database,
-        question: "Where did this rule or guidance come from?",
-        description: "Keep reusable source links and references available to reviewers without attaching them to an examinee.",
-      },
-      {
-        href: "/guideline-editor",
-        title: "Guideline Editor",
-        icon: ShieldCheck,
-        question: "Can we save reviewed internal guidance?",
-        description: "Maintain reusable reviewer guidance independently from any person's case or medical record.",
-      },
-    ],
+    href: "/drugs",
+    title: "Drug Checker",
+    short: "Medication identity and reviewed occupational flags.",
+    icon: Pill,
+    keywords: "drug medication rx sedating pharmacy occupational rxnorm",
+    tier: "review",
+  },
+  {
+    href: "/calculator",
+    title: "Clinical Calculators",
+    short: "BMI, eGFR, MAP, pack-years, walking METs, plus the current official AHA PREVENT launch point.",
+    icon: Calculator,
+    keywords: "calculator bmi egfr map pack years mets prevent cardiovascular clinical value",
+    tier: "review",
+  },
+  {
+    href: "/guidelines",
+    title: "Condition Reference",
+    short: "Condition triggers, reviewer questions, internal guidance, and live PubMed results.",
+    icon: BookOpen,
+    keywords: "guideline condition medical guidance trigger questions pubmed standard rule",
+    tier: "review",
+  },
+  {
+    href: "/matrix",
+    title: "Standards Matrix",
+    short: "Current source starting points for common occupational review frameworks.",
+    icon: Grid3x3,
+    keywords: "standard matrix nfpa 1580 fmcsa faa deployment compare",
+    tier: "review",
+  },
+  {
+    href: "/aor",
+    title: "AOR / Deployment",
+    short: "Country, climate, medical access, pharmacy, security, and evacuation reference context.",
+    icon: Globe,
+    keywords: "country deployment aor travel climate disease pharmacy evacuation medical access",
+    tier: "review",
+  },
+  {
+    href: "/citations",
+    title: "Citation Finder",
+    short: "Find supporting literature and source material for a review question.",
+    icon: BookMarked,
+    keywords: "citation evidence source literature research support pubmed",
+    tier: "evidence",
+  },
+  {
+    href: "/sources",
+    title: "Source Library",
+    short: "Reusable source links and reference material.",
+    icon: Database,
+    keywords: "source library reference link evidence",
+    tier: "evidence",
+  },
+  {
+    href: "/guideline-editor",
+    title: "Guideline Editor",
+    short: "Maintain reviewed internal guidance independently from an examinee.",
+    icon: ShieldCheck,
+    keywords: "editor internal guideline save guidance",
+    tier: "evidence",
   },
 ];
 
+type IntelligenceStatus = {
+  onet?: { configured?: boolean };
+  bls?: { configured?: boolean; measuredTables?: boolean };
+  osha?: { publicSevereInjuryData?: boolean };
+};
+
+function StatusDot({ active }: { active: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        width: 6,
+        height: 6,
+        borderRadius: "50%",
+        background: active ? "#9fc7bd" : "rgba(255,255,255,0.2)",
+        boxShadow: active ? "0 0 8px rgba(159,199,189,0.45)" : "none",
+        flexShrink: 0,
+      }}
+    />
+  );
+}
+
 export default function Dashboard() {
   const [, setLocation] = useLocation();
+  const [query, setQuery] = useState("");
+  const [status, setStatus] = useState<IntelligenceStatus | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/intelligence/status")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data) => {
+        if (!cancelled && data && typeof data === "object") setStatus(data as IntelligenceStatus);
+      })
+      .catch(() => undefined);
+    return () => { cancelled = true; };
+  }, []);
+
+  const matches = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return [];
+    return TOOLS.filter((tool) => `${tool.title} ${tool.short} ${tool.keywords}`.toLowerCase().includes(q)).slice(0, 6);
+  }, [query]);
+
+  const intelligence = TOOLS.filter((tool) => tool.tier === "intelligence");
+  const reviewTools = TOOLS.filter((tool) => tool.tier === "review");
+  const evidenceTools = TOOLS.filter((tool) => tool.tier === "evidence");
 
   return (
-    <div style={{ maxWidth: 1240, margin: "0 auto" }} data-testid="reviewer-tool-hub">
-      <div style={{ marginBottom: "1.25rem", display: "flex", justifyContent: "space-between", gap: "2rem", alignItems: "flex-start", flexWrap: "wrap" }}>
-        <div style={{ maxWidth: 790 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "0.45rem", color: "#b4d7d0", fontSize: "0.7rem", fontWeight: 800, letterSpacing: ".09em", textTransform: "uppercase", marginBottom: "0.6rem" }}>
-            <Sparkles size={14} />
-            Exam Reviewer Toolkit
-          </div>
-          <h1 style={{ margin: 0, fontSize: "2rem", lineHeight: 1.12, color: "#fff", fontWeight: 850, letterSpacing: "-0.03em" }}>
-            Use the tool you need. Enter almost nothing.
-          </h1>
-          <p style={{ margin: "0.8rem 0 0", color: "rgba(255,255,255,0.5)", fontSize: "0.93rem", lineHeight: 1.65, maxWidth: 760 }}>
-            These are independent decision-support tools for reviewers working through a case in their normal system. There is no case setup, no required document upload, no master risk score, and no report workflow.
-          </p>
+    <div className="workbench" data-testid="reviewer-tool-hub">
+      <header className="workbench-header">
+        <div>
+          <div className="workbench-kicker">EXAM REVIEWER / WORKBENCH</div>
+          <h1>Exam Reviewer Workbench</h1>
+          <p>Independent occupational, clinical, deployment, and evidence tools. Open the one you need; no case setup or required sequence.</p>
         </div>
 
-        <div className="glass-card" style={{ padding: "0.9rem 1rem", minWidth: 270, maxWidth: 330 }}>
-          <div style={{ fontSize: "0.67rem", fontWeight: 800, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: ".08em", marginBottom: "0.45rem" }}>
-            Hard rule
-          </div>
-          <div style={{ fontSize: "0.82rem", lineHeight: 1.55, color: "rgba(255,255,255,0.68)" }}>
-            If a reviewer has to re-enter the case to use a tool, the tool is designed wrong. Ask only for the smallest input needed to answer that one question.
+        <div className="source-status" aria-label="Intelligence source availability">
+          <div className="source-status-label">SOURCE STATUS</div>
+          <div className="source-status-items">
+            <span><StatusDot active={Boolean(status?.onet?.configured)} /> O*NET</span>
+            <span><StatusDot active={Boolean(status?.bls?.measuredTables || status?.bls?.configured)} /> BLS</span>
+            <span><StatusDot active={Boolean(status?.osha?.publicSevereInjuryData)} /> OSHA</span>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", marginBottom: "2rem" }}>
-        {["No document upload", "No case creation", "No duplicated demographics", "No required tool order", "No report generation"].map((rule) => (
-          <span key={rule} style={{ padding: "0.32rem 0.55rem", borderRadius: 6, background: "rgba(180,215,208,0.055)", border: "1px solid rgba(180,215,208,0.12)", color: "rgba(255,255,255,0.58)", fontSize: "0.7rem", fontWeight: 650 }}>
-            {rule}
-          </span>
-        ))}
-      </div>
+      <section className="command-panel">
+        <div className="command-label">FIND A TOOL</div>
+        <div className="command-input-wrap">
+          <Search size={19} />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => { if (event.key === "Enter" && matches.length === 1) setLocation(matches[0].href); }}
+            placeholder="Medication, occupation, injury, deployment, calculator, citation…"
+            aria-label="Find a reviewer tool"
+          />
+          <span className="command-hint">tool / topic search</span>
+        </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
-        {TOOL_GROUPS.map((group) => (
-          <section key={group.label}>
-            <div style={{ marginBottom: "0.85rem" }}>
-              <h2 style={{ margin: 0, color: "#f4efdc", fontSize: "1rem", fontWeight: 800 }}>{group.label}</h2>
-              <p style={{ margin: "0.25rem 0 0", color: "rgba(255,255,255,0.35)", fontSize: "0.75rem" }}>{group.description}</p>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(285px, 1fr))", gap: "0.9rem" }}>
-              {group.tools.map(({ href, title, icon: Icon, question, description }) => (
-                <button
-                  key={href}
-                  onClick={() => setLocation(href)}
-                  className="glass-card"
-                  style={{
-                    textAlign: "left",
-                    padding: "1.1rem",
-                    cursor: "pointer",
-                    background: "rgba(255,255,255,0.032)",
-                    color: "inherit",
-                    minHeight: 190,
-                    display: "flex",
-                    flexDirection: "column",
-                    border: "1px solid rgba(255,255,255,0.075)",
-                  }}
-                  data-testid={`tool-card-${href.replace(/\//g, "") || "home"}`}
-                >
-                  <div style={{ width: 38, height: 38, borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(180,215,208,0.08)", border: "1px solid rgba(180,215,208,0.14)", marginBottom: "0.9rem" }}>
-                    <Icon size={19} style={{ color: "#b4d7d0" }} />
-                  </div>
-                  <div style={{ color: "#fff", fontSize: "0.96rem", fontWeight: 800, marginBottom: "0.35rem" }}>{title}</div>
-                  <div style={{ color: "#b4d7d0", fontSize: "0.72rem", fontWeight: 700, marginBottom: "0.55rem" }}>{question}</div>
-                  <div style={{ color: "rgba(255,255,255,0.46)", fontSize: "0.77rem", lineHeight: 1.55 }}>{description}</div>
+        {matches.length > 0 && (
+          <div className="command-results">
+            {matches.map((tool) => {
+              const Icon = tool.icon;
+              return (
+                <button key={tool.href} onClick={() => setLocation(tool.href)}>
+                  <span className="command-result-icon"><Icon size={16} /></span>
+                  <span><strong>{tool.title}</strong><small>{tool.short}</small></span>
+                  <ArrowRight size={15} />
                 </button>
-              ))}
-            </div>
-          </section>
-        ))}
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="workbench-section">
+        <div className="section-heading-row">
+          <div><div className="section-eyebrow">OCCUPATIONAL INTELLIGENCE</div><h2>Occupation and injury data</h2></div>
+          <div className="section-note">job title → occupational context</div>
+        </div>
+
+        <div className="intelligence-grid">
+          {intelligence.map((tool, index) => {
+            const Icon = tool.icon;
+            return (
+              <button key={tool.href} className={`intelligence-lane ${index === 0 ? "primary" : ""}`} onClick={() => setLocation(tool.href)}>
+                <div className="lane-icon"><Icon size={21} /></div>
+                <div className="lane-copy"><div className="lane-number">0{index + 1}</div><h3>{tool.title}</h3><p>{tool.short}</p></div>
+                <ArrowRight className="lane-arrow" size={20} />
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <div className="workbench-columns">
+        <section className="workbench-section compact-section">
+          <div className="section-heading-row compact"><div><div className="section-eyebrow">REVIEW UTILITIES</div><h2>Clinical and operational tools</h2></div></div>
+          <div className="tool-list">
+            {reviewTools.map((tool) => {
+              const Icon = tool.icon;
+              return <button key={tool.href} className="tool-row" onClick={() => setLocation(tool.href)}><span className="tool-row-icon"><Icon size={16} /></span><span className="tool-row-copy"><strong>{tool.title}</strong><small>{tool.short}</small></span><ArrowRight size={14} /></button>;
+            })}
+          </div>
+        </section>
+
+        <section className="workbench-section compact-section">
+          <div className="section-heading-row compact"><div><div className="section-eyebrow">EVIDENCE & KNOWLEDGE</div><h2>Sources and internal guidance</h2></div></div>
+          <div className="tool-list">
+            {evidenceTools.map((tool) => {
+              const Icon = tool.icon;
+              return <button key={tool.href} className="tool-row" onClick={() => setLocation(tool.href)}><span className="tool-row-icon"><Icon size={16} /></span><span className="tool-row-copy"><strong>{tool.title}</strong><small>{tool.short}</small></span><ArrowRight size={14} /></button>;
+            })}
+          </div>
+          <div className="workbench-rule"><span>WORKFLOW</span><p>No case creation · no packet upload · no duplicated demographics · no required sequence</p></div>
+        </section>
       </div>
     </div>
   );

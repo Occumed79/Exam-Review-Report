@@ -10,9 +10,9 @@ router.get("/intelligence/status", (_req, res) => {
     onet: getOnetStatus(),
     bls: getBlsStatus(),
     osha: {
-      importEnabled: ["true", "1", "yes", "on"].includes(String(process.env.OSHA_ITA_IMPORT_ENABLED ?? "").toLowerCase()),
-      dataDirConfigured: Boolean(process.env.OSHA_DATA_DIR?.trim()),
-      note: "OSHA public injury data is a dataset/import pipeline, not a reviewer-supplied credential.",
+      publicSevereInjuryData: true,
+      source: "OSHA Severe Injury Reports",
+      note: "Current public Severe Injury Report data is loaded from OSHA's published dashboard/download. It is industry-sector context under federal OSHA jurisdiction, not occupation-specific incidence.",
     },
   });
 });

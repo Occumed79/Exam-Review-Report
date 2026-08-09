@@ -3,12 +3,12 @@ import { Plus, Trash2, ChevronDown, ChevronUp, Search, ExternalLink, Upload, Fil
 import { Guideline, SourceConfidence } from "@/lib/types";
 import { generateId } from "@/lib/store";
 
-interface Props { guidelines: Guideline[]; onSave: (g: Guideline) => void; onDelete: (id: string) => void; onImportMany: (items: Guideline[]) => void; }
+interface Props { guidelines: Guideline[]; onSave: (g: Guideline) => void; onDelete: (id: string) => void; onImportMany?: (items: Guideline[]) => void; }
 
 const CONF_META: Record<SourceConfidence, { label: string; color: string }> = {
   official: { label: "Official", color: "#b4d7d0" },
   internal: { label: "Internal", color: "#a7c7be" },
-  "sme-summary": { label: "SME Summary", color: "#d6c8aa" },
+  "sme-summary": { label: "Reviewed Summary", color: "#d6c8aa" },
   secondary: { label: "Secondary", color: "#7f9d96" },
   unclear: { label: "Unclear", color: "#f4efdc" },
 };
@@ -35,7 +35,7 @@ function blank(): Guideline {
   };
 }
 
-export default function Guidelines({ guidelines, onSave, onDelete }: Props) {
+export default function Guidelines({ guidelines, onSave, onDelete, onImportMany }: Props) {
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -104,11 +104,12 @@ export default function Guidelines({ guidelines, onSave, onDelete }: Props) {
         notes: item.notes || "",
         isSample: Boolean(item.isSample),
       }));
-      onImportMany(mapped);
-      setImportNote(`Imported ${mapped.length} guidelines.`);
+      if (onImportMany) onImportMany(mapped);
+      else mapped.forEach(onSave);
+      setImportNote(`Imported ${mapped.length} guidance entries.`);
       setImportText("");
     } catch {
-      setImportNote("Paste an array of guideline objects, or {\"guidelines\": [...] }.");
+      setImportNote("Paste an array of guidance objects, or {\"guidelines\": [...] }.");
     }
   }
 
@@ -119,150 +120,95 @@ export default function Guidelines({ guidelines, onSave, onDelete }: Props) {
     <div data-testid="guidelines-page">
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.75rem" }}>
         <div>
-          <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>Guideline Library</h1>
+          <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>Guideline Editor</h1>
           <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)" }}>
-            Occupational health standards, agency guidelines, and SME reference documentation.
+            Maintain reusable occupational-health guidance and source-backed reviewer notes. No examinee record is stored here.
           </p>
         </div>
-        <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
-          <button className="glow-btn glow-btn-secondary" onClick={handleImport} data-testid="btn-import-guidelines" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Upload size={16} />
-            Import Guidelines
-          </button>
-          <button className="glow-btn" onClick={startNew} data-testid="btn-new-guideline" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Plus size={16} />
-            Add Guideline
-          </button>
-        </div>
+        <button className="glow-btn" onClick={startNew} data-testid="btn-new-guideline" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Plus size={16} />
+          Add Guidance
+        </button>
       </div>
 
-      {/* Search + filter */}
       <div className="glass-card" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem", display: "flex", gap: "0.875rem", alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ position: "relative", flex: 1, minWidth: "200px" }}>
           <Search size={14} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }} />
-          <input className="glass-input" style={{ ...inp, paddingLeft: "2.25rem" }} placeholder="Search guidelines..." value={search} onChange={e => setSearch(e.target.value)} data-testid="input-search-guidelines" />
+          <input className="glass-input" style={{ ...inp, paddingLeft: "2.25rem" }} placeholder="Search guidance..." value={search} onChange={e => setSearch(e.target.value)} data-testid="input-search-guidelines" />
         </div>
         <select className="glass-input" style={{ ...inp, width: "200px" }} value={catFilter} onChange={e => setCatFilter(e.target.value)} data-testid="select-cat-filter">
           <option value="all">All Categories</option>
           {CAT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>{filtered.length} of {guidelines.length} guidelines</div>
+        <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>{filtered.length} of {guidelines.length} entries</div>
       </div>
 
       <div className="glass-card" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.65rem", color: "#fff", fontWeight: 700 }}>
-          <FileText size={15} />
-          Bulk guideline import
-        </div>
-        <textarea className="glass-input" style={{ ...inp, minHeight: "120px", resize: "vertical" }} value={importText} onChange={e => setImportText(e.target.value)} placeholder='Paste JSON array or {"guidelines":[...]} here' />
-        <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", marginTop: "0.75rem", flexWrap: "wrap" }}>
-          <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.45)" }}>
-            {importPreview.total ? `${importPreview.valid} valid of ${importPreview.total} records ready` : "Supports JSON guideline imports only."}
-          </div>
-          <button className="glow-btn glow-btn-secondary" onClick={handleImport} style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Upload size={14} />
-            Apply Import
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.7rem", marginBottom: "0.6rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><FileText size={15} style={{ color: "#b4d7d0" }} /><strong style={{ fontSize: "0.8rem", color: "#f4efdc" }}>Bulk import guidance</strong></div>
+          <button
+            className="glow-btn glow-btn-secondary"
+            onClick={handleImport}
+            disabled={importPreview.valid === 0}
+            data-testid="btn-import-guidelines"
+            style={{ display: "flex", alignItems: "center", gap: "0.4rem", opacity: importPreview.valid === 0 ? 0.45 : 1 }}
+          >
+            <Upload size={14} /> Import queued
           </button>
         </div>
-        {importNote && <div style={{ marginTop: "0.6rem", fontSize: "0.8125rem", color: "#b4d7d0" }}>{importNote}</div>}
+        <textarea className="glass-input" value={importText} onChange={e => { setImportText(e.target.value); setImportNote(null); }} placeholder='Paste a JSON array or {"guidelines": [...]}' style={{ width: "100%", minHeight: "90px", padding: "0.7rem", boxSizing: "border-box", resize: "vertical" }} />
+        <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "center", marginTop: "0.55rem" }}>
+          <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.35)" }}>{importPreview.total ? `${importPreview.valid}/${importPreview.total} recognizable entries` : "Nothing queued"}</span>
+          {importNote && <span style={{ fontSize: "0.7rem", color: "#b4d7d0" }}>{importNote}</span>}
+        </div>
       </div>
 
-      {/* Edit Form */}
-      {editing && (
-        <div className="glass-card glass-card-active" style={{ padding: "1.5rem", marginBottom: "1.25rem" }}>
-          <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1.25rem" }}>
-            {editing.id && guidelines.some(g => g.id === editing.id) ? "Edit Guideline" : "New Guideline"}
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-            <div><label style={lbl}>Source / Guideline Name</label><input className="glass-input" style={inp} value={editing.sourceName} onChange={e => upd("sourceName", e.target.value)} placeholder="e.g., NFPA 1582 — Firefighter Cardiovascular Considerations" data-testid="input-guideline-name" /></div>
-            <div><label style={lbl}>Agency</label><input className="glass-input" style={inp} value={editing.agency} onChange={e => upd("agency", e.target.value)} placeholder="NFPA, FAA, DOT..." data-testid="input-guideline-agency" /></div>
-            <div><label style={lbl}>Standard Type</label><input className="glass-input" style={inp} value={editing.standardType} onChange={e => upd("standardType", e.target.value)} placeholder="Medical standard, guidance, etc." /></div>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-            <div><label style={lbl}>Condition Category</label><select className="glass-input" style={inp} value={editing.conditionCategory} onChange={e => upd("conditionCategory", e.target.value)} data-testid="select-guideline-category">{CAT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}</select></div>
-            <div><label style={lbl}>Job Category</label><select className="glass-input" style={inp} value={editing.jobCategory} onChange={e => upd("jobCategory", e.target.value)}><option value="">— Select —</option>{JOB_OPTIONS.map(j => <option key={j} value={j}>{j}</option>)}</select></div>
-            <div><label style={lbl}>Source Confidence</label><select className="glass-input" style={inp} value={editing.sourceConfidence} onChange={e => upd("sourceConfidence", e.target.value as SourceConfidence)}><option value="official">Official</option><option value="internal">Internal</option><option value="sme-summary">SME Summary</option><option value="secondary">Secondary</option><option value="unclear">Unclear</option></select></div>
-            <div><label style={lbl}>Version / Date</label><input className="glass-input" style={inp} value={editing.versionDate} onChange={e => upd("versionDate", e.target.value)} placeholder="e.g., 2022, 2024 Ed." /></div>
-          </div>
-          <div style={{ marginBottom: "0.75rem" }}><label style={lbl}>Summary</label><textarea className="glass-input" style={{ ...inp, minHeight: "80px", resize: "vertical" }} value={editing.summary} onChange={e => upd("summary", e.target.value)} data-testid="textarea-guideline-summary" /></div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
-            <div><label style={lbl}>Medical Triggers</label><textarea className="glass-input" style={{ ...inp, minHeight: "70px", resize: "vertical" }} value={editing.medicalTriggers} onChange={e => upd("medicalTriggers", e.target.value)} /></div>
-            <div><label style={lbl}>Job Duty Triggers</label><textarea className="glass-input" style={{ ...inp, minHeight: "70px", resize: "vertical" }} value={editing.jobDutyTriggers} onChange={e => upd("jobDutyTriggers", e.target.value)} /></div>
-            <div><label style={lbl}>Documentation Needed</label><textarea className="glass-input" style={{ ...inp, minHeight: "70px", resize: "vertical" }} value={editing.documentationNeeded} onChange={e => upd("documentationNeeded", e.target.value)} /></div>
-            <div><label style={lbl}>Risk Considerations</label><textarea className="glass-input" style={{ ...inp, minHeight: "70px", resize: "vertical" }} value={editing.riskConsiderations} onChange={e => upd("riskConsiderations", e.target.value)} /></div>
-          </div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", marginBottom: "1rem" }}>
-            <div><label style={lbl}>Source Link</label><input className="glass-input" style={inp} value={editing.sourceLink} onChange={e => upd("sourceLink", e.target.value)} placeholder="https://..." /></div>
-            <div><label style={lbl}>Reviewed By</label><input className="glass-input" style={inp} value={editing.reviewedBy} onChange={e => upd("reviewedBy", e.target.value)} /></div>
-            <div><label style={lbl}>Last Reviewed</label><input type="date" className="glass-input" style={inp} value={editing.lastReviewed} onChange={e => upd("lastReviewed", e.target.value)} /></div>
-          </div>
-          <div style={{ marginBottom: "1rem" }}><label style={lbl}>Notes</label><textarea className="glass-input" style={{ ...inp, minHeight: "60px", resize: "vertical" }} value={editing.notes} onChange={e => upd("notes", e.target.value)} /></div>
-          <div style={{ display: "flex", gap: "0.625rem", justifyContent: "flex-end" }}>
-            <button className="glow-btn glow-btn-secondary" onClick={() => setEditing(null)} data-testid="btn-cancel-guideline">Cancel</button>
-            <button className="glow-btn" onClick={save} data-testid="btn-save-guideline">Save Guideline</button>
-          </div>
-        </div>
-      )}
-
-      {/* List */}
-      {filtered.length === 0 ? (
-        <div className="glass-card" style={{ padding: "3rem", textAlign: "center" }}>
-          <div style={{ color: "rgba(255,255,255,0.3)", marginBottom: "0.875rem" }}>No guidelines found</div>
-        </div>
-      ) : (
-        filtered.map(g => {
-          const isOpen = expanded === g.id;
-          const conf = CONF_META[g.sourceConfidence];
-          return (
-            <div key={g.id} className="glass-card" style={{ marginBottom: "0.75rem", overflow: "hidden" }} data-testid={`guideline-card-${g.id}`}>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", padding: "1rem 1.25rem", cursor: "pointer" }} onClick={() => setExpanded(isOpen ? null : g.id)}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem", flexWrap: "wrap" }}>
-                    <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#fff" }}>{g.sourceName || "Unnamed Guideline"}</span>
-                    <span style={{ fontSize: "0.6875rem", padding: "0.15rem 0.5rem", borderRadius: "4px", background: `${conf.color}15`, color: conf.color, fontWeight: 600 }}>{conf.label}</span>
-                  </div>
-                  <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-                    <span style={{ fontSize: "0.75rem", color: "#b4d7d0" }}>{g.agency}</span>
-                    {g.jobCategory && <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>{g.jobCategory}</span>}
-                    {g.conditionCategory && <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.4)" }}>{g.conditionCategory}</span>}
-                  </div>
-                </div>
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-                  <button className="glow-btn glow-btn-secondary" onClick={e => { e.stopPropagation(); setEditing({ ...g }); setExpanded(null); }} data-testid={`btn-edit-guideline-${g.id}`} style={{ padding: "0.3rem 0.625rem", fontSize: "0.75rem" }}>Edit</button>
-                  {confirmDelete === g.id ? (
-                    <button className="glow-btn glow-btn-danger" onClick={e => { e.stopPropagation(); onDelete(g.id); setConfirmDelete(null); }} data-testid={`btn-confirm-delete-guideline-${g.id}`} style={{ padding: "0.3rem 0.625rem", fontSize: "0.75rem" }}>Delete</button>
-                  ) : (
-                    <button className="glow-btn glow-btn-secondary" onClick={e => { e.stopPropagation(); setConfirmDelete(g.id); }} data-testid={`btn-delete-guideline-${g.id}`} style={{ padding: "0.3rem 0.5rem" }}><Trash2 size={12} /></button>
-                  )}
-                  {isOpen ? <ChevronUp size={16} style={{ color: "rgba(255,255,255,0.4)" }} /> : <ChevronDown size={16} style={{ color: "rgba(255,255,255,0.4)" }} />}
-                </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
+        {filtered.length === 0 && <div className="glass-card" style={{ padding: "1.5rem", textAlign: "center", color: "rgba(255,255,255,0.35)" }}>No matching guidance entries.</div>}
+        {filtered.map(g => {
+          const meta = CONF_META[g.sourceConfidence] || CONF_META.unclear;
+          const open = expanded === g.id;
+          return <div key={g.id} className="glass-card" style={{ padding: "0.9rem 1rem" }}>
+            <button onClick={() => setExpanded(open ? null : g.id)} style={{ width: "100%", display: "grid", gridTemplateColumns: "1fr auto", gap: "1rem", alignItems: "start", background: "none", border: 0, color: "inherit", padding: 0, textAlign: "left", cursor: "pointer" }}>
+              <div>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}><strong style={{ color: "#fff", fontSize: "0.88rem" }}>{g.sourceName || "Untitled guidance"}</strong><span style={{ color: meta.color, fontSize: "0.62rem", fontWeight: 700 }}>{meta.label}</span></div>
+                <div style={{ marginTop: "0.25rem", color: "rgba(255,255,255,0.38)", fontSize: "0.7rem" }}>{g.agency || "No agency"} · {g.conditionCategory} · {g.jobCategory || "General"}</div>
+                <div style={{ marginTop: "0.45rem", color: "rgba(255,255,255,0.55)", fontSize: "0.75rem", lineHeight: 1.5 }}>{g.summary || "No summary entered."}</div>
               </div>
-              {isOpen && (
-                <div style={{ padding: "0 1.25rem 1.25rem", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginTop: "0.875rem" }}>
-                    {[
-                      ["Summary", g.summary], ["Medical Triggers", g.medicalTriggers],
-                      ["Job Duty Triggers", g.jobDutyTriggers], ["Documentation Needed", g.documentationNeeded],
-                      ["Risk Considerations", g.riskConsiderations],
-                    ].filter(([, v]) => v).map(([label, value]) => (
-                      <div key={label}>
-                        <div style={{ fontSize: "0.625rem", fontWeight: 700, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.25rem" }}>{label}</div>
-                        <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.7)", lineHeight: 1.5 }}>{value}</div>
-                      </div>
-                    ))}
-                  </div>
-                  {g.sourceLink && (
-                    <a href={g.sourceLink} target="_blank" rel="noopener noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: "0.375rem", marginTop: "0.875rem", fontSize: "0.8125rem", color: "#b4d7d0", textDecoration: "none" }} data-testid={`link-guideline-source-${g.id}`}>
-                      <ExternalLink size={13} />
-                      Source Link
-                    </a>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })
-      )}
+              {open ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+            </button>
+            {open && <div style={{ marginTop: "0.8rem", paddingTop: "0.8rem", borderTop: "1px solid rgba(255,255,255,0.07)", display: "grid", gap: "0.65rem" }}>
+              {[["Medical triggers",g.medicalTriggers],["Job-duty triggers",g.jobDutyTriggers],["Documentation needed",g.documentationNeeded],["Risk considerations",g.riskConsiderations],["Notes",g.notes]].map(([title,value]) => value ? <div key={title}><div style={lbl}>{title}</div><div style={{ color: "rgba(255,255,255,0.62)", fontSize: "0.75rem", lineHeight: 1.5 }}>{value}</div></div> : null)}
+              <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+                {g.sourceLink && <a href={g.sourceLink} target="_blank" rel="noreferrer" style={{ color: "#b4d7d0", textDecoration: "none", display: "inline-flex", gap: "0.25rem", alignItems: "center", fontSize: "0.7rem" }}>Open source <ExternalLink size={11}/></a>}
+                <button onClick={() => setEditing(g)} className="glow-btn glow-btn-secondary" style={{ fontSize: "0.68rem", padding: "0.35rem 0.6rem" }}>Edit</button>
+                <button onClick={() => setConfirmDelete(g.id)} style={{ border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.05)", color: "#ef9a9a", borderRadius: 6, padding: "0.35rem 0.5rem", cursor: "pointer" }}><Trash2 size={12}/></button>
+              </div>
+              {confirmDelete === g.id && <div style={{ display: "flex", gap: "0.45rem", alignItems: "center", color: "rgba(255,255,255,0.5)", fontSize: "0.7rem" }}>Delete this entry?<button onClick={() => { onDelete(g.id); setConfirmDelete(null); }} style={{ color: "#ef9a9a", background: "transparent", border: 0, cursor: "pointer" }}>Delete</button><button onClick={() => setConfirmDelete(null)} style={{ color: "#b4d7d0", background: "transparent", border: 0, cursor: "pointer" }}>Cancel</button></div>}
+            </div>}
+          </div>;
+        })}
+      </div>
+
+      {editing && <div style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.72)", display: "grid", placeItems: "center", padding: "2rem" }}>
+        <div className="glass-card" style={{ width: "min(900px, 92vw)", maxHeight: "90vh", overflow: "auto", padding: "1.2rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}><strong style={{ color: "#fff" }}>{editing.sourceName ? "Edit guidance" : "New guidance"}</strong><button onClick={() => setEditing(null)} style={{ background: "transparent", border: 0, color: "rgba(255,255,255,0.4)", cursor: "pointer" }}>Close</button></div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: "0.65rem" }}>
+            <Field label="Source name" value={editing.sourceName} onChange={v => upd("sourceName",v)} />
+            <Field label="Agency" value={editing.agency} onChange={v => upd("agency",v)} />
+            <Field label="Standard type" value={editing.standardType} onChange={v => upd("standardType",v)} />
+            <div><label style={lbl}>Condition category</label><select className="glass-input" style={inp} value={editing.conditionCategory} onChange={e => upd("conditionCategory",e.target.value)}>{CAT_OPTIONS.map(c => <option key={c}>{c}</option>)}</select></div>
+            <div><label style={lbl}>Job category</label><select className="glass-input" style={inp} value={editing.jobCategory} onChange={e => upd("jobCategory",e.target.value)}><option value="">General</option>{JOB_OPTIONS.map(c => <option key={c}>{c}</option>)}</select></div>
+            <Field label="Source link" value={editing.sourceLink} onChange={v => upd("sourceLink",v)} />
+          </div>
+          {["summary","medicalTriggers","jobDutyTriggers","documentationNeeded","riskConsiderations","notes"].map(key => <div key={key} style={{ marginTop: "0.65rem" }}><label style={lbl}>{key.replace(/([A-Z])/g," $1")}</label><textarea className="glass-input" style={{ width: "100%", minHeight: key === "summary" ? "90px" : "70px", padding: "0.6rem", boxSizing: "border-box" }} value={String(editing[key as keyof Guideline] || "")} onChange={e => upd(key as keyof Guideline,e.target.value)} /></div>)}
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.8rem" }}><button onClick={() => setEditing(null)} className="glow-btn glow-btn-secondary">Cancel</button><button onClick={save} className="glow-btn">Save guidance</button></div>
+        </div>
+      </div>}
     </div>
   );
+}
+
+function Field({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+  return <div><label style={{ display: "block", fontSize: "0.6875rem", fontWeight: 600, color: "rgba(255,255,255,0.45)", marginBottom: "0.3rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>{label}</label><input className="glass-input" value={value} onChange={e => onChange(e.target.value)} style={{ width: "100%", padding: "0.55rem 0.75rem", fontSize: "0.8125rem" }} /></div>;
 }

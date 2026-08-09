@@ -26,7 +26,7 @@ export default function Settings({ guidelineCount, sourceCount, onExport, onImpo
   }
 
   return (
-    <div style={{ maxWidth: 1050, margin: "0 auto" }}>
+    <div data-testid="settings-page" style={{ maxWidth: 1050, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ margin: 0, fontSize: "1.55rem", color: "#fff", fontWeight: 800 }}>Settings</h1>
         <p style={{ margin: "0.35rem 0 0", color: "rgba(255,255,255,0.45)", fontSize: "0.84rem" }}>

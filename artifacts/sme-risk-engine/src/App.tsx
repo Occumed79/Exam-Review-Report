@@ -6,14 +6,15 @@ import Dashboard from "@/pages/Dashboard";
 import Guidelines from "@/pages/Guidelines";
 import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
-import AORMonitor from "@/pages/AORMonitor";
+import AORMonitor from "@/pages/DeploymentReferenceV2";
 import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
-import GuidelineLibrary from "@/pages/GuidelineLibrary";
-import ClearanceMatrix from "@/pages/ClearanceMatrix";
-import DrugChecker from "@/pages/DrugChecker";
-import ClinicalCalculator from "@/pages/ClinicalCalculator";
-import Citations from "@/pages/Citations";
+import ConditionReference from "@/pages/ConditionReference";
+import StandardsMatrix from "@/pages/StandardsMatrixV2";
+import DrugChecker from "@/pages/DrugCheckerV2";
+import ClinicalCalculator from "@/pages/ClinicalCalculatorV3";
+import Citations from "@/pages/CitationFinderV2";
+import "@/pages/injury-osha.css";
 
 function AppRouter() {
   const store = useStore();
@@ -36,10 +37,10 @@ function AppRouter() {
             <InjuryIntelligence />
           </Route>
           <Route path="/guidelines">
-            <GuidelineLibrary />
+            <ConditionReference />
           </Route>
           <Route path="/matrix">
-            <ClearanceMatrix />
+            <StandardsMatrix />
           </Route>
           <Route path="/drugs">
             <DrugChecker />

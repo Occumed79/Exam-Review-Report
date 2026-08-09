@@ -1,0 +1,155 @@
+name: Reviewer Toolkit CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: reviewer-toolkit-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck frontend
+        run: pnpm --filter @workspace/sme-risk-engine run typecheck
+
+      - name: Typecheck API server
+        run: pnpm --filter @workspace/api-server run typecheck
+
+      - name: Build frontend
+        run: pnpm --filter @workspace/sme-risk-engine run build
+
+      - name: Build API server
+        run: pnpm --filter @workspace/api-server run build
+
+      - name: Production runtime and browser smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          PORT=4173 NODE_ENV=production pnpm --filter @workspace/api-server run start > /tmp/reviewer-toolkit-server.log 2>&1 &
+          SERVER_PID=$!
+          cleanup() {
+            kill "$SERVER_PID" 2>/dev/null || true
+            wait "$SERVER_PID" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+
+          READY=0
+          for attempt in {1..30}; do
+            if curl --fail --silent --show-error http://127.0.0.1:4173/api/health > /tmp/health.json; then
+              READY=1
+              break
+            fi
+            sleep 0.5
+          done
+
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/reviewer-toolkit-server.log
+            exit 1
+          fi
+
+          grep -q '"ok":true' /tmp/health.json
+          curl --fail --silent --show-error http://127.0.0.1:4173/api/intelligence/status > /tmp/intelligence-status.json
+          grep -q '"ok":true' /tmp/intelligence-status.json
+          grep -q '"measuredTables":true' /tmp/intelligence-status.json
+          grep -q '"publicSevereInjuryData":true' /tmp/intelligence-status.json
+
+          BLS_BAD_STATUS=$(curl --silent --output /tmp/bls-bad.json --write-out '%{http_code}' http://127.0.0.1:4173/api/injuries/occupation/bad)
+          test "$BLS_BAD_STATUS" = "400"
+          grep -q '"ok":false' /tmp/bls-bad.json
+
+          OSHA_BAD_STATUS=$(curl --silent --output /tmp/osha-bad.json --write-out '%{http_code}' http://127.0.0.1:4173/api/injuries/osha-severe)
+          test "$OSHA_BAD_STATUS" = "400"
+          grep -q '"ok":false' /tmp/osha-bad.json
+
+          ROUTES=(
+            "/"
+            "/injury-intelligence"
+            "/job-intelligence"
+            "/drugs"
+            "/calculator"
+            "/guidelines"
+            "/matrix"
+            "/aor"
+            "/citations"
+            "/sources"
+            "/guideline-editor"
+            "/settings"
+          )
+
+          for route in "${ROUTES[@]}"; do
+            output="/tmp/route-$(echo "$route" | tr '/ ' '__').html"
+            curl --fail --silent --show-error "http://127.0.0.1:4173${route}" > "$output"
+            grep -q 'id="root"' "$output"
+          done
+
+          CHROME=$(command -v google-chrome || command -v google-chrome-stable || command -v chromium || true)
+          if [ -z "$CHROME" ]; then
+            echo "Chrome/Chromium is required for rendered route smoke tests."
+            exit 1
+          fi
+
+          declare -A MARKERS=(
+            ["/"]='data-testid="reviewer-tool-hub"'
+            ["/injury-intelligence"]='data-testid="injury-intelligence"'
+            ["/job-intelligence"]='data-testid="job-intelligence"'
+            ["/drugs"]='data-testid="drug-checker"'
+            ["/calculator"]='data-testid="clinical-calculators"'
+            ["/guidelines"]='data-testid="condition-reference"'
+            ["/matrix"]='data-testid="standards-matrix"'
+            ["/aor"]='data-testid="deployment-reference"'
+            ["/citations"]='data-testid="citation-finder"'
+            ["/sources"]='data-testid="sources-page"'
+            ["/guideline-editor"]='data-testid="guidelines-page"'
+            ["/settings"]='data-testid="settings-page"'
+          )
+
+          for route in "${ROUTES[@]}"; do
+            rendered="/tmp/rendered-$(echo "$route" | tr '/ ' '__').html"
+            "$CHROME" \
+              --headless=new \
+              --no-sandbox \
+              --disable-gpu \
+              --disable-dev-shm-usage \
+              --virtual-time-budget=4000 \
+              --dump-dom \
+              "http://127.0.0.1:4173${route}" > "$rendered" 2>/tmp/chrome-stderr.log
+            grep -q "${MARKERS[$route]}" "$rendered" || {
+              echo "Rendered marker missing for ${route}"
+              cat "$rendered"
+              cat /tmp/chrome-stderr.log
+              exit 1
+            }
+            if grep -q 'This tool hit an unexpected error' "$rendered"; then
+              echo "Error boundary rendered for ${route}"
+              cat "$rendered"
+              exit 1
+            fi
+          done
