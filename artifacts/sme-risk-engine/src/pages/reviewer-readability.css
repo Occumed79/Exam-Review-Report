@@ -1,0 +1,227 @@
+/* Final desktop readability pass after Render visual review.
+   Keeps the dense workstation layout while avoiding sub-10px copy and ultra-low contrast. */
+
+:root {
+  --review-copy: rgba(224, 233, 232, 0.62);
+  --review-copy-strong: rgba(238, 244, 242, 0.82);
+  --review-copy-dim: rgba(216, 228, 228, 0.46);
+  --review-copy-faint: rgba(210, 224, 224, 0.36);
+  --review-border: rgba(112, 160, 176, 0.18);
+}
+
+:is(
+  .injury-workbench,
+  .job-workbench,
+  .drug-workbench,
+  .clinical-workbench,
+  .condition-reference,
+  .standards-workbench,
+  .deployment-workbench,
+  .citation-workbench
+) p {
+  color: var(--review-copy);
+}
+
+:is(
+  .injury-workbench,
+  .job-workbench,
+  .drug-workbench,
+  .clinical-workbench,
+  .condition-reference,
+  .standards-workbench,
+  .deployment-workbench,
+  .citation-workbench
+) small {
+  color: var(--review-copy-dim);
+}
+
+:is(
+  .injury-header,
+  .job-header,
+  .drug-header,
+  .clinical-header,
+  .condition-header,
+  .standards-header,
+  .deployment-header,
+  .citation-header
+) p {
+  color: rgba(225, 234, 233, 0.58);
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+
+:is(
+  .injury-kicker,
+  .job-kicker,
+  .drug-kicker,
+  .clinical-kicker,
+  .condition-kicker,
+  .standards-kicker,
+  .deployment-kicker,
+  .citation-kicker
+) {
+  font-size: 0.61rem;
+}
+
+:is(
+  .injury-input-wrap input,
+  .injury-input,
+  .job-search-input input,
+  .drug-search-input input,
+  .clinical-field input,
+  .clinical-field select,
+  .condition-search input,
+  .standards-search input,
+  .deployment-search input,
+  .citation-search-input input
+) {
+  font-size: 0.78rem;
+}
+
+:is(
+  .injury-input-wrap input,
+  .job-search-input input,
+  .drug-search-input input,
+  .condition-search input,
+  .standards-search input,
+  .deployment-search input,
+  .citation-search-input input
+)::placeholder {
+  color: rgba(215, 228, 228, 0.4);
+}
+
+/* Do not open occupation suggestion menus before the reviewer types. */
+.injury-search-panel:has(.injury-input-wrap input:placeholder-shown) .injury-match-list,
+.job-search-panel:has(.job-search-input input:placeholder-shown) .job-match-list {
+  display: none;
+}
+
+/* Sidebar: preserve density, improve legibility. */
+.reviewer-sidebar .nav-item,
+.reviewer-sidebar .sidebar-home {
+  color: rgba(221, 231, 230, 0.58);
+}
+.reviewer-sidebar .nav-item:hover,
+.reviewer-sidebar .sidebar-home:hover {
+  color: rgba(242, 246, 244, 0.9);
+}
+.reviewer-sidebar .sidebar-group-label {
+  color: rgba(188, 209, 208, 0.48);
+}
+.reviewer-sidebar .sidebar-brand-subtitle {
+  color: rgba(214, 226, 226, 0.46);
+}
+
+/* Job Intelligence */
+.job-source-status strong { font-size: 0.68rem; color: var(--review-copy-strong); }
+.job-source-status small { font-size: 0.59rem; }
+.job-tabs button { font-size: 0.68rem; }
+.job-search-panel > label { color: var(--review-copy-dim); font-size: 0.58rem; }
+.job-match-list strong { font-size: 0.74rem; }
+.job-match-list small { font-size: 0.59rem; }
+.job-profile-strip p { color: var(--review-copy-dim); font-size: 0.66rem; }
+.job-profile-actions a,
+.job-profile-actions button,
+.job-safety { font-size: 0.64rem; }
+.job-profile-column p { color: rgba(221, 231, 230, 0.58); font-size: 0.69rem; line-height: 1.5; }
+.job-standards > div > span { color: rgba(221, 231, 230, 0.56); font-size: 0.61rem; }
+
+/* Injury Intelligence */
+.injury-source-state { color: rgba(224, 232, 232, 0.62); font-size: 0.66rem; }
+.injury-source-state small { font-size: 0.59rem; }
+.injury-field label { color: var(--review-copy-dim); font-size: 0.58rem; }
+.injury-match-list strong { font-size: 0.74rem; }
+.injury-match-list small { font-size: 0.59rem; }
+.injury-empty-state p,
+.injury-signal-copy p,
+.injury-demand-list div,
+.injury-finding-panel > p,
+.injury-finding-grid > div > div { font-size: 0.68rem; }
+.injury-signal-copy small,
+.injury-measured-meta,
+.injury-measured-list span,
+.injury-measured-list strong,
+.injury-measured-unavailable,
+.injury-measured-caveat { font-size: 0.58rem; }
+.injury-measured-card-head > div > strong { font-size: 0.7rem; }
+
+/* Drug Checker */
+.drug-status strong { color: var(--review-copy-strong); }
+.drug-status small { color: var(--review-copy-dim); }
+.drug-empty p,
+.drug-card p,
+.drug-review-points p,
+.drug-identity-only p,
+.drug-capability p { color: rgba(221, 231, 230, 0.58); font-size: 0.68rem; line-height: 1.5; }
+.drug-capability strong { color: rgba(239, 244, 242, 0.78); font-size: 0.67rem; }
+
+/* Clinical calculators */
+.clinical-nav button strong { font-size: 0.7rem; }
+.clinical-nav button small { color: rgba(214, 226, 226, 0.44); font-size: 0.58rem; }
+.clinical-panel { min-height: 390px; }
+.clinical-panel-head p { color: var(--review-copy-dim); font-size: 0.66rem; }
+.clinical-field > span { color: rgba(220, 230, 229, 0.58); font-size: 0.61rem; }
+.clinical-field > span small { font-size: 0.56rem; }
+.clinical-actions button { font-size: 0.63rem; }
+.clinical-actions > span { color: var(--review-copy-faint); font-size: 0.59rem; }
+.clinical-disclaimer,
+.clinical-reference > button,
+.clinical-reference p { font-size: 0.61rem; }
+
+/* Condition Reference */
+.condition-summary p,
+.condition-questions p,
+.condition-side-note,
+.condition-side-empty,
+.condition-saved-list p { color: rgba(221, 231, 230, 0.58); font-size: 0.68rem; line-height: 1.5; }
+.condition-standard-list > div { color: rgba(222, 232, 231, 0.55); }
+.condition-article-list strong { color: rgba(239, 244, 242, 0.78); }
+.condition-article-list small { color: var(--review-copy-dim); }
+
+/* Standards Matrix */
+.standards-row p { color: rgba(221, 231, 230, 0.58); font-size: 0.67rem; line-height: 1.45; }
+.standards-framework strong { color: rgba(241, 245, 243, 0.82); }
+.standards-framework small,
+.standards-topics span,
+.standards-source,
+.standards-footnote { color: rgba(216, 228, 228, 0.5); font-size: 0.59rem; }
+
+/* AOR / Deployment */
+.deployment-country-list button strong { color: rgba(239, 244, 242, 0.76); }
+.deployment-country-list button small { color: var(--review-copy-dim); }
+.deployment-fact p { color: rgba(221, 231, 230, 0.58); font-size: 0.67rem; }
+.deployment-watch span,
+.deployment-warning { font-size: 0.6rem; }
+.deployment-warning { color: rgba(221, 210, 178, 0.58); }
+
+/* Citation Finder: readable source metadata and less dead empty space. */
+.citation-results-panel { min-height: 360px; }
+.citation-empty { min-height: 235px; }
+.citation-empty strong { color: rgba(239, 244, 242, 0.72); font-size: 0.74rem; }
+.citation-empty p { color: rgba(220, 230, 230, 0.46); font-size: 0.62rem; }
+.citation-search-input button { font-size: 0.62rem; }
+.citation-examples button { color: rgba(215, 226, 226, 0.45); font-size: 0.55rem; }
+.citation-panel-head h2 { color: rgba(239, 244, 242, 0.82); font-size: 0.75rem; }
+.citation-article-list strong { color: rgba(239, 244, 242, 0.78); font-size: 0.65rem; }
+.citation-article-list small { color: var(--review-copy-dim); font-size: 0.55rem; }
+.citation-official-list strong { color: rgba(239, 244, 242, 0.72); font-size: 0.61rem; }
+.citation-official-list small { color: var(--review-copy-dim); font-size: 0.54rem; }
+.citation-saved-list strong { font-size: 0.6rem; }
+.citation-saved-list small,
+.citation-saved-list a,
+.citation-side-empty { font-size: 0.53rem; }
+
+@media (min-width: 1500px) {
+  :is(
+    .injury-workbench,
+    .job-workbench,
+    .drug-workbench,
+    .clinical-workbench,
+    .condition-reference,
+    .standards-workbench,
+    .deployment-workbench,
+    .citation-workbench
+  ) {
+    max-width: 1540px;
+  }
+}
