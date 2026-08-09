@@ -1,12 +1,11 @@
 import { Link, useLocation } from "wouter";
 import {
   LayoutGrid, BookOpen, Database, Settings, Globe, Grid3x3, Pill,
-  Calculator, BookMarked, Briefcase, FileSearch, ShieldCheck
+  Calculator, BookMarked, Briefcase, ShieldCheck
 } from "lucide-react";
 
 const NAV_MAIN = [
   { href: "/", label: "Reviewer Tools", icon: LayoutGrid },
-  { href: "/document-assistant", label: "Document Assistant", icon: FileSearch },
   { href: "/job-intelligence", label: "Job Intelligence", icon: Briefcase },
   { href: "/guidelines", label: "Guideline Library", icon: BookOpen },
   { href: "/matrix", label: "Standards Matrix", icon: Grid3x3 },
@@ -86,7 +85,7 @@ export default function Sidebar() {
 
       <div style={{ padding: "0.8rem 1rem", borderTop: "1px solid rgba(255,255,255,0.06)", fontSize: "0.65rem", color: "rgba(255,255,255,0.28)", lineHeight: 1.5 }}>
         <div>Use any tool in any order.</div>
-        <div>No report workflow required.</div>
+        <div>No case setup or document upload.</div>
       </div>
     </aside>
   );
