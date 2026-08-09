@@ -8,7 +8,7 @@ interface Props { guidelines: Guideline[]; onSave: (g: Guideline) => void; onDel
 const CONF_META: Record<SourceConfidence, { label: string; color: string }> = {
   official: { label: "Official", color: "#b4d7d0" },
   internal: { label: "Internal", color: "#a7c7be" },
-  "sme-summary": { label: "SME Summary", color: "#d6c8aa" },
+  "sme-summary": { label: "Reviewed Summary", color: "#d6c8aa" },
   secondary: { label: "Secondary", color: "#7f9d96" },
   unclear: { label: "Unclear", color: "#f4efdc" },
 };
@@ -106,10 +106,10 @@ export default function Guidelines({ guidelines, onSave, onDelete, onImportMany 
       }));
       if (onImportMany) onImportMany(mapped);
       else mapped.forEach(onSave);
-      setImportNote(`Imported ${mapped.length} guidelines.`);
+      setImportNote(`Imported ${mapped.length} guidance entries.`);
       setImportText("");
     } catch {
-      setImportNote("Paste an array of guideline objects, or {\"guidelines\": [...] }.");
+      setImportNote("Paste an array of guidance objects, or {\"guidelines\": [...] }.");
     }
   }
 
@@ -120,38 +120,43 @@ export default function Guidelines({ guidelines, onSave, onDelete, onImportMany 
     <div data-testid="guidelines-page">
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.75rem" }}>
         <div>
-          <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>Guideline Library</h1>
+          <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>Guideline Editor</h1>
           <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)" }}>
-            Occupational health standards, agency guidelines, and SME reference documentation.
+            Maintain reusable occupational-health guidance and source-backed reviewer notes. No examinee record is stored here.
           </p>
         </div>
-        <div style={{ display: "flex", gap: "0.625rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
-          <button className="glow-btn glow-btn-secondary" onClick={handleImport} data-testid="btn-import-guidelines" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Upload size={16} />
-            Import Guidelines
-          </button>
-          <button className="glow-btn" onClick={startNew} data-testid="btn-new-guideline" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Plus size={16} />
-            Add Guideline
-          </button>
-        </div>
+        <button className="glow-btn" onClick={startNew} data-testid="btn-new-guideline" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <Plus size={16} />
+          Add Guidance
+        </button>
       </div>
 
       <div className="glass-card" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem", display: "flex", gap: "0.875rem", alignItems: "center", flexWrap: "wrap" }}>
         <div style={{ position: "relative", flex: 1, minWidth: "200px" }}>
           <Search size={14} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }} />
-          <input className="glass-input" style={{ ...inp, paddingLeft: "2.25rem" }} placeholder="Search guidelines..." value={search} onChange={e => setSearch(e.target.value)} data-testid="input-search-guidelines" />
+          <input className="glass-input" style={{ ...inp, paddingLeft: "2.25rem" }} placeholder="Search guidance..." value={search} onChange={e => setSearch(e.target.value)} data-testid="input-search-guidelines" />
         </div>
         <select className="glass-input" style={{ ...inp, width: "200px" }} value={catFilter} onChange={e => setCatFilter(e.target.value)} data-testid="select-cat-filter">
           <option value="all">All Categories</option>
           {CAT_OPTIONS.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>{filtered.length} of {guidelines.length} guidelines</div>
+        <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>{filtered.length} of {guidelines.length} entries</div>
       </div>
 
       <div className="glass-card" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.6rem" }}><FileText size={15} style={{ color: "#b4d7d0" }} /><strong style={{ fontSize: "0.8rem", color: "#f4efdc" }}>Bulk import</strong></div>
-        <textarea className="glass-input" value={importText} onChange={e => setImportText(e.target.value)} placeholder='Paste a JSON array or {"guidelines": [...]}' style={{ width: "100%", minHeight: "90px", padding: "0.7rem", boxSizing: "border-box", resize: "vertical" }} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.7rem", marginBottom: "0.6rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><FileText size={15} style={{ color: "#b4d7d0" }} /><strong style={{ fontSize: "0.8rem", color: "#f4efdc" }}>Bulk import guidance</strong></div>
+          <button
+            className="glow-btn glow-btn-secondary"
+            onClick={handleImport}
+            disabled={importPreview.valid === 0}
+            data-testid="btn-import-guidelines"
+            style={{ display: "flex", alignItems: "center", gap: "0.4rem", opacity: importPreview.valid === 0 ? 0.45 : 1 }}
+          >
+            <Upload size={14} /> Import queued
+          </button>
+        </div>
+        <textarea className="glass-input" value={importText} onChange={e => { setImportText(e.target.value); setImportNote(null); }} placeholder='Paste a JSON array or {"guidelines": [...]}' style={{ width: "100%", minHeight: "90px", padding: "0.7rem", boxSizing: "border-box", resize: "vertical" }} />
         <div style={{ display: "flex", justifyContent: "space-between", gap: "1rem", alignItems: "center", marginTop: "0.55rem" }}>
           <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.35)" }}>{importPreview.total ? `${importPreview.valid}/${importPreview.total} recognizable entries` : "Nothing queued"}</span>
           {importNote && <span style={{ fontSize: "0.7rem", color: "#b4d7d0" }}>{importNote}</span>}
@@ -159,14 +164,14 @@ export default function Guidelines({ guidelines, onSave, onDelete, onImportMany 
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
-        {filtered.length === 0 && <div className="glass-card" style={{ padding: "1.5rem", textAlign: "center", color: "rgba(255,255,255,0.35)" }}>No matching guideline entries.</div>}
+        {filtered.length === 0 && <div className="glass-card" style={{ padding: "1.5rem", textAlign: "center", color: "rgba(255,255,255,0.35)" }}>No matching guidance entries.</div>}
         {filtered.map(g => {
           const meta = CONF_META[g.sourceConfidence] || CONF_META.unclear;
           const open = expanded === g.id;
           return <div key={g.id} className="glass-card" style={{ padding: "0.9rem 1rem" }}>
             <button onClick={() => setExpanded(open ? null : g.id)} style={{ width: "100%", display: "grid", gridTemplateColumns: "1fr auto", gap: "1rem", alignItems: "start", background: "none", border: 0, color: "inherit", padding: 0, textAlign: "left", cursor: "pointer" }}>
               <div>
-                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}><strong style={{ color: "#fff", fontSize: "0.88rem" }}>{g.sourceName || "Untitled guideline"}</strong><span style={{ color: meta.color, fontSize: "0.62rem", fontWeight: 700 }}>{meta.label}</span></div>
+                <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}><strong style={{ color: "#fff", fontSize: "0.88rem" }}>{g.sourceName || "Untitled guidance"}</strong><span style={{ color: meta.color, fontSize: "0.62rem", fontWeight: 700 }}>{meta.label}</span></div>
                 <div style={{ marginTop: "0.25rem", color: "rgba(255,255,255,0.38)", fontSize: "0.7rem" }}>{g.agency || "No agency"} · {g.conditionCategory} · {g.jobCategory || "General"}</div>
                 <div style={{ marginTop: "0.45rem", color: "rgba(255,255,255,0.55)", fontSize: "0.75rem", lineHeight: 1.5 }}>{g.summary || "No summary entered."}</div>
               </div>
@@ -187,7 +192,7 @@ export default function Guidelines({ guidelines, onSave, onDelete, onImportMany 
 
       {editing && <div style={{ position: "fixed", inset: 0, zIndex: 100, background: "rgba(0,0,0,0.72)", display: "grid", placeItems: "center", padding: "2rem" }}>
         <div className="glass-card" style={{ width: "min(900px, 92vw)", maxHeight: "90vh", overflow: "auto", padding: "1.2rem" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}><strong style={{ color: "#fff" }}>{editing.sourceName ? "Edit guideline" : "New guideline"}</strong><button onClick={() => setEditing(null)} style={{ background: "transparent", border: 0, color: "rgba(255,255,255,0.4)", cursor: "pointer" }}>Close</button></div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.8rem" }}><strong style={{ color: "#fff" }}>{editing.sourceName ? "Edit guidance" : "New guidance"}</strong><button onClick={() => setEditing(null)} style={{ background: "transparent", border: 0, color: "rgba(255,255,255,0.4)", cursor: "pointer" }}>Close</button></div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2,minmax(0,1fr))", gap: "0.65rem" }}>
             <Field label="Source name" value={editing.sourceName} onChange={v => upd("sourceName",v)} />
             <Field label="Agency" value={editing.agency} onChange={v => upd("agency",v)} />
@@ -197,7 +202,7 @@ export default function Guidelines({ guidelines, onSave, onDelete, onImportMany 
             <Field label="Source link" value={editing.sourceLink} onChange={v => upd("sourceLink",v)} />
           </div>
           {["summary","medicalTriggers","jobDutyTriggers","documentationNeeded","riskConsiderations","notes"].map(key => <div key={key} style={{ marginTop: "0.65rem" }}><label style={lbl}>{key.replace(/([A-Z])/g," $1")}</label><textarea className="glass-input" style={{ width: "100%", minHeight: key === "summary" ? "90px" : "70px", padding: "0.6rem", boxSizing: "border-box" }} value={String(editing[key as keyof Guideline] || "")} onChange={e => upd(key as keyof Guideline,e.target.value)} /></div>)}
-          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.8rem" }}><button onClick={() => setEditing(null)} className="glow-btn glow-btn-secondary">Cancel</button><button onClick={save} className="glow-btn">Save guideline</button></div>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.8rem" }}><button onClick={() => setEditing(null)} className="glow-btn glow-btn-secondary">Cancel</button><button onClick={save} className="glow-btn">Save guidance</button></div>
         </div>
       </div>}
     </div>
