@@ -20,11 +20,14 @@ import {
   fetchIntelligenceStatus,
   fetchLiveOccupation,
   fetchOccupationInjuryEvidence,
+  fetchOshaSevereInjuryContext,
   searchLiveOccupations,
   type IntelligenceStatus,
   type InjuryDataset,
+  type InjuryMetric,
   type LiveOccupationMatch,
   type OccupationInjuryEvidence,
+  type OshaSevereInjuryContext,
 } from '@/lib/liveOccupationalApi';
 import './injury-workbench.css';
 
@@ -103,6 +106,21 @@ function DatasetCard({ dataset }: { dataset: InjuryDataset }) {
   );
 }
 
+function OshaMetricList({ title, metrics }: { title: string; metrics: InjuryMetric[] }) {
+  return (
+    <div className="injury-osha-list">
+      <span>{title}</span>
+      {metrics.slice(0, 5).map((metric) => (
+        <div key={`${title}-${metric.label}`}>
+          <small>{metric.label}</small>
+          <strong>{formatMetric(metric.value)}</strong>
+        </div>
+      ))}
+      {metrics.length === 0 && <p>No categorized values returned.</p>}
+    </div>
+  );
+}
+
 export default function InjuryIntelligenceLive() {
   const [status, setStatus] = useState<IntelligenceStatus | null>(null);
   const [jobSearch, setJobSearch] = useState('');
@@ -116,6 +134,9 @@ export default function InjuryIntelligenceLive() {
   const [measured, setMeasured] = useState<OccupationInjuryEvidence | null>(null);
   const [measuredLoading, setMeasuredLoading] = useState(false);
   const [measuredError, setMeasuredError] = useState('');
+  const [oshaContext, setOshaContext] = useState<OshaSevereInjuryContext | null>(null);
+  const [oshaLoading, setOshaLoading] = useState(false);
+  const [oshaError, setOshaError] = useState('');
 
   useEffect(() => {
     fetchIntelligenceStatus().then(setStatus).catch(() => setStatus(null));
@@ -166,6 +187,27 @@ export default function InjuryIntelligenceLive() {
       .finally(() => { if (!cancelled) setMeasuredLoading(false); });
     return () => { cancelled = true; };
   }, [selectedJob]);
+
+  useEffect(() => {
+    const sectors = measured?.suggestedNaicsSectors ?? [];
+    if (!sectors.length) {
+      setOshaContext(null);
+      setOshaError('');
+      setOshaLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setOshaContext(null);
+    setOshaError('');
+    setOshaLoading(true);
+    fetchOshaSevereInjuryContext(sectors)
+      .then((context) => { if (!cancelled) setOshaContext(context); })
+      .catch((error) => {
+        if (!cancelled) setOshaError(error instanceof Error ? error.message : 'OSHA severe-injury context is unavailable right now.');
+      })
+      .finally(() => { if (!cancelled) setOshaLoading(false); });
+    return () => { cancelled = true; };
+  }, [measured]);
 
   const profile = useMemo(
     () => (selectedJob ? buildOccupationalInjuryProfile(selectedJob) : null),
@@ -222,12 +264,12 @@ export default function InjuryIntelligenceLive() {
         <div>
           <div className="injury-kicker"><Activity size={14} /> OCCUPATIONAL INJURY INTELLIGENCE</div>
           <h1>Injury Intelligence</h1>
-          <p>Measured BLS surveillance plus occupation demands and reviewer context. Counts/rates and derived signals are kept visibly separate.</p>
+          <p>Measured BLS surveillance, OSHA severe-injury context, occupation demands, and reviewer context. Each source keeps its own meaning and denominator.</p>
         </div>
         <div className="injury-source-stack">
           <SourceState active={Boolean(status?.onet?.configured)} label="O*NET" detail={status?.onet?.configured ? 'live' : 'fallback'} />
           <SourceState active={Boolean(status?.bls?.measuredTables || status?.bls?.configured)} label="BLS" detail={status?.bls?.measuredTables ? 'measured tables' : 'public'} />
-          <SourceState active={Boolean(status?.osha?.importEnabled || status?.osha?.dataDirConfigured)} label="OSHA" detail={status?.osha?.importEnabled ? 'import enabled' : 'context source'} />
+          <SourceState active={Boolean(status?.osha?.publicSevereInjuryData)} label="OSHA" detail={status?.osha?.publicSevereInjuryData ? 'current SIR' : 'unavailable'} />
         </div>
       </header>
 
@@ -260,7 +302,7 @@ export default function InjuryIntelligenceLive() {
       {!selectedJob && (
         <section className="injury-empty-state">
           <div className="injury-empty-number">01</div>
-          <div><strong>Search an occupation.</strong><p>The occupation drives both measured BLS surveillance lookup and the separate O*NET-derived review context.</p></div>
+          <div><strong>Search an occupation.</strong><p>The selected occupation drives the BLS surveillance lookup, BLS industry bridge for OSHA context, and separate O*NET-derived review signals.</p></div>
           <div className="injury-empty-examples"><span>Firefighter</span><span>Electrician</span><span>Aircraft mechanic</span><span>Truck driver</span></div>
         </section>
       )}
@@ -281,10 +323,7 @@ export default function InjuryIntelligenceLive() {
 
           <section className="injury-measured-section">
             <div className="injury-measured-heading">
-              <div>
-                <span>MEASURED SURVEILLANCE</span>
-                <h3>BLS occupation injury evidence</h3>
-              </div>
+              <div><span>MEASURED SURVEILLANCE</span><h3>BLS occupation injury evidence</h3></div>
               <small>SOII 2023–2024 · CFOI 2024</small>
             </div>
             {measuredLoading && <div className="injury-measured-loading"><Loader2 size={16} className="animate-spin" /> Loading published BLS occupation tables…</div>}
@@ -303,6 +342,45 @@ export default function InjuryIntelligenceLive() {
               </>
             )}
           </section>
+
+          {(oshaLoading || oshaError || oshaContext || (measured && measured.suggestedNaicsSectors.length === 0)) && (
+            <section className="injury-osha-section">
+              <div className="injury-osha-heading">
+                <div><span>SEVERE-INJURY CONTEXT</span><h3>OSHA industry-sector reports</h3></div>
+                <small>industry context · not occupation incidence</small>
+              </div>
+              {oshaLoading && <div className="injury-measured-loading"><Loader2 size={16} className="animate-spin" /> Loading current OSHA Severe Injury Report data…</div>}
+              {oshaError && <div className="injury-measured-error"><AlertTriangle size={14} /> {oshaError}</div>}
+              {measured && measured.suggestedNaicsSectors.length === 0 && !oshaLoading && !oshaError && (
+                <div className="injury-osha-empty">BLS R44 did not provide enough industry context to infer a defensible OSHA sector filter for this occupation.</div>
+              )}
+              {oshaContext && (
+                <>
+                  <div className="injury-osha-summary">
+                    <div><span>REPORTS</span><strong>{formatMetric(oshaContext.reportCount)}</strong></div>
+                    <div><span>HOSPITALIZED</span><strong>{formatMetric(oshaContext.hospitalized)}</strong></div>
+                    <div><span>AMPUTATIONS</span><strong>{formatMetric(oshaContext.amputations)}</strong></div>
+                    <div><span>EYE LOSS</span><strong>{formatMetric(oshaContext.eyeLoss)}</strong></div>
+                  </div>
+                  <div className="injury-osha-meta">
+                    <span>{oshaContext.coverage}</span>
+                    <span>NAICS sectors: {oshaContext.sectors.join(', ')}</span>
+                  </div>
+                  <div className="injury-osha-grid">
+                    <OshaMetricList title="TOP EVENTS / EXPOSURES" metrics={oshaContext.topEvents} />
+                    <OshaMetricList title="TOP BODY PARTS" metrics={oshaContext.topBodyParts} />
+                    <OshaMetricList title="TOP NATURES" metrics={oshaContext.topNatures} />
+                    <OshaMetricList title="TOP SOURCES" metrics={oshaContext.topSources} />
+                  </div>
+                  <div className="injury-osha-caveat">
+                    <AlertTriangle size={12} />
+                    <span>{oshaContext.caveat}</span>
+                    <a href={oshaContext.source.landingPage} target="_blank" rel="noreferrer">OSHA SIR <ExternalLink size={10} /></a>
+                  </div>
+                </>
+              )}
+            </section>
+          )}
 
           <div className="injury-main-grid">
             <section className="injury-panel injury-signal-panel">
@@ -339,7 +417,7 @@ export default function InjuryIntelligenceLive() {
               </section>
               <section className="injury-panel injury-source-note">
                 <div className="injury-mini-heading"><Database size={15} /> SOURCE BOUNDARY</div>
-                <p>BLS cards above are measured published estimates. This lower section is derived from occupation demands and is intentionally not presented as prevalence or incidence.</p>
+                <p>BLS is occupation-level measured surveillance. OSHA above is severe-injury context for BLS-linked industry sectors. This lower section is derived from O*NET/job demands. They are intentionally not combined into one score or rate.</p>
               </section>
             </aside>
           </div>
