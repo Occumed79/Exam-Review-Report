@@ -63,7 +63,6 @@ function AppRouter() {
         </Route>
         <Route path="/settings">
           <Settings
-            caseCount={0}
             guidelineCount={store.guidelines.length}
             sourceCount={store.sources.length}
             onExport={store.exportAll}
