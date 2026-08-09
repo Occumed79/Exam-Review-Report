@@ -52,9 +52,9 @@ const TOOLS: Tool[] = [
   {
     href: "/calculator",
     title: "Clinical Calculators",
-    short: "ASCVD, BMI, eGFR, Framingham, and METs with only required inputs.",
+    short: "BMI, eGFR, MAP, pack-years, walking METs, plus the current official AHA PREVENT launch point.",
     icon: Calculator,
-    keywords: "calculator bmi cardiac clinical value ascvd egfr framingham mets",
+    keywords: "calculator bmi egfr map pack years mets prevent cardiovascular clinical value",
     tier: "review",
   },
   {
@@ -68,9 +68,9 @@ const TOOLS: Tool[] = [
   {
     href: "/matrix",
     title: "Standards Matrix",
-    short: "Compare occupational review frameworks without declaring clearance.",
+    short: "Current source starting points for common occupational review frameworks.",
     icon: Grid3x3,
-    keywords: "standard matrix nfpa dot faa deployment compare",
+    keywords: "standard matrix nfpa 1580 fmcsa faa deployment compare",
     tier: "review",
   },
   {
