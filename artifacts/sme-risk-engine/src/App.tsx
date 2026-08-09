@@ -12,7 +12,6 @@ import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
 import ClinicalCalculator from "@/pages/ClinicalCalculator";
 import Citations from "@/pages/Citations";
-import DocumentAssistant from "@/pages/DocumentAssistant";
 
 function AppRouter() {
   const store = useStore();
@@ -22,9 +21,6 @@ function AppRouter() {
       <Switch>
         <Route path="/">
           <Dashboard />
-        </Route>
-        <Route path="/document-assistant">
-          <DocumentAssistant />
         </Route>
         <Route path="/aor">
           <AORMonitor />
