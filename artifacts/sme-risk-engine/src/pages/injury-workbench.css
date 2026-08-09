@@ -164,35 +164,14 @@
   cursor: pointer;
 }
 
-.injury-match-list button:hover {
-  background: rgba(91, 195, 184, 0.05);
-}
-
+.injury-match-list button:hover { background: rgba(91, 195, 184, 0.05); }
 .injury-match-list strong,
-.injury-match-list small {
-  display: block;
-}
+.injury-match-list small { display: block; }
+.injury-match-list strong { color: rgba(239, 244, 242, 0.9); font-size: 0.7rem; }
+.injury-match-list small { margin-top: 0.16rem; color: rgba(218, 228, 229, 0.28); font: 500 0.56rem/1 var(--app-font-mono); }
+.injury-match-list svg { color: rgba(100, 194, 184, 0.35); }
 
-.injury-match-list strong {
-  color: rgba(239, 244, 242, 0.9);
-  font-size: 0.7rem;
-}
-
-.injury-match-list small {
-  margin-top: 0.16rem;
-  color: rgba(218, 228, 229, 0.28);
-  font: 500 0.56rem/1 var(--app-font-mono);
-}
-
-.injury-match-list svg {
-  color: rgba(100, 194, 184, 0.35);
-}
-
-.injury-notice {
-  grid-column: 1 / -1;
-  color: #cbb88f;
-  font-size: 0.62rem;
-}
+.injury-notice { grid-column: 1 / -1; color: #cbb88f; font-size: 0.62rem; }
 
 .injury-empty-state {
   min-height: 210px;
@@ -204,43 +183,14 @@
   padding: 1.2rem 1.25rem;
   border: 1px solid rgba(105, 148, 165, 0.1);
   border-radius: 9px;
-  background:
-    linear-gradient(90deg, rgba(56, 181, 169, 0.035), transparent 36%),
-    rgba(7, 18, 27, 0.52);
+  background: linear-gradient(90deg, rgba(56, 181, 169, 0.035), transparent 36%), rgba(7, 18, 27, 0.52);
 }
 
-.injury-empty-number {
-  align-self: start;
-  color: rgba(101, 199, 188, 0.36);
-  font: 700 0.72rem/1 var(--app-font-mono);
-}
-
-.injury-empty-state strong {
-  color: rgba(239, 244, 242, 0.84);
-  font-size: 0.9rem;
-}
-
-.injury-empty-state p {
-  margin: 0.35rem 0 0;
-  color: rgba(217, 227, 227, 0.34);
-  font-size: 0.7rem;
-  line-height: 1.55;
-}
-
-.injury-empty-examples {
-  display: flex;
-  justify-content: flex-end;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-.injury-empty-examples span {
-  padding: 0.28rem 0.45rem;
-  border: 1px solid rgba(98, 163, 177, 0.11);
-  border-radius: 5px;
-  color: rgba(218, 227, 226, 0.35);
-  font-size: 0.58rem;
-}
+.injury-empty-number { align-self: start; color: rgba(101, 199, 188, 0.36); font: 700 0.72rem/1 var(--app-font-mono); }
+.injury-empty-state strong { color: rgba(239, 244, 242, 0.84); font-size: 0.9rem; }
+.injury-empty-state p { margin: 0.35rem 0 0; color: rgba(217, 227, 227, 0.34); font-size: 0.7rem; line-height: 1.55; }
+.injury-empty-examples { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 0.35rem; }
+.injury-empty-examples span { padding: 0.28rem 0.45rem; border: 1px solid rgba(98, 163, 177, 0.11); border-radius: 5px; color: rgba(218, 227, 226, 0.35); font-size: 0.58rem; }
 
 .injury-occupation-strip {
   margin-top: 0.9rem;
@@ -251,57 +201,102 @@
   padding: 0.75rem 0.9rem;
   border: 1px solid rgba(94, 197, 185, 0.16);
   border-radius: 8px;
-  background:
-    linear-gradient(90deg, rgba(57, 190, 178, 0.07), transparent 42%),
-    rgba(9, 22, 31, 0.94);
+  background: linear-gradient(90deg, rgba(57, 190, 178, 0.07), transparent 42%), rgba(9, 22, 31, 0.94);
 }
 
-.injury-strip-label {
-  color: #6ec9bd;
-  font: 700 0.53rem/1 var(--app-font-mono);
-  letter-spacing: 0.11em;
+.injury-strip-label { color: #6ec9bd; font: 700 0.53rem/1 var(--app-font-mono); letter-spacing: 0.11em; }
+.injury-occupation-strip h2 { margin: 0.28rem 0 0; color: #f1f5f3; font-size: 1rem; font-weight: 720; }
+.injury-occupation-strip p { margin: 0.16rem 0 0; color: rgba(219, 228, 227, 0.32); font-size: 0.62rem; }
+.injury-occupation-strip p span { margin: 0 0.25rem; }
+.injury-strip-actions { display: flex; gap: 0.65rem; align-items: center; }
+.injury-safety { display: inline-flex; align-items: center; gap: 0.3rem; color: #e9989e; font-size: 0.6rem; font-weight: 700; }
+.injury-strip-actions a { display: inline-flex; align-items: center; gap: 0.25rem; color: #8bd5ca; font-size: 0.6rem; text-decoration: none; }
+
+.injury-measured-section {
+  margin-top: 0.9rem;
+  overflow: hidden;
+  border: 1px solid rgba(95, 203, 190, 0.18);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(10, 27, 35, 0.98), rgba(6, 17, 25, 0.98));
 }
 
-.injury-occupation-strip h2 {
-  margin: 0.28rem 0 0;
-  color: #f1f5f3;
-  font-size: 1rem;
-  font-weight: 720;
-}
-
-.injury-occupation-strip p {
-  margin: 0.16rem 0 0;
-  color: rgba(219, 228, 227, 0.32);
-  font-size: 0.62rem;
-}
-
-.injury-occupation-strip p span {
-  margin: 0 0.25rem;
-}
-
-.injury-strip-actions {
+.injury-measured-heading {
   display: flex;
-  gap: 0.65rem;
-  align-items: center;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  padding: 0.85rem 0.9rem;
+  border-bottom: 1px solid rgba(105, 150, 168, 0.1);
 }
 
-.injury-safety {
-  display: inline-flex;
+.injury-measured-heading span { color: #70cbbf; font: 700 0.52rem/1.2 var(--app-font-mono); letter-spacing: 0.1em; }
+.injury-measured-heading h3 { margin: 0.28rem 0 0; color: rgba(242, 246, 244, 0.92); font-size: 0.88rem; }
+.injury-measured-heading small { color: rgba(218, 228, 229, 0.28); font: 500 0.55rem/1 var(--app-font-mono); }
+
+.injury-measured-loading,
+.injury-measured-error {
+  display: flex;
   align-items: center;
-  gap: 0.3rem;
-  color: #e9989e;
-  font-size: 0.6rem;
-  font-weight: 700;
+  gap: 0.45rem;
+  padding: 0.9rem;
+  color: rgba(222, 231, 231, 0.48);
+  font-size: 0.66rem;
 }
 
-.injury-strip-actions a {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #8bd5ca;
-  font-size: 0.6rem;
-  text-decoration: none;
+.injury-measured-error { color: #d5b790; }
+
+.injury-measured-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(112, 159, 175, 0.08);
 }
+
+.injury-measured-card {
+  min-height: 220px;
+  padding: 0.78rem;
+  background: #081720;
+}
+
+.injury-measured-card.unavailable { opacity: 0.54; }
+
+.injury-measured-card-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.55rem;
+  align-items: flex-start;
+}
+
+.injury-measured-card-head > div > span { display: block; color: rgba(102, 202, 191, 0.56); font: 700 0.5rem/1 var(--app-font-mono); }
+.injury-measured-card-head > div > strong { display: block; margin-top: 0.28rem; color: rgba(241,245,243,0.86); font-size: 0.68rem; line-height: 1.35; }
+.injury-measured-card-head small { white-space: nowrap; padding: 0.18rem 0.28rem; border: 1px solid rgba(105, 198, 187, 0.13); border-radius: 4px; color: rgba(119, 205, 194, 0.56); font: 600 0.47rem/1 var(--app-font-mono); }
+.injury-measured-card-head small[data-match='major-group'] { color: #cbb88f; border-color: rgba(203,184,143,0.16); }
+
+.injury-measured-meta { display: flex; flex-wrap: wrap; gap: 0.28rem 0.48rem; margin-top: 0.5rem; color: rgba(214,225,225,0.26); font: 500 0.49rem/1.25 var(--app-font-mono); }
+.injury-measured-total { margin-top: 0.6rem; padding: 0.48rem 0; border-top: 1px solid rgba(105,150,168,0.08); border-bottom: 1px solid rgba(105,150,168,0.08); }
+.injury-measured-total strong { color: #8cd6cc; font-size: 1.06rem; font-weight: 760; }
+.injury-measured-total span { display: block; margin-top: 0.1rem; color: rgba(216,226,226,0.26); font-size: 0.5rem; }
+
+.injury-measured-list { margin-top: 0.48rem; display: grid; gap: 0.3rem; }
+.injury-measured-list > div { display: grid; grid-template-columns: 1fr auto; gap: 0.5rem; align-items: baseline; }
+.injury-measured-list span { overflow: hidden; text-overflow: ellipsis; color: rgba(218,228,228,0.4); font-size: 0.55rem; white-space: nowrap; }
+.injury-measured-list strong { color: rgba(236,241,239,0.72); font: 700 0.56rem/1 var(--app-font-mono); }
+.injury-measured-list p,
+.injury-measured-unavailable { margin: 0.62rem 0 0; color: rgba(218,228,228,0.3); font-size: 0.56rem; line-height: 1.45; }
+.injury-measured-card > a { display: inline-flex; align-items: center; gap: 0.25rem; margin-top: 0.62rem; color: rgba(122, 205, 195, 0.52); font-size: 0.52rem; text-decoration: none; }
+
+.injury-measured-caveat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.62rem 0.8rem;
+  border-top: 1px solid rgba(105, 150, 168, 0.1);
+  color: rgba(215,225,225,0.32);
+  font-size: 0.55rem;
+}
+
+.injury-measured-caveat span { flex: 1; }
+.injury-measured-caveat a { display: inline-flex; align-items: center; gap: 0.2rem; color: rgba(123, 205, 195, 0.6); text-decoration: none; white-space: nowrap; }
 
 .injury-main-grid {
   margin-top: 0.9rem;
@@ -311,228 +306,52 @@
 }
 
 .injury-panel,
-.injury-finding-panel {
-  border: 1px solid rgba(105, 150, 168, 0.13);
-  border-radius: 8px;
-  background: linear-gradient(150deg, rgba(13, 28, 38, 0.9), rgba(7, 18, 27, 0.92));
-}
-
-.injury-signal-panel {
-  overflow: hidden;
-}
-
-.injury-panel-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-end;
-  padding: 0.82rem 0.9rem;
-  border-bottom: 1px solid rgba(105, 150, 168, 0.1);
-}
-
+.injury-finding-panel { border: 1px solid rgba(105, 150, 168, 0.13); border-radius: 8px; background: linear-gradient(150deg, rgba(13, 28, 38, 0.9), rgba(7, 18, 27, 0.92)); }
+.injury-signal-panel { overflow: hidden; }
+.injury-panel-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-end; padding: 0.82rem 0.9rem; border-bottom: 1px solid rgba(105, 150, 168, 0.1); }
 .injury-panel-heading span,
 .injury-mini-heading,
 .injury-finding-head > div > span,
-.injury-finding-grid > div > span {
-  color: rgba(107, 204, 193, 0.67);
-  font: 700 0.52rem/1.2 var(--app-font-mono);
-  letter-spacing: 0.1em;
-}
-
-.injury-panel-heading h3 {
-  margin: 0.28rem 0 0;
-  color: rgba(239, 244, 242, 0.9);
-  font-size: 0.82rem;
-  font-weight: 680;
-}
-
-.injury-panel-heading small {
-  color: rgba(214, 224, 225, 0.24);
-  font: 500 0.53rem/1 var(--app-font-mono);
-}
-
-.injury-signal-row {
-  display: grid;
-  grid-template-columns: 36px 1fr;
-  gap: 0.7rem;
-  padding: 0.85rem 0.9rem;
-  border-bottom: 1px solid rgba(105, 150, 168, 0.08);
-}
-
-.injury-signal-row:last-child {
-  border-bottom: 0;
-}
-
-.injury-signal-rank {
-  color: rgba(117, 188, 184, 0.24);
-  font: 700 0.56rem/1.2 var(--app-font-mono);
-}
-
-.injury-signal-title {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.8rem;
-  align-items: flex-start;
-}
-
-.injury-signal-title strong {
-  color: rgba(241, 245, 243, 0.9);
-  font-size: 0.73rem;
-  font-weight: 690;
-}
-
-.injury-signal-title span {
-  white-space: nowrap;
-  color: rgba(223, 229, 229, 0.36);
-  font: 700 0.52rem/1 var(--app-font-mono);
-}
-
+.injury-finding-grid > div > span { color: rgba(107, 204, 193, 0.67); font: 700 0.52rem/1.2 var(--app-font-mono); letter-spacing: 0.1em; }
+.injury-panel-heading h3 { margin: 0.28rem 0 0; color: rgba(239, 244, 242, 0.9); font-size: 0.82rem; font-weight: 680; }
+.injury-panel-heading small { color: rgba(214, 224, 225, 0.24); font: 500 0.53rem/1 var(--app-font-mono); }
+.injury-signal-row { display: grid; grid-template-columns: 36px 1fr; gap: 0.7rem; padding: 0.85rem 0.9rem; border-bottom: 1px solid rgba(105, 150, 168, 0.08); }
+.injury-signal-row:last-child { border-bottom: 0; }
+.injury-signal-rank { color: rgba(117, 188, 184, 0.24); font: 700 0.56rem/1.2 var(--app-font-mono); }
+.injury-signal-title { display: flex; justify-content: space-between; gap: 0.8rem; align-items: flex-start; }
+.injury-signal-title strong { color: rgba(241, 245, 243, 0.9); font-size: 0.73rem; font-weight: 690; }
+.injury-signal-title span { white-space: nowrap; color: rgba(223, 229, 229, 0.36); font: 700 0.52rem/1 var(--app-font-mono); }
 .injury-signal-title span[data-prominence='Very prominent'] { color: #e99ba0; }
 .injury-signal-title span[data-prominence='Prominent'] { color: #cbb88f; }
 .injury-signal-title span[data-prominence='Relevant'] { color: #80cfc4; }
-
-.injury-signal-copy p {
-  margin: 0.36rem 0 0;
-  color: rgba(217, 227, 227, 0.4);
-  font-size: 0.65rem;
-  line-height: 1.5;
-}
-
-.injury-signal-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.28rem;
-  margin-top: 0.48rem;
-}
-
+.injury-signal-copy p { margin: 0.36rem 0 0; color: rgba(217, 227, 227, 0.4); font-size: 0.65rem; line-height: 1.5; }
+.injury-signal-tags { display: flex; flex-wrap: wrap; gap: 0.28rem; margin-top: 0.48rem; }
 .injury-signal-tags span,
-.injury-chip-grid span {
-  padding: 0.21rem 0.34rem;
-  border: 1px solid rgba(99, 158, 174, 0.1);
-  border-radius: 4px;
-  background: rgba(255,255,255,0.018);
-  color: rgba(220, 228, 228, 0.42);
-  font-size: 0.55rem;
-}
+.injury-chip-grid span { padding: 0.21rem 0.34rem; border: 1px solid rgba(99, 158, 174, 0.1); border-radius: 4px; background: rgba(255,255,255,0.018); color: rgba(220, 228, 228, 0.42); font-size: 0.55rem; }
+.injury-signal-copy small { display: block; margin-top: 0.42rem; color: rgba(216, 225, 226, 0.24); font-size: 0.55rem; line-height: 1.35; }
+.injury-side-column { display: grid; gap: 0.7rem; align-content: start; }
+.injury-side-column .injury-panel { padding: 0.78rem 0.82rem; }
+.injury-mini-heading { display: flex; align-items: center; gap: 0.4rem; }
+.injury-chip-grid { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.6rem; }
+.injury-demand-list { margin-top: 0.55rem; display: grid; gap: 0.38rem; }
+.injury-demand-list div { padding-left: 0.65rem; position: relative; color: rgba(216, 226, 226, 0.4); font-size: 0.61rem; line-height: 1.45; }
+.injury-demand-list div::before { content: ''; position: absolute; left: 0; top: 0.5em; width: 3px; height: 3px; border-radius: 50%; background: rgba(102, 202, 191, 0.45); }
+.injury-source-note p { margin: 0.48rem 0 0; color: rgba(213, 224, 224, 0.32); font-size: 0.59rem; line-height: 1.48; }
 
-.injury-signal-copy small {
-  display: block;
-  margin-top: 0.42rem;
-  color: rgba(216, 225, 226, 0.24);
-  font-size: 0.55rem;
-  line-height: 1.35;
-}
-
-.injury-side-column {
-  display: grid;
-  gap: 0.7rem;
-  align-content: start;
-}
-
-.injury-side-column .injury-panel {
-  padding: 0.78rem 0.82rem;
-}
-
-.injury-mini-heading {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.injury-chip-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-top: 0.6rem;
-}
-
-.injury-demand-list {
-  margin-top: 0.55rem;
-  display: grid;
-  gap: 0.38rem;
-}
-
-.injury-demand-list div {
-  padding-left: 0.65rem;
-  position: relative;
-  color: rgba(216, 226, 226, 0.4);
-  font-size: 0.61rem;
-  line-height: 1.45;
-}
-
-.injury-demand-list div::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.5em;
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(102, 202, 191, 0.45);
-}
-
-.injury-source-note p {
-  margin: 0.48rem 0 0;
-  color: rgba(213, 224, 224, 0.32);
-  font-size: 0.59rem;
-  line-height: 1.48;
-}
-
-.injury-finding-panel {
-  margin-top: 0.9rem;
-  padding: 0.88rem 0.92rem;
-  border-color: rgba(104, 194, 183, 0.17);
-}
-
-.injury-finding-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-start;
-}
-
-.injury-finding-head h3 {
-  margin: 0.3rem 0 0;
-  display: flex;
-  align-items: center;
-  gap: 0.42rem;
-  color: rgba(241, 245, 243, 0.9);
-  font-size: 0.78rem;
-}
-
-.injury-finding-head > strong {
-  color: #cbb88f;
-  font: 700 0.56rem/1 var(--app-font-mono);
-}
-
+.injury-finding-panel { margin-top: 0.9rem; padding: 0.88rem 0.92rem; border-color: rgba(104, 194, 183, 0.17); }
+.injury-finding-head { display: flex; justify-content: space-between; gap: 1rem; align-items: flex-start; }
+.injury-finding-head h3 { margin: 0.3rem 0 0; display: flex; align-items: center; gap: 0.42rem; color: rgba(241, 245, 243, 0.9); font-size: 0.78rem; }
+.injury-finding-head > strong { color: #cbb88f; font: 700 0.56rem/1 var(--app-font-mono); }
 .injury-finding-head > strong[data-relevance='High'] { color: #e99ba0; }
 .injury-finding-head > strong[data-relevance='Moderate'] { color: #cbb88f; }
 .injury-finding-head > strong[data-relevance='Context-dependent'] { color: #80cfc4; }
+.injury-finding-panel > p { margin: 0.5rem 0 0; color: rgba(216, 226, 226, 0.4); font-size: 0.65rem; line-height: 1.5; }
+.injury-finding-grid { margin-top: 0.75rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; }
+.injury-finding-grid > div { padding-top: 0.62rem; border-top: 1px solid rgba(105, 150, 168, 0.09); }
+.injury-finding-grid > div > div { margin-top: 0.38rem; color: rgba(218, 227, 227, 0.42); font-size: 0.61rem; line-height: 1.42; }
 
-.injury-finding-panel > p {
-  margin: 0.5rem 0 0;
-  color: rgba(216, 226, 226, 0.4);
-  font-size: 0.65rem;
-  line-height: 1.5;
-}
-
-.injury-finding-grid {
-  margin-top: 0.75rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.9rem;
-}
-
-.injury-finding-grid > div {
-  padding-top: 0.62rem;
-  border-top: 1px solid rgba(105, 150, 168, 0.09);
-}
-
-.injury-finding-grid > div > div {
-  margin-top: 0.38rem;
-  color: rgba(218, 227, 227, 0.42);
-  font-size: 0.61rem;
-  line-height: 1.42;
+@media (max-width: 1250px) {
+  .injury-measured-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 1050px) {
