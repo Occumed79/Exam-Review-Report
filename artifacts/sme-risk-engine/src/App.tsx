@@ -14,6 +14,7 @@ import StandardsMatrix from "@/pages/StandardsMatrixV2";
 import DrugChecker from "@/pages/DrugCheckerV2";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV2";
 import Citations from "@/pages/CitationFinderV2";
+import "@/pages/injury-osha.css";
 
 function AppRouter() {
   const store = useStore();
