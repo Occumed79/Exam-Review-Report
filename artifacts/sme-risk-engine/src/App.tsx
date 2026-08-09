@@ -13,7 +13,7 @@ import ConditionReference from "@/pages/ConditionReference";
 import StandardsMatrix from "@/pages/StandardsMatrixV2";
 import DrugChecker from "@/pages/DrugCheckerV2";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV2";
-import Citations from "@/pages/Citations";
+import Citations from "@/pages/CitationFinderV2";
 
 function AppRouter() {
   const store = useStore();
