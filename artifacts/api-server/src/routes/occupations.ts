@@ -28,7 +28,7 @@ router.get("/occupations/search", async (req, res) => {
     const results = await searchOccupations(query);
     res.json({ ok: true, source: "live-onet", results });
   } catch (error) {
-    req.log?.warn({ error }, "O*NET occupation search failed");
+    console.warn("O*NET occupation search failed", error);
     res.status(502).json({ ok: false, error: error instanceof Error ? error.message : "O*NET search failed." });
   }
 });
@@ -38,7 +38,7 @@ router.get("/occupations/:code", async (req, res) => {
     const profile = await getOccupationProfile(req.params.code);
     res.json({ ok: true, source: "live-onet", profile });
   } catch (error) {
-    req.log?.warn({ error }, "O*NET occupation profile failed");
+    console.warn("O*NET occupation profile failed", error);
     const message = error instanceof Error ? error.message : "O*NET profile lookup failed.";
     res.status(message.startsWith("Invalid") ? 400 : 502).json({ ok: false, error: message });
   }
