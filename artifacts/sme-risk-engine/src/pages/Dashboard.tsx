@@ -28,9 +28,9 @@ const TOOLS: Tool[] = [
   {
     href: "/injury-intelligence",
     title: "Injury Intelligence",
-    short: "Occupation injury patterns, body regions, mechanisms, and finding-to-job context.",
+    short: "Measured BLS injury surveillance, OSHA severe-injury context, occupation demands, and finding-to-job context.",
     icon: Activity,
-    keywords: "injury history occupation body part mechanism prevalence job finding shoulder back knee",
+    keywords: "injury history occupation body part mechanism prevalence incidence bls osha job finding shoulder back knee",
     tier: "intelligence",
   },
   {
@@ -44,9 +44,9 @@ const TOOLS: Tool[] = [
   {
     href: "/drugs",
     title: "Drug Checker",
-    short: "Medication class, interactions, and reviewed occupational flags.",
+    short: "Medication identity and reviewed occupational flags.",
     icon: Pill,
-    keywords: "drug medication rx sedating interactions pharmacy occupational",
+    keywords: "drug medication rx sedating pharmacy occupational rxnorm",
     tier: "review",
   },
   {
@@ -76,7 +76,7 @@ const TOOLS: Tool[] = [
   {
     href: "/aor",
     title: "AOR / Deployment",
-    short: "Country, climate, medical access, pharmacy, security, and evacuation context.",
+    short: "Country, climate, medical access, pharmacy, security, and evacuation reference context.",
     icon: Globe,
     keywords: "country deployment aor travel climate disease pharmacy evacuation medical access",
     tier: "review",
@@ -86,7 +86,7 @@ const TOOLS: Tool[] = [
     title: "Citation Finder",
     short: "Find supporting literature and source material for a review question.",
     icon: BookMarked,
-    keywords: "citation evidence source literature research support",
+    keywords: "citation evidence source literature research support pubmed",
     tier: "evidence",
   },
   {
@@ -109,8 +109,8 @@ const TOOLS: Tool[] = [
 
 type IntelligenceStatus = {
   onet?: { configured?: boolean };
-  bls?: { configured?: boolean; authMode?: string };
-  osha?: { importEnabled?: boolean; dataDirConfigured?: boolean };
+  bls?: { configured?: boolean; measuredTables?: boolean };
+  osha?: { publicSevereInjuryData?: boolean };
 };
 
 function StatusDot({ active }: { active: boolean }) {
@@ -164,12 +164,12 @@ export default function Dashboard() {
           <p>Independent occupational, clinical, deployment, and evidence tools. Open the one you need; no case setup or required sequence.</p>
         </div>
 
-        <div className="source-status" aria-label="Connected intelligence sources">
+        <div className="source-status" aria-label="Intelligence source availability">
           <div className="source-status-label">SOURCE STATUS</div>
           <div className="source-status-items">
             <span><StatusDot active={Boolean(status?.onet?.configured)} /> O*NET</span>
-            <span><StatusDot active={Boolean(status?.bls?.configured)} /> BLS</span>
-            <span><StatusDot active={Boolean(status?.osha?.importEnabled || status?.osha?.dataDirConfigured)} /> OSHA</span>
+            <span><StatusDot active={Boolean(status?.bls?.measuredTables || status?.bls?.configured)} /> BLS</span>
+            <span><StatusDot active={Boolean(status?.osha?.publicSevereInjuryData)} /> OSHA</span>
           </div>
         </div>
       </header>
