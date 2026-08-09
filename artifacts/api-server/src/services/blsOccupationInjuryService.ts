@@ -12,7 +12,7 @@ export type InjuryMetric = {
 export type InjuryDatasetResult = {
   id: string;
   label: string;
-  dimension: "nature" | "body-part" | "source" | "event" | "fatal-event" | "fatal-rate";
+  dimension: "nature" | "body-part" | "source" | "event" | "industry" | "fatal-event" | "fatal-rate";
   measure: "count" | "rate";
   unit: string;
   referencePeriod: string;
@@ -77,6 +77,15 @@ const TABLES: TableDefinition[] = [
     sourceUrl: "https://www.bls.gov/iif/nonfatal-injuries-and-illnesses-tables/case-and-demographic-characteristics-table-r12-2023-2024.xlsx",
   },
   {
+    id: "R44",
+    label: "Nonfatal cases by industry division",
+    dimension: "industry",
+    measure: "count",
+    unit: "estimated cases",
+    referencePeriod: "2023-2024",
+    sourceUrl: "https://www.bls.gov/iif/nonfatal-injuries-and-illnesses-tables/case-and-demographic-characteristics-table-r44-2023-2024.xlsx",
+  },
+  {
     id: "R98",
     label: "Nonfatal rates by nature",
     dimension: "nature",
@@ -116,7 +125,7 @@ const TABLES: TableDefinition[] = [
 
 const cache = new Map<string, CachedTable>();
 
-function normalizeText(value: SpreadsheetCell): string {
+function normalizeText(value: SpreadsheetCell | undefined): string {
   if (typeof value === "string") return value.replace(/\s+/g, " ").trim();
   if (typeof value === "number") return String(value);
   if (typeof value === "boolean") return value ? "true" : "false";
@@ -129,7 +138,7 @@ function normalizeSoc(code: string): string {
   return match?.[1] ?? clean;
 }
 
-function numericValue(value: SpreadsheetCell): number | null {
+function numericValue(value: SpreadsheetCell | undefined): number | null {
   if (typeof value === "number" && Number.isFinite(value)) return value;
   if (typeof value !== "string") return null;
   const clean = value.replace(/,/g, "").trim();
@@ -169,7 +178,8 @@ function parseOccupationRows(buffer: Buffer): ParsedOccupationRow[] {
   const firstSoc = rowSocCell(sheetRows[firstDataIndex]);
   if (!firstSoc) throw new Error("Unable to identify the occupation-code column.");
   const codeColumn = firstSoc.column;
-  const maxColumn = Math.max(...sheetRows.flatMap((row) => [...row.cells.keys()]));
+  const allColumns = sheetRows.flatMap((row) => [...row.cells.keys()]);
+  const maxColumn = allColumns.length ? Math.max(...allColumns) : codeColumn;
   const headers = new Map<number, string>();
   for (let column = codeColumn + 1; column <= maxColumn; column += 1) headers.set(column, headerForColumn(headerRows, column));
 
@@ -251,9 +261,7 @@ async function resolveDataset(definition: TableDefinition, requestedCode: string
   try {
     const rows = await fetchTable(definition);
     const match = findOccupationRow(rows, requestedCode);
-    if (!match) {
-      return { ...definition, status: "unavailable", top: [], error: "No matching detailed or major-group SOC row was published in this table." };
-    }
+    if (!match) return { ...definition, status: "unavailable", top: [], error: "No matching detailed or major-group SOC row was published in this table." };
     const summary = summarizeMetrics(match.row.metrics);
     return {
       ...definition,
@@ -265,13 +273,43 @@ async function resolveDataset(definition: TableDefinition, requestedCode: string
       top: summary.top,
     };
   } catch (error) {
-    return {
-      ...definition,
-      status: "unavailable",
-      top: [],
-      error: error instanceof Error ? error.message : "Unable to load the BLS dataset.",
-    };
+    return { ...definition, status: "unavailable", top: [], error: error instanceof Error ? error.message : "Unable to load the BLS dataset." };
   }
+}
+
+const INDUSTRY_NAICS_MAP: Array<{ pattern: RegExp; sectors: string[] }> = [
+  { pattern: /agriculture|forestry|fishing|hunting/i, sectors: ["11"] },
+  { pattern: /mining|quarrying|oil and gas/i, sectors: ["21"] },
+  { pattern: /utilities/i, sectors: ["22"] },
+  { pattern: /construction/i, sectors: ["23"] },
+  { pattern: /manufacturing/i, sectors: ["31", "32", "33"] },
+  { pattern: /wholesale trade/i, sectors: ["42"] },
+  { pattern: /retail trade/i, sectors: ["44", "45"] },
+  { pattern: /transportation|warehousing/i, sectors: ["48", "49"] },
+  { pattern: /information/i, sectors: ["51"] },
+  { pattern: /finance|insurance/i, sectors: ["52"] },
+  { pattern: /real estate|rental|leasing/i, sectors: ["53"] },
+  { pattern: /professional|scientific|technical/i, sectors: ["54"] },
+  { pattern: /management of companies/i, sectors: ["55"] },
+  { pattern: /administrative|support|waste/i, sectors: ["56"] },
+  { pattern: /educational services/i, sectors: ["61"] },
+  { pattern: /health care|social assistance/i, sectors: ["62"] },
+  { pattern: /arts|entertainment|recreation/i, sectors: ["71"] },
+  { pattern: /accommodation|food services/i, sectors: ["72"] },
+  { pattern: /other services/i, sectors: ["81"] },
+  { pattern: /public administration/i, sectors: ["92"] },
+];
+
+function suggestedNaicsSectors(datasets: InjuryDatasetResult[]): string[] {
+  const industry = datasets.find((dataset) => dataset.id === "R44" && dataset.status === "available");
+  if (!industry) return [];
+  const sectors: string[] = [];
+  for (const metric of industry.top) {
+    const mapping = INDUSTRY_NAICS_MAP.find(({ pattern }) => pattern.test(metric.label));
+    for (const sector of mapping?.sectors ?? []) if (!sectors.includes(sector)) sectors.push(sector);
+    if (sectors.length >= 6) break;
+  }
+  return sectors;
 }
 
 export function getBlsMeasuredInjuryStatus() {
@@ -290,9 +328,7 @@ export async function getOccupationInjuryEvidence(socCode: string) {
 
   const datasets = await Promise.all(TABLES.map((definition) => resolveDataset(definition, normalized)));
   const available = datasets.filter((dataset) => dataset.status === "available");
-  const matchedOccupation = available.find((dataset) => dataset.matchLevel === "exact")?.occupation
-    ?? available[0]?.occupation
-    ?? null;
+  const matchedOccupation = available.find((dataset) => dataset.matchLevel === "exact")?.occupation ?? available[0]?.occupation ?? null;
 
   return {
     ok: true,
@@ -301,6 +337,7 @@ export async function getOccupationInjuryEvidence(socCode: string) {
     matchedOccupation,
     checkedAt: new Date().toISOString(),
     datasets,
+    suggestedNaicsSectors: suggestedNaicsSectors(datasets),
     source: {
       agency: "U.S. Bureau of Labor Statistics",
       program: "Survey of Occupational Injuries and Illnesses / Census of Fatal Occupational Injuries",
