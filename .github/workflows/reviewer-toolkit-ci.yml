@@ -73,9 +73,24 @@ jobs:
 
           grep -q '"ok":true' /tmp/health.json
           curl --fail --silent --show-error http://127.0.0.1:4173/api/intelligence/status | grep -q '"ok":true'
-          curl --fail --silent --show-error http://127.0.0.1:4173/ > /tmp/root.html
-          curl --fail --silent --show-error http://127.0.0.1:4173/injury-intelligence > /tmp/injury.html
-          curl --fail --silent --show-error http://127.0.0.1:4173/job-intelligence > /tmp/job.html
-          grep -q 'id="root"' /tmp/root.html
-          grep -q 'id="root"' /tmp/injury.html
-          grep -q 'id="root"' /tmp/job.html
+
+          ROUTES=(
+            "/"
+            "/injury-intelligence"
+            "/job-intelligence"
+            "/drugs"
+            "/calculator"
+            "/guidelines"
+            "/matrix"
+            "/aor"
+            "/citations"
+            "/sources"
+            "/guideline-editor"
+            "/settings"
+          )
+
+          for route in "${ROUTES[@]}"; do
+            output="/tmp/route-$(echo "$route" | tr '/ ' '__').html"
+            curl --fail --silent --show-error "http://127.0.0.1:4173${route}" > "$output"
+            grep -q 'id="root"' "$output"
+          done
