@@ -36,7 +36,7 @@ const TOOLS: Tool[] = [
   {
     href: "/job-intelligence",
     title: "Job Intelligence",
-    short: "Physical, cognitive, safety-sensitive, and environmental job demands.",
+    short: "Live O*NET occupation lookup, functions, physical demands, and work context.",
     icon: Briefcase,
     keywords: "job occupation onet duties essential functions physical cognitive safety demand",
     tier: "intelligence",
@@ -44,7 +44,7 @@ const TOOLS: Tool[] = [
   {
     href: "/drugs",
     title: "Drug Checker",
-    short: "Medication class, interactions, and occupational relevance.",
+    short: "Medication class, interactions, and reviewed occupational flags.",
     icon: Pill,
     keywords: "drug medication rx sedating interactions pharmacy occupational",
     tier: "review",
@@ -52,17 +52,17 @@ const TOOLS: Tool[] = [
   {
     href: "/calculator",
     title: "Clinical Calculators",
-    short: "Run focused calculations using only the values required.",
+    short: "ASCVD, BMI, eGFR, Framingham, and METs with only required inputs.",
     icon: Calculator,
-    keywords: "calculator bmi blood pressure cardiac clinical value",
+    keywords: "calculator bmi cardiac clinical value ascvd egfr framingham mets",
     tier: "review",
   },
   {
     href: "/guidelines",
-    title: "Guideline Library",
-    short: "Condition-focused reviewer guidance and supporting sources.",
+    title: "Condition Reference",
+    short: "Condition triggers, reviewer questions, internal guidance, and live PubMed results.",
     icon: BookOpen,
-    keywords: "guideline condition medical guidance standard rule",
+    keywords: "guideline condition medical guidance trigger questions pubmed standard rule",
     tier: "review",
   },
   {
@@ -84,7 +84,7 @@ const TOOLS: Tool[] = [
   {
     href: "/citations",
     title: "Citation Finder",
-    short: "Find support for the review question you are already working through.",
+    short: "Find supporting literature and source material for a review question.",
     icon: BookMarked,
     keywords: "citation evidence source literature research support",
     tier: "evidence",
@@ -100,7 +100,7 @@ const TOOLS: Tool[] = [
   {
     href: "/guideline-editor",
     title: "Guideline Editor",
-    short: "Maintain reviewed internal guidance independent of any examinee.",
+    short: "Maintain reviewed internal guidance independently from an examinee.",
     icon: ShieldCheck,
     keywords: "editor internal guideline save guidance",
     tier: "evidence",
@@ -139,12 +139,10 @@ export default function Dashboard() {
     fetch("/api/intelligence/status")
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
-        if (!cancelled && data) setStatus(data as IntelligenceStatus);
+        if (!cancelled && data && typeof data === "object") setStatus(data as IntelligenceStatus);
       })
       .catch(() => undefined);
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
   const matches = useMemo(() => {
@@ -162,11 +160,8 @@ export default function Dashboard() {
       <header className="workbench-header">
         <div>
           <div className="workbench-kicker">EXAM REVIEWER / WORKBENCH</div>
-          <h1>Decision support without the data-entry tax.</h1>
-          <p>
-            Start with the question in front of you. The toolkit supplies occupational, clinical,
-            deployment, and evidence context without creating a second case record.
-          </p>
+          <h1>Exam Reviewer Workbench</h1>
+          <p>Independent occupational, clinical, deployment, and evidence tools. Open the one you need; no case setup or required sequence.</p>
         </div>
 
         <div className="source-status" aria-label="Connected intelligence sources">
@@ -186,13 +181,11 @@ export default function Dashboard() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter" && matches.length === 1) setLocation(matches[0].href);
-            }}
-            placeholder="Try: medication, firefighter, deployment, blood pressure, citation…"
+            onKeyDown={(event) => { if (event.key === "Enter" && matches.length === 1) setLocation(matches[0].href); }}
+            placeholder="Medication, occupation, injury, deployment, calculator, citation…"
             aria-label="Find a reviewer tool"
           />
-          <span className="command-hint">search by the question you have</span>
+          <span className="command-hint">tool / topic search</span>
         </div>
 
         {matches.length > 0 && (
@@ -202,10 +195,7 @@ export default function Dashboard() {
               return (
                 <button key={tool.href} onClick={() => setLocation(tool.href)}>
                   <span className="command-result-icon"><Icon size={16} /></span>
-                  <span>
-                    <strong>{tool.title}</strong>
-                    <small>{tool.short}</small>
-                  </span>
+                  <span><strong>{tool.title}</strong><small>{tool.short}</small></span>
                   <ArrowRight size={15} />
                 </button>
               );
@@ -216,28 +206,17 @@ export default function Dashboard() {
 
       <section className="workbench-section">
         <div className="section-heading-row">
-          <div>
-            <div className="section-eyebrow">PRIMARY INTELLIGENCE</div>
-            <h2>Understand the work before judging the finding.</h2>
-          </div>
-          <div className="section-note">1 input → occupational context</div>
+          <div><div className="section-eyebrow">OCCUPATIONAL INTELLIGENCE</div><h2>Occupation and injury data</h2></div>
+          <div className="section-note">job title → occupational context</div>
         </div>
 
         <div className="intelligence-grid">
           {intelligence.map((tool, index) => {
             const Icon = tool.icon;
             return (
-              <button
-                key={tool.href}
-                className={`intelligence-lane ${index === 0 ? "primary" : ""}`}
-                onClick={() => setLocation(tool.href)}
-              >
+              <button key={tool.href} className={`intelligence-lane ${index === 0 ? "primary" : ""}`} onClick={() => setLocation(tool.href)}>
                 <div className="lane-icon"><Icon size={21} /></div>
-                <div className="lane-copy">
-                  <div className="lane-number">0{index + 1}</div>
-                  <h3>{tool.title}</h3>
-                  <p>{tool.short}</p>
-                </div>
+                <div className="lane-copy"><div className="lane-number">0{index + 1}</div><h3>{tool.title}</h3><p>{tool.short}</p></div>
                 <ArrowRight className="lane-arrow" size={20} />
               </button>
             );
@@ -247,58 +226,24 @@ export default function Dashboard() {
 
       <div className="workbench-columns">
         <section className="workbench-section compact-section">
-          <div className="section-heading-row compact">
-            <div>
-              <div className="section-eyebrow">REVIEW UTILITIES</div>
-              <h2>Answer the immediate question.</h2>
-            </div>
-          </div>
-
+          <div className="section-heading-row compact"><div><div className="section-eyebrow">REVIEW UTILITIES</div><h2>Clinical and operational tools</h2></div></div>
           <div className="tool-list">
             {reviewTools.map((tool) => {
               const Icon = tool.icon;
-              return (
-                <button key={tool.href} className="tool-row" onClick={() => setLocation(tool.href)}>
-                  <span className="tool-row-icon"><Icon size={16} /></span>
-                  <span className="tool-row-copy">
-                    <strong>{tool.title}</strong>
-                    <small>{tool.short}</small>
-                  </span>
-                  <ArrowRight size={14} />
-                </button>
-              );
+              return <button key={tool.href} className="tool-row" onClick={() => setLocation(tool.href)}><span className="tool-row-icon"><Icon size={16} /></span><span className="tool-row-copy"><strong>{tool.title}</strong><small>{tool.short}</small></span><ArrowRight size={14} /></button>;
             })}
           </div>
         </section>
 
         <section className="workbench-section compact-section">
-          <div className="section-heading-row compact">
-            <div>
-              <div className="section-eyebrow">EVIDENCE & KNOWLEDGE</div>
-              <h2>Verify what supports the reasoning.</h2>
-            </div>
-          </div>
-
+          <div className="section-heading-row compact"><div><div className="section-eyebrow">EVIDENCE & KNOWLEDGE</div><h2>Sources and internal guidance</h2></div></div>
           <div className="tool-list">
             {evidenceTools.map((tool) => {
               const Icon = tool.icon;
-              return (
-                <button key={tool.href} className="tool-row" onClick={() => setLocation(tool.href)}>
-                  <span className="tool-row-icon"><Icon size={16} /></span>
-                  <span className="tool-row-copy">
-                    <strong>{tool.title}</strong>
-                    <small>{tool.short}</small>
-                  </span>
-                  <ArrowRight size={14} />
-                </button>
-              );
+              return <button key={tool.href} className="tool-row" onClick={() => setLocation(tool.href)}><span className="tool-row-icon"><Icon size={16} /></span><span className="tool-row-copy"><strong>{tool.title}</strong><small>{tool.short}</small></span><ArrowRight size={14} /></button>;
             })}
           </div>
-
-          <div className="workbench-rule">
-            <span>PRODUCT RULE</span>
-            <p>No case creation. No packet upload. No duplicated demographics. No required sequence.</p>
-          </div>
+          <div className="workbench-rule"><span>WORKFLOW</span><p>No case creation · no packet upload · no duplicated demographics · no required sequence</p></div>
         </section>
       </div>
     </div>
