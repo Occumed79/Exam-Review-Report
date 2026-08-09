@@ -1,12 +1,16 @@
 name: Live Occupational Source Contracts
 
 on:
-  pull_request:
-    branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '17 13 * * 1-5'
 
 permissions:
   contents: read
+
+concurrency:
+  group: live-occupational-source-contracts
+  cancel-in-progress: true
 
 jobs:
   source-contracts:
