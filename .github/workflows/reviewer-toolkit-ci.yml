@@ -72,7 +72,18 @@ jobs:
           fi
 
           grep -q '"ok":true' /tmp/health.json
-          curl --fail --silent --show-error http://127.0.0.1:4173/api/intelligence/status | grep -q '"ok":true'
+          curl --fail --silent --show-error http://127.0.0.1:4173/api/intelligence/status > /tmp/intelligence-status.json
+          grep -q '"ok":true' /tmp/intelligence-status.json
+          grep -q '"measuredTables":true' /tmp/intelligence-status.json
+          grep -q '"publicSevereInjuryData":true' /tmp/intelligence-status.json
+
+          BLS_BAD_STATUS=$(curl --silent --output /tmp/bls-bad.json --write-out '%{http_code}' http://127.0.0.1:4173/api/injuries/occupation/bad)
+          test "$BLS_BAD_STATUS" = "400"
+          grep -q '"ok":false' /tmp/bls-bad.json
+
+          OSHA_BAD_STATUS=$(curl --silent --output /tmp/osha-bad.json --write-out '%{http_code}' http://127.0.0.1:4173/api/injuries/osha-severe)
+          test "$OSHA_BAD_STATUS" = "400"
+          grep -q '"ok":false' /tmp/osha-bad.json
 
           ROUTES=(
             "/"
