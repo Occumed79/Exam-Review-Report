@@ -9,7 +9,7 @@ import Settings from "@/pages/Settings";
 import AORMonitor from "@/pages/AORMonitor";
 import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
-import GuidelineLibrary from "@/pages/GuidelineLibrary";
+import ConditionReference from "@/pages/ConditionReference";
 import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV2";
@@ -36,7 +36,7 @@ function AppRouter() {
             <InjuryIntelligence />
           </Route>
           <Route path="/guidelines">
-            <GuidelineLibrary />
+            <ConditionReference />
           </Route>
           <Route path="/matrix">
             <ClearanceMatrix />
