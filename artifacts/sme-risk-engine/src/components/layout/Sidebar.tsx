@@ -6,15 +6,16 @@ import {
 
 const NAV_MAIN = [
   { href: "/", label: "Reviewer Tools", icon: LayoutGrid },
+  { href: "/document-assistant", label: "Document Assistant", icon: FileSearch },
   { href: "/job-intelligence", label: "Job Intelligence", icon: Briefcase },
   { href: "/guidelines", label: "Guideline Library", icon: BookOpen },
-  { href: "/matrix", label: "Clearance Matrix", icon: Grid3x3 },
+  { href: "/matrix", label: "Standards Matrix", icon: Grid3x3 },
   { href: "/drugs", label: "Drug Checker", icon: Pill },
   { href: "/calculator", label: "Clinical Calculators", icon: Calculator },
   { href: "/aor", label: "AOR / Deployment", icon: Globe },
   { href: "/citations", label: "Citation Finder", icon: BookMarked },
   { href: "/sources", label: "Source Library", icon: Database },
-  { href: "/guideline-editor", label: "Guideline Editor", icon: FileSearch },
+  { href: "/guideline-editor", label: "Guideline Editor", icon: ShieldCheck },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
