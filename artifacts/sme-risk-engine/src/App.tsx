@@ -7,6 +7,7 @@ import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
 import AORMonitor from "@/pages/AORMonitor";
 import JobIntelligence from "@/pages/JobIntelligence";
+import InjuryIntelligence from "@/pages/InjuryIntelligence";
 import GuidelineLibrary from "@/pages/GuidelineLibrary";
 import ClearanceMatrix from "@/pages/ClearanceMatrix";
 import DrugChecker from "@/pages/DrugChecker";
@@ -27,6 +28,9 @@ function AppRouter() {
         </Route>
         <Route path="/job-intelligence">
           <JobIntelligence />
+        </Route>
+        <Route path="/injury-intelligence">
+          <InjuryIntelligence />
         </Route>
         <Route path="/guidelines">
           <GuidelineLibrary />
