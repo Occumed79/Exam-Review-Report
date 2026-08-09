@@ -1,0 +1,97 @@
+name: Live Occupational Source Contracts
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          run_install: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build application
+        run: |
+          pnpm --filter @workspace/sme-risk-engine run build
+          pnpm --filter @workspace/api-server run build
+
+      - name: Start production server
+        shell: bash
+        run: |
+          PORT=4183 NODE_ENV=production pnpm --filter @workspace/api-server run start > /tmp/source-contract-server.log 2>&1 &
+          echo $! > /tmp/source-contract-server.pid
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:4183/api/health > /dev/null; then
+              exit 0
+            fi
+            sleep 0.5
+          done
+          cat /tmp/source-contract-server.log
+          exit 1
+
+      - name: Validate live BLS occupation tables
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 120 \
+            http://127.0.0.1:4183/api/injuries/occupation/33-2011.00 \
+            > /tmp/bls-live.json
+          python - <<'PY'
+          import json
+          data = json.load(open('/tmp/bls-live.json'))
+          assert data.get('ok') is True, data
+          datasets = data.get('datasets') or []
+          available = [d for d in datasets if d.get('status') == 'available']
+          assert len(available) >= 2, data
+          ids = {d.get('id') for d in available}
+          assert ids & {'R9', 'R10', 'R11', 'R12', 'R44', 'R98', 'R100'}, data
+          assert any((d.get('top') or []) or d.get('total') is not None for d in available), data
+          print('BLS live contract OK:', sorted(ids))
+          PY
+
+      - name: Validate live OSHA Severe Injury Reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --max-time 120 \
+            'http://127.0.0.1:4183/api/injuries/osha-severe?sectors=23' \
+            > /tmp/osha-live.json
+          python - <<'PY'
+          import json
+          data = json.load(open('/tmp/osha-live.json'))
+          assert data.get('ok') is True, data
+          assert data.get('reportCount', 0) > 0, data
+          assert data.get('sectors') == ['23'], data
+          assert data.get('source', {}).get('agency') == 'Occupational Safety and Health Administration', data
+          print('OSHA live contract OK:', data.get('reportCount'), 'reports')
+          PY
+
+      - name: Stop production server
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/source-contract-server.pid ]; then
+            kill "$(cat /tmp/source-contract-server.pid)" 2>/dev/null || true
+          fi
