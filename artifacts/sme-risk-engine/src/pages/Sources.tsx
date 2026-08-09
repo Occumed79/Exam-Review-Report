@@ -51,7 +51,7 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.75rem" }}>
         <div>
           <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>Source Library</h1>
-          <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)" }}>Reference sources, agency publications, and supporting literature for SME review.</p>
+          <p style={{ fontSize: "0.875rem", color: "rgba(255,255,255,0.45)" }}>Reusable agency publications, standards, literature, and reviewer reference sources. No examinee record is stored here.</p>
         </div>
         <button className="glow-btn" onClick={() => setEditing(blank())} data-testid="btn-new-source" style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <Plus size={16} />
