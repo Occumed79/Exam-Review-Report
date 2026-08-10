@@ -8,7 +8,13 @@ export type LiveOccupationMatch = {
 
 export type IntelligenceStatus = {
   ok: boolean;
-  onet: { configured: boolean; source: string };
+  onet: {
+    configured: boolean;
+    source: string;
+    authMode?: string;
+    keyVariable?: string;
+    note?: string;
+  };
   bls: { configured: boolean; authMode: string; source: string; note: string; measuredTables?: boolean };
   osha: { publicSevereInjuryData: boolean; source: string; note: string };
 };
@@ -118,7 +124,13 @@ export async function fetchIntelligenceStatus(): Promise<IntelligenceStatus> {
 
   return {
     ok: asBoolean(payload.ok),
-    onet: { configured: asBoolean(onet.configured), source: asString(onet.source, 'O*NET') },
+    onet: {
+      configured: asBoolean(onet.configured),
+      source: asString(onet.source, 'O*NET'),
+      authMode: asString(onet.authMode) || undefined,
+      keyVariable: asString(onet.keyVariable) || undefined,
+      note: asString(onet.note) || undefined,
+    },
     bls: {
       configured: asBoolean(bls.configured),
       authMode: asString(bls.authMode, 'public'),
