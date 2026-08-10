@@ -18,6 +18,7 @@ import "@/pages/injury-osha.css";
 import "@/pages/reviewer-readability.css";
 import "@/pages/reviewer-effects.css";
 import "@/pages/workbench-showcase.css";
+import "@/pages/tool-showcase-effects.css";
 
 function AppRouter() {
   const store = useStore();
