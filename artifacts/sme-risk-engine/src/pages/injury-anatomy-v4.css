@@ -1,0 +1,322 @@
+@keyframes real-holo-float {
+  0%,100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.006); }
+}
+
+@keyframes real-holo-scan {
+  0% { transform: translateY(-120%); opacity: 0; }
+  12% { opacity: .65; }
+  58% { opacity: .28; }
+  100% { transform: translateY(620%); opacity: 0; }
+}
+
+@keyframes real-holo-ring {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+@keyframes real-holo-pulse {
+  0%,100% { opacity: .34; filter: blur(18px); }
+  50% { opacity: .52; filter: blur(23px); }
+}
+
+.anatomy-real {
+  grid-template-columns: minmax(0, 1.5fr) minmax(310px, .5fr);
+  border-color: rgba(75, 233, 215, .26);
+  background: linear-gradient(130deg, rgba(5, 24, 33, .985), rgba(3, 11, 18, .995));
+  box-shadow: 0 24px 70px rgba(0,0,0,.36), 0 0 62px rgba(52, 219, 198, .055), inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.anatomy-real-stage {
+  min-height: 690px;
+  background:
+    radial-gradient(circle at 47% 46%, rgba(62, 238, 214, .10), transparent 30%),
+    radial-gradient(circle at 51% 58%, rgba(44, 113, 214, .075), transparent 40%),
+    linear-gradient(rgba(79, 165, 173, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 165, 173, .035) 1px, transparent 1px),
+    #04121a;
+  background-size: auto, auto, 25px 25px, 25px 25px, auto;
+}
+
+.anatomy-real-controls {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+}
+
+.hologram-view-toggle {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid rgba(98, 226, 209, .14);
+  border-radius: 999px;
+  background: rgba(2, 10, 15, .58);
+}
+
+.hologram-view-toggle button {
+  border: 0;
+  border-radius: 999px;
+  padding: .34rem .55rem;
+  background: transparent;
+  color: rgba(211, 230, 228, .42);
+  font: 700 .53rem/1 var(--app-font-mono);
+  letter-spacing: .08em;
+  cursor: pointer;
+}
+
+.hologram-view-toggle button.active {
+  color: #b8fff5;
+  background: rgba(75, 220, 202, .095);
+  box-shadow: 0 0 14px rgba(64, 220, 201, .08);
+}
+
+.anatomy-real-visual {
+  position: relative;
+  min-height: 610px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: .1rem 1rem 1rem;
+}
+
+.anatomy-real-visual::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 330px;
+  height: 500px;
+  transform: translate(-50%, -50%);
+  border-radius: 48%;
+  background: radial-gradient(ellipse, rgba(67, 255, 228, .18), rgba(67, 255, 228, .035) 42%, transparent 72%);
+  animation: real-holo-pulse 4.8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.anatomy-real-body {
+  position: relative;
+  z-index: 4;
+  width: min(420px, 54vw);
+  height: 570px;
+  display: grid;
+  place-items: center;
+  animation: real-holo-float 5.6s ease-in-out infinite;
+}
+
+.anatomy-real-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  user-select: none;
+  pointer-events: none;
+}
+
+.anatomy-real-img.glow-layer {
+  opacity: .6;
+  filter:
+    grayscale(1)
+    sepia(1)
+    saturate(5.5)
+    hue-rotate(116deg)
+    brightness(1.9)
+    contrast(1.6)
+    blur(7px)
+    drop-shadow(0 0 14px rgba(70, 255, 229, .9))
+    drop-shadow(0 0 30px rgba(70, 255, 229, .52));
+  mix-blend-mode: screen;
+}
+
+.anatomy-real-img.core-layer {
+  opacity: .84;
+  filter:
+    grayscale(.72)
+    sepia(.82)
+    saturate(4.8)
+    hue-rotate(112deg)
+    brightness(1.32)
+    contrast(1.46)
+    drop-shadow(0 0 4px rgba(204, 255, 248, .92))
+    drop-shadow(0 0 13px rgba(80, 255, 228, .86))
+    drop-shadow(0 0 28px rgba(57, 204, 225, .34));
+  mix-blend-mode: screen;
+}
+
+.anatomy-real-body[data-view='back'] .core-layer,
+.anatomy-real-body[data-view='back'] .glow-layer {
+  filter:
+    grayscale(1)
+    sepia(1)
+    saturate(5.4)
+    hue-rotate(112deg)
+    brightness(1.65)
+    contrast(1.7)
+    drop-shadow(0 0 5px rgba(210,255,250,.9))
+    drop-shadow(0 0 15px rgba(68,255,227,.85));
+}
+
+.anatomy-real-hotspot {
+  position: absolute;
+  z-index: 8;
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: 46%;
+  background:
+    radial-gradient(ellipse at center,
+      color-mix(in srgb, var(--heat-color) 72%, transparent) 0%,
+      color-mix(in srgb, var(--heat-color) 35%, transparent) 42%,
+      transparent 72%);
+  opacity: calc(.28 + var(--heat-strength) * .55);
+  cursor: pointer;
+  mix-blend-mode: screen;
+  filter: drop-shadow(0 0 9px var(--heat-color));
+  transition: opacity .16s ease, filter .16s ease, transform .16s ease;
+}
+
+.anatomy-real-hotspot:hover,
+.anatomy-real-hotspot.active {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.035);
+  filter: drop-shadow(0 0 12px var(--heat-color)) drop-shadow(0 0 25px var(--heat-color));
+  outline: 1px solid color-mix(in srgb, var(--heat-color) 74%, white 26%);
+}
+
+.anatomy-real-hud {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 52%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.anatomy-real-hud::before,
+.anatomy-real-hud::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  inset: 11%;
+  border: 1px dashed rgba(102, 241, 222, .12);
+}
+
+.hud-a {
+  width: 500px;
+  height: 500px;
+  border: 1px solid rgba(76, 240, 218, .18);
+  border-left-color: transparent;
+  border-bottom-color: rgba(81, 142, 223, .14);
+  animation: real-holo-ring 24s linear infinite;
+}
+.hud-b {
+  width: 395px;
+  height: 395px;
+  border: 8px solid transparent;
+  border-top-color: rgba(63, 229, 208, .13);
+  border-right-color: rgba(59, 124, 211, .1);
+  animation: real-holo-ring 17s linear infinite reverse;
+}
+.hud-c {
+  width: 286px;
+  height: 286px;
+  border: 1px dotted rgba(103, 245, 225, .15);
+  animation: real-holo-ring 12s linear infinite;
+}
+
+.anatomy-real-scan {
+  position: absolute;
+  z-index: 6;
+  left: 20%;
+  right: 20%;
+  top: 5%;
+  height: 60px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(88, 255, 229, .04) 28%, rgba(162, 255, 244, .33) 50%, rgba(88, 255, 229, .04) 72%, transparent);
+  animation: real-holo-scan 5.8s linear infinite;
+  mix-blend-mode: screen;
+}
+
+.anatomy-real-projector {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 21px;
+  width: 250px;
+  height: 72px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  border: 1px solid rgba(95, 248, 226, .28);
+  box-shadow: 0 0 30px rgba(72, 241, 216, .16), inset 0 0 28px rgba(72, 241, 216, .08);
+}
+
+.anatomy-real-projector::before,
+.anatomy-real-projector::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(99, 236, 218, .18);
+}
+.anatomy-real-projector::before { width: 72%; height: 62%; }
+.anatomy-real-projector::after { width: 44%; height: 34%; box-shadow: 0 0 16px rgba(92, 255, 229, .22); }
+.anatomy-real-projector i { position: absolute; left: 50%; top: 50%; width: 4px; height: 4px; border-radius: 50%; background: #9affef; box-shadow: 0 0 10px rgba(154,255,239,.85); }
+.anatomy-real-projector i:nth-child(1) { transform: translate(-92px,-9px); }
+.anatomy-real-projector i:nth-child(2) { transform: translate(86px,11px); }
+.anatomy-real-projector i:nth-child(3) { transform: translate(-2px,18px); }
+
+.anatomy-real-callout {
+  bottom: 28px;
+  z-index: 12;
+  background: rgba(3, 18, 24, .92);
+  border-color: rgba(79, 235, 215, .28);
+  box-shadow: 0 12px 34px rgba(0,0,0,.32), 0 0 24px rgba(69, 230, 210, .06);
+}
+
+.anatomy-real-credit {
+  position: absolute;
+  left: 1rem;
+  bottom: .55rem;
+  z-index: 12;
+  max-width: 72%;
+  color: rgba(185, 207, 209, .28);
+  font-size: .49rem;
+  line-height: 1.35;
+}
+
+.anatomy-real-data {
+  background:
+    radial-gradient(circle at 20% 4%, rgba(63, 225, 205, .055), transparent 28%),
+    linear-gradient(180deg, rgba(5, 20, 28, .99), rgba(3, 13, 20, .995));
+}
+
+.anatomy-real-fallback {
+  position: absolute;
+  inset: 16% 12%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  border: 1px dashed rgba(85, 212, 198, .18);
+  color: rgba(99, 220, 208, .5);
+  text-align: center;
+}
+.anatomy-real-fallback strong { color: rgba(236,244,241,.72); font-size: .72rem; }
+.anatomy-real-fallback span { max-width: 260px; color: rgba(210,225,225,.42); font-size: .58rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anatomy-real-body,
+  .anatomy-real-scan,
+  .anatomy-real-hud,
+  .anatomy-real-visual::before { animation: none !important; }
+}
+
+@media (max-width: 1120px) {
+  .anatomy-real { grid-template-columns: 1fr; }
+  .anatomy-real-stage { min-height: 640px; }
+  .anatomy-real-data { border-top: 1px solid rgba(94, 163, 176, .12); }
+}
