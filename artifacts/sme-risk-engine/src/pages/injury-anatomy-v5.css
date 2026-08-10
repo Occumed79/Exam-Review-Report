@@ -1,0 +1,121 @@
+/* v5 — preserve real anatomy detail. The anatomical artwork is the primary image;
+   cyan is used as projection light, not as a destructive full-body tint. */
+
+.anatomy-real-body {
+  width: min(455px, 58vw);
+  height: 585px;
+}
+
+.anatomy-real-img.glow-layer {
+  z-index: 1;
+  opacity: .18;
+  filter:
+    grayscale(1)
+    sepia(1)
+    saturate(4.2)
+    hue-rotate(116deg)
+    brightness(1.35)
+    contrast(1.35)
+    blur(4px)
+    drop-shadow(0 0 11px rgba(75, 245, 225, .72))
+    drop-shadow(0 0 22px rgba(67, 192, 235, .28));
+  mix-blend-mode: screen;
+}
+
+.anatomy-real-img.core-layer {
+  z-index: 3;
+  opacity: .88;
+  mix-blend-mode: normal;
+  filter:
+    brightness(.76)
+    contrast(1.48)
+    saturate(.9)
+    drop-shadow(0 0 2px rgba(203, 255, 248, .38))
+    drop-shadow(0 0 8px rgba(67, 232, 215, .34));
+}
+
+/* posterior source is largely monochrome; keep linework crisp rather than washing it cyan */
+.anatomy-real-body[data-view='back'] .core-layer {
+  opacity: .9;
+  mix-blend-mode: screen;
+  filter:
+    grayscale(.76)
+    sepia(.2)
+    saturate(1.35)
+    hue-rotate(150deg)
+    brightness(.88)
+    contrast(1.7)
+    drop-shadow(0 0 3px rgba(198, 250, 255, .48))
+    drop-shadow(0 0 9px rgba(72, 199, 232, .38));
+}
+
+.anatomy-real-body[data-view='back'] .glow-layer {
+  opacity: .13;
+  filter:
+    grayscale(1)
+    sepia(.8)
+    saturate(3.2)
+    hue-rotate(130deg)
+    brightness(1.2)
+    contrast(1.45)
+    blur(3px)
+    drop-shadow(0 0 10px rgba(75, 224, 231, .55));
+}
+
+/* a thin projection wash supplies the hologram character without flattening anatomy */
+.anatomy-real-body::after {
+  content: '';
+  position: absolute;
+  z-index: 4;
+  inset: 4% 13% 3%;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(102,255,237,.04) 0 1px, transparent 1px 6px),
+    linear-gradient(90deg, transparent, rgba(87,239,223,.035) 50%, transparent);
+  mix-blend-mode: screen;
+  opacity: .5;
+}
+
+/* Localized BLS heat sits above the anatomy and is now visually distinct. */
+.anatomy-real-hotspot {
+  z-index: 9;
+  opacity: calc(.18 + var(--heat-strength) * .56);
+  background:
+    radial-gradient(ellipse at center,
+      color-mix(in srgb, var(--heat-color) 68%, transparent) 0%,
+      color-mix(in srgb, var(--heat-color) 24%, transparent) 46%,
+      transparent 73%);
+  filter: drop-shadow(0 0 7px var(--heat-color));
+  border: 1px solid color-mix(in srgb, var(--heat-color) 36%, transparent);
+}
+
+.anatomy-real-hotspot:hover,
+.anatomy-real-hotspot.active {
+  opacity: .94;
+  filter: drop-shadow(0 0 10px var(--heat-color)) drop-shadow(0 0 20px var(--heat-color));
+}
+
+.anatomy-real-visual::before {
+  opacity: .52;
+  width: 300px;
+  height: 470px;
+  background: radial-gradient(ellipse, rgba(72, 234, 216, .10), rgba(55, 148, 210, .025) 45%, transparent 72%);
+}
+
+.hud-a { opacity: .62; }
+.hud-b { opacity: .52; }
+.hud-c { opacity: .45; }
+
+.anatomy-real-scan {
+  opacity: .55;
+  height: 42px;
+  background: linear-gradient(180deg, transparent, rgba(105,255,238,.025) 26%, rgba(181,255,247,.21) 50%, rgba(105,255,238,.025) 74%, transparent);
+}
+
+.anatomy-real-projector {
+  opacity: .72;
+}
+
+@media (max-width: 1120px) {
+  .anatomy-real-body { width: min(430px, 72vw); }
+}
