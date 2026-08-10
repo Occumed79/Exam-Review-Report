@@ -1,475 +1,208 @@
-/**
- * macOS Tahoe Liquid Glass Aesthetic
- * Luminous, floating orbs, cursor glow, and glassmorphism
- */
-
 :root {
-  /* Tahoe Glass Color Palette */
-  --glass-primary: rgba(255, 255, 255, 0.08);
-  --glass-secondary: rgba(255, 255, 255, 0.12);
-  --glass-tertiary: rgba(255, 255, 255, 0.15);
-  --glass-glow: rgba(255, 255, 255, 0.25);
-  
-  /* Luminous Colors */
-  --luminous-white: #ffffff;
-  --luminous-blue: #b4d7d0;
-  --luminous-green: #7f9d96;
-  --luminous-purple: #9badc4;
-  --luminous-pink: #d6c8aa;
-  
-  /* Dark Background */
-  --bg-dark: #041113;
-  --bg-darker: #020b0d;
-  
-  /* Glassmorphism Blur */
-  --glass-blur: blur(20px);
-  --glass-blur-light: blur(10px);
+  --glass-pointer-x: 70vw;
+  --glass-pointer-y: 24vh;
+  --tahoe-cyan: #7cf8ff;
+  --tahoe-blue: #74a7ff;
+  --tahoe-violet: #bd83ff;
+  --tahoe-pink: #ff86cf;
+  --tahoe-mint: #7dffd7;
+  --tahoe-gold: #ffdca0;
+  --glass-white: rgba(255, 255, 255, 0.92);
+  --glass-line: rgba(255, 255, 255, 0.22);
+  --glass-line-soft: rgba(255, 255, 255, 0.11);
+  --glass-shadow: 0 24px 70px rgba(0, 5, 20, 0.38);
 }
 
-/* ============================================
-   BACKGROUND & FLOATING ORBS
-   ============================================ */
-
-body {
-  background: linear-gradient(180deg, #041113 0%, #071416 50%, #050b0d 100%);
-  background-attachment: fixed;
-  color: #ffffff;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
-  overflow: hidden;
-  position: relative;
-}
-
-/* Floating Orbs Background */
-.tahoe-background {
+.tahoe-light-field {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
+  inset: 0;
+  z-index: 0;
   pointer-events: none;
   overflow: hidden;
+  background:
+    radial-gradient(circle at 48% 110%, rgba(53, 202, 255, 0.23), transparent 42%),
+    radial-gradient(circle at 4% 10%, rgba(127, 97, 255, 0.18), transparent 36%),
+    radial-gradient(circle at 96% 18%, rgba(255, 91, 185, 0.17), transparent 34%),
+    linear-gradient(145deg, #050913 0%, #07101d 35%, #07121c 58%, #050a13 100%);
+  isolation: isolate;
 }
 
-.orb {
+.tahoe-light-field::before {
+  content: "";
   position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.05));
-  filter: blur(60px);
-  animation: float 20s ease-in-out infinite;
+  inset: -18%;
+  background:
+    conic-gradient(from 210deg at 50% 48%,
+      transparent 0 12%,
+      rgba(102, 230, 255, 0.075) 17%,
+      transparent 24% 42%,
+      rgba(196, 113, 255, 0.08) 48%,
+      transparent 57% 73%,
+      rgba(255, 111, 191, 0.065) 81%,
+      transparent 91%),
+    radial-gradient(ellipse at center, rgba(255,255,255,0.045), transparent 63%);
+  filter: blur(50px) saturate(145%);
+  animation: tahoe-spectrum-rotate 42s linear infinite;
 }
 
-.orb-1 {
-  width: 400px;
-  height: 400px;
-  top: 10%;
-  left: 10%;
-  animation: float 25s ease-in-out infinite;
-  opacity: 0.3;
+.tahoe-light-field::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.014) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.014) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(circle at center, black, transparent 82%);
+  opacity: 0.42;
 }
 
-.orb-2 {
-  width: 300px;
-  height: 300px;
-  top: 60%;
-  right: 15%;
-  animation: float 30s ease-in-out infinite reverse;
-  opacity: 0.25;
-}
-
-.orb-3 {
-  width: 350px;
-  height: 350px;
-  bottom: 10%;
-  left: 50%;
-  animation: float 28s ease-in-out infinite;
-  opacity: 0.2;
-}
-
-.orb-4 {
-  width: 250px;
-  height: 250px;
-  top: 40%;
-  right: 5%;
-  animation: float 22s ease-in-out infinite reverse;
-  opacity: 0.15;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translate(0, 0);
-  }
-  25% {
-    transform: translate(30px, -30px);
-  }
-  50% {
-    transform: translate(-20px, 20px);
-  }
-  75% {
-    transform: translate(20px, 10px);
-  }
-}
-
-/* ============================================
-   CURSOR GLOW EFFECT
-   ============================================ */
-
-.cursor-glow {
-  position: fixed;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0, 132, 255, 0.4), rgba(0, 132, 255, 0.1), transparent);
-  pointer-events: none;
-  z-index: 9999;
-  box-shadow: 0 0 40px rgba(0, 132, 255, 0.3), 0 0 80px rgba(0, 132, 255, 0.15);
-  transform: translate(-50%, -50%);
+.tahoe-aurora {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(74px) saturate(175%);
   mix-blend-mode: screen;
+  opacity: 0.38;
+  will-change: transform;
 }
 
-.cursor-glow.active {
-  animation: glow-pulse 2s ease-in-out infinite;
+.tahoe-aurora-a {
+  width: 58vw;
+  height: 31vw;
+  left: -10vw;
+  top: 2vh;
+  background: linear-gradient(120deg, rgba(94, 223, 255, 0.75), rgba(85, 106, 255, 0.28), rgba(199, 92, 255, 0.5));
+  transform: rotate(-18deg);
+  animation: tahoe-drift-a 19s ease-in-out infinite alternate;
 }
 
-@keyframes glow-pulse {
-  0%, 100% {
-    box-shadow: 0 0 40px rgba(0, 132, 255, 0.3), 0 0 80px rgba(0, 132, 255, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 60px rgba(0, 132, 255, 0.5), 0 0 120px rgba(0, 132, 255, 0.25);
-  }
+.tahoe-aurora-b {
+  width: 48vw;
+  height: 30vw;
+  right: -10vw;
+  top: 17vh;
+  background: linear-gradient(130deg, rgba(255, 87, 191, 0.58), rgba(149, 97, 255, 0.45), rgba(99, 232, 255, 0.43));
+  transform: rotate(21deg);
+  animation: tahoe-drift-b 24s ease-in-out infinite alternate;
 }
 
-/* ============================================
-   GLASSMORPHISM CONTAINERS
-   ============================================ */
-
-.glass-container {
-  background: var(--glass-primary);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-secondary);
-  border-radius: 24px;
-  padding: 24px;
-  position: relative;
-  overflow: hidden;
+.tahoe-aurora-c {
+  width: 54vw;
+  height: 24vw;
+  left: 27vw;
+  bottom: -14vw;
+  background: linear-gradient(90deg, rgba(72, 242, 213, 0.5), rgba(68, 154, 255, 0.46), rgba(213, 105, 255, 0.32));
+  animation: tahoe-drift-c 22s ease-in-out infinite alternate;
 }
 
-.glass-container::before {
-  content: "";
+.tahoe-caustic {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
-  pointer-events: none;
-  border-radius: 24px;
-}
-
-.glass-container-elevated {
-  background: var(--glass-secondary);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-tertiary);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.2);
-}
-
-.glass-card {
-  background: var(--glass-tertiary);
-  backdrop-filter: var(--glass-blur-light);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 16px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.glass-card:hover {
-  background: var(--glass-glow);
-  border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 24px rgba(0, 132, 255, 0.1);
-}
-
-/* ============================================
-   LUMINOUS TEXT & GLOWS
-   ============================================ */
-
-.text-luminous {
-  color: var(--luminous-white);
-  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-}
-
-.text-glow-blue {
-  color: var(--luminous-blue);
-  text-shadow: 0 0 20px rgba(0, 132, 255, 0.5);
-}
-
-.text-glow-green {
-  color: var(--luminous-green);
-  text-shadow: 0 0 20px rgba(0, 208, 132, 0.5);
-}
-
-.text-glow-purple {
-  color: var(--luminous-purple);
-  text-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
-}
-
-.glow-accent {
-  background: linear-gradient(135deg, var(--luminous-blue), var(--luminous-purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: 0 0 30px rgba(0, 132, 255, 0.3);
-}
-
-/* ============================================
-   GLOWING BARS & CHARTS
-   ============================================ */
-
-.glow-bar {
-  background: linear-gradient(90deg, rgba(0, 132, 255, 0.3), rgba(0, 132, 255, 0.6), rgba(0, 132, 255, 0.3));
-  border-radius: 12px;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 132, 255, 0.4), inset 0 0 20px rgba(0, 132, 255, 0.2);
-}
-
-.glow-bar::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shimmer 3s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-.glow-bar-success {
-  background: linear-gradient(90deg, rgba(0, 208, 132, 0.3), rgba(0, 208, 132, 0.6), rgba(0, 208, 132, 0.3));
-  box-shadow: 0 0 20px rgba(0, 208, 132, 0.4), inset 0 0 20px rgba(0, 208, 132, 0.2);
-}
-
-.glow-bar-warning {
-  background: linear-gradient(90deg, rgba(255, 165, 0, 0.3), rgba(255, 165, 0, 0.6), rgba(255, 165, 0, 0.3));
-  box-shadow: 0 0 20px rgba(255, 165, 0, 0.4), inset 0 0 20px rgba(255, 165, 0, 0.2);
-}
-
-.glow-bar-danger {
-  background: linear-gradient(90deg, rgba(236, 72, 153, 0.3), rgba(236, 72, 153, 0.6), rgba(236, 72, 153, 0.3));
-  box-shadow: 0 0 20px rgba(236, 72, 153, 0.4), inset 0 0 20px rgba(236, 72, 153, 0.2);
-}
-
-/* ============================================
-   NEURAL PROCESSING VISUALS
-   ============================================ */
-
-.neural-processor {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 20px;
-  background: var(--glass-secondary);
-  border-radius: 16px;
-  border: 1px solid rgba(0, 132, 255, 0.3);
-}
-
-.neural-dot {
-  width: 12px;
-  height: 12px;
+  width: 52vw;
+  height: 12vw;
   border-radius: 50%;
-  background: var(--luminous-blue);
-  box-shadow: 0 0 10px rgba(0, 132, 255, 0.8);
-  animation: pulse-dot 1.5s ease-in-out infinite;
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow:
+    inset 0 0 48px rgba(255,255,255,0.04),
+    0 0 90px rgba(105, 214, 255, 0.08);
+  filter: blur(0.4px);
+  opacity: 0.65;
 }
 
-.neural-dot:nth-child(1) {
-  animation-delay: 0s;
+.tahoe-caustic-a {
+  left: 22vw;
+  top: 7vh;
+  transform: rotate(-8deg);
+  animation: tahoe-caustic-slide 18s ease-in-out infinite alternate;
 }
 
-.neural-dot:nth-child(2) {
-  animation-delay: 0.3s;
+.tahoe-caustic-b {
+  right: 3vw;
+  bottom: 8vh;
+  transform: rotate(14deg);
+  animation: tahoe-caustic-slide 24s ease-in-out -7s infinite alternate-reverse;
 }
 
-.neural-dot:nth-child(3) {
-  animation-delay: 0.6s;
-}
-
-@keyframes pulse-dot {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(0.8);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.2);
-  }
-}
-
-.neural-wave {
-  position: relative;
-  height: 60px;
-  background: var(--glass-tertiary);
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid rgba(0, 132, 255, 0.2);
-}
-
-.neural-wave svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0 0 10px rgba(0, 132, 255, 0.4));
-}
-
-/* ============================================
-   ANIMATED CHARTS
-   ============================================ */
-
-.chart-container {
-  position: relative;
-  padding: 20px;
-  background: var(--glass-secondary);
-  border-radius: 16px;
-  border: 1px solid rgba(0, 132, 255, 0.2);
-}
-
-.chart-bar {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  height: 200px;
-  padding: 20px 0;
-}
-
-.chart-bar-item {
-  flex: 1;
-  background: linear-gradient(180deg, var(--luminous-blue), rgba(0, 132, 255, 0.3));
-  border-radius: 8px 8px 0 0;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 0 15px rgba(0, 132, 255, 0.3);
-  animation: grow-up 1s ease-out forwards;
-}
-
-.chart-bar-item::after {
-  content: "";
+.tahoe-prism-orb {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.6);
-  animation: glow-top 2s ease-in-out infinite;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.19);
+  background:
+    radial-gradient(circle at 28% 22%, rgba(255,255,255,0.5), transparent 12%),
+    radial-gradient(circle at 70% 74%, rgba(111, 255, 224, 0.18), transparent 42%),
+    linear-gradient(135deg, rgba(255,255,255,0.12), rgba(106, 169, 255, 0.07) 42%, rgba(225, 104, 255, 0.09));
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.42),
+    inset 12px -16px 38px rgba(104, 133, 255, 0.09),
+    0 18px 70px rgba(0,0,0,0.24),
+    0 0 42px rgba(124, 232, 255, 0.09);
+  backdrop-filter: blur(10px) saturate(165%);
+  opacity: 0.42;
 }
 
-@keyframes grow-up {
-  from {
-    height: 0;
-  }
-  to {
-    height: var(--height);
-  }
+.tahoe-prism-orb-a {
+  width: 270px;
+  height: 270px;
+  left: 11vw;
+  bottom: 4vh;
+  animation: tahoe-orbit 18s ease-in-out infinite alternate;
 }
 
-@keyframes glow-top {
-  0%, 100% {
-    opacity: 0.5;
-  }
-  50% {
-    opacity: 1;
-  }
+.tahoe-prism-orb-b {
+  width: 170px;
+  height: 170px;
+  right: 13vw;
+  top: 12vh;
+  animation: tahoe-orbit 14s ease-in-out -4s infinite alternate-reverse;
 }
 
-/* ============================================
-   BUTTONS & INTERACTIVE ELEMENTS
-   ============================================ */
-
-.btn-glass {
-  background: var(--glass-secondary);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: var(--luminous-white);
-  padding: 12px 24px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: var(--glass-blur-light);
+.tahoe-prism-orb-c {
+  width: 118px;
+  height: 118px;
+  left: 47vw;
+  top: 42vh;
+  opacity: 0.22;
+  animation: tahoe-orbit 12s ease-in-out -2s infinite alternate;
 }
 
-.btn-glass:hover {
-  background: var(--glass-glow);
-  border-color: rgba(0, 132, 255, 0.5);
-  box-shadow: 0 0 20px rgba(0, 132, 255, 0.3);
-  transform: translateY(-2px);
+.tahoe-pointer-light {
+  position: absolute;
+  width: 680px;
+  height: 680px;
+  left: var(--glass-pointer-x);
+  top: var(--glass-pointer-y);
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,0.13) 0 3%, rgba(125, 240, 255, 0.11) 12%, rgba(142, 119, 255, 0.065) 30%, transparent 68%);
+  filter: blur(10px);
+  mix-blend-mode: screen;
+  transition: left 90ms linear, top 90ms linear;
+  opacity: 0.9;
 }
 
-.btn-glass-primary {
-  background: linear-gradient(135deg, rgba(0, 132, 255, 0.3), rgba(168, 85, 247, 0.2));
-  border: 1px solid rgba(0, 132, 255, 0.4);
+.tahoe-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, rgba(1, 4, 12, 0.2) 74%, rgba(1, 3, 9, 0.56) 100%);
 }
 
-.btn-glass-primary:hover {
-  background: linear-gradient(135deg, rgba(0, 132, 255, 0.5), rgba(168, 85, 247, 0.4));
-  box-shadow: 0 0 30px rgba(0, 132, 255, 0.4);
+.tahoe-grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.07;
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.83' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
 }
 
-/* ============================================
-   MAIN CONTENT AREA
-   ============================================ */
+@keyframes tahoe-spectrum-rotate { to { transform: rotate(360deg) scale(1.06); } }
+@keyframes tahoe-drift-a { from { transform: translate3d(-2vw, -1vh, 0) rotate(-18deg) scale(0.96); } to { transform: translate3d(9vw, 7vh, 0) rotate(-10deg) scale(1.08); } }
+@keyframes tahoe-drift-b { from { transform: translate3d(2vw, -3vh, 0) rotate(21deg) scale(1.04); } to { transform: translate3d(-9vw, 8vh, 0) rotate(13deg) scale(0.94); } }
+@keyframes tahoe-drift-c { from { transform: translate3d(-6vw, 4vh, 0) scale(0.95); } to { transform: translate3d(7vw, -9vh, 0) scale(1.12); } }
+@keyframes tahoe-caustic-slide { from { opacity: 0.3; transform: translateX(-5vw) rotate(-8deg) scaleX(0.88); } to { opacity: 0.72; transform: translateX(5vw) rotate(-3deg) scaleX(1.08); } }
+@keyframes tahoe-orbit { from { transform: translate3d(-12px, 8px, 0) rotate(-5deg); } to { transform: translate3d(24px, -24px, 0) rotate(8deg); } }
 
-.main-content {
-  position: relative;
-  z-index: 10;
-  padding: 40px;
-  height: 100vh;
-  overflow-y: auto;
-}
-
-/* Scrollbar Styling */
-.main-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.main-content::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.main-content::-webkit-scrollbar-thumb {
-  background: rgba(0, 132, 255, 0.3);
-  border-radius: 4px;
-}
-
-.main-content::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 132, 255, 0.5);
-}
-
-/* ============================================
-   RESPONSIVE DESIGN
-   ============================================ */
-
-@media (max-width: 768px) {
-  .main-content {
-    padding: 20px;
-  }
-
-  .glass-container {
-    padding: 16px;
-  }
-
-  .orb {
-    filter: blur(40px);
-  }
-
-  .cursor-glow {
-    width: 60px;
-    height: 60px;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .tahoe-light-field *,
+  .tahoe-light-field::before { animation: none !important; }
+  .tahoe-pointer-light { display: none; }
 }
