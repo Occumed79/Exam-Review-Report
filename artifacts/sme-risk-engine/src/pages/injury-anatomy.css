@@ -1,0 +1,372 @@
+@keyframes anatomy-scan {
+  0% { transform: translateY(-120%); opacity: 0; }
+  10% { opacity: .65; }
+  55% { opacity: .34; }
+  100% { transform: translateY(520%); opacity: 0; }
+}
+
+@keyframes anatomy-orbit-pulse {
+  0%, 100% { transform: scale(1); opacity: .18; }
+  50% { transform: scale(1.05); opacity: .34; }
+}
+
+@keyframes anatomy-region-pulse {
+  0%, 100% { opacity: var(--region-opacity); }
+  50% { opacity: .82; }
+}
+
+.injury-anatomy-shell {
+  margin-top: .9rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr);
+  overflow: hidden;
+  border: 1px solid rgba(91, 210, 198, .22);
+  border-radius: 12px;
+  background:
+    linear-gradient(120deg, rgba(15, 39, 50, .97), rgba(6, 17, 25, .99) 54%),
+    #07121b;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,.32),
+    inset 0 1px 0 rgba(255,255,255,.025),
+    0 0 48px rgba(51, 203, 187, .035);
+}
+
+.injury-anatomy-stage {
+  position: relative;
+  min-height: 520px;
+  overflow: hidden;
+  border-right: 1px solid rgba(109, 161, 177, .1);
+  background:
+    radial-gradient(circle at 50% 52%, rgba(72, 217, 198, .105), transparent 34%),
+    radial-gradient(circle at 35% 30%, rgba(69, 152, 255, .065), transparent 28%),
+    linear-gradient(rgba(82, 129, 146, .032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(82, 129, 146, .032) 1px, transparent 1px);
+  background-size: auto, auto, 24px 24px, 24px 24px;
+}
+
+.injury-anatomy-stage::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 0 49.85%, rgba(98, 216, 201, .12) 50%, transparent 50.15%),
+    linear-gradient(transparent 0 49.85%, rgba(98, 216, 201, .055) 50%, transparent 50.15%);
+  mask-image: radial-gradient(circle at center, black, transparent 76%);
+}
+
+.injury-anatomy-stage-head {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: .92rem 1rem .6rem;
+}
+
+.injury-anatomy-stage-head > div:first-child > span,
+.injury-anatomy-focus > span,
+.injury-anatomy-ranking > span {
+  display: inline-flex;
+  align-items: center;
+  gap: .38rem;
+  color: #75d8cd;
+  font: 700 .57rem/1 var(--app-font-mono);
+  letter-spacing: .11em;
+}
+
+.injury-anatomy-stage-head h3 {
+  margin: .28rem 0 0;
+  color: rgba(246, 249, 247, .94);
+  font-size: 1.02rem;
+  letter-spacing: -.025em;
+}
+
+.injury-anatomy-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: .34rem;
+  padding: .36rem .5rem;
+  border: 1px solid rgba(141, 171, 181, .14);
+  border-radius: 999px;
+  color: rgba(219, 231, 230, .48);
+  background: rgba(3, 12, 18, .46);
+  font-size: .58rem;
+  white-space: nowrap;
+}
+
+.injury-anatomy-mode.measured {
+  color: #9ee3da;
+  border-color: rgba(86, 211, 196, .22);
+  background: rgba(61, 202, 186, .075);
+  box-shadow: 0 0 20px rgba(74, 211, 196, .06);
+}
+
+.injury-anatomy-visual {
+  position: relative;
+  z-index: 2;
+  min-height: 445px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(170px, 1fr));
+  gap: .7rem;
+  align-items: end;
+  justify-items: center;
+  padding: .2rem 2rem 1rem;
+}
+
+.anatomy-orbit {
+  position: absolute;
+  left: 50%;
+  top: 53%;
+  border: 1px solid rgba(86, 214, 199, .16);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  animation: anatomy-orbit-pulse 4.8s ease-in-out infinite;
+}
+.anatomy-orbit::before,
+.anatomy-orbit::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(102, 224, 208, .38);
+  box-shadow: 0 0 12px rgba(102, 224, 208, .44);
+}
+.anatomy-orbit::before { width: 4px; height: 4px; top: -2px; left: 50%; }
+.anatomy-orbit::after { width: 3px; height: 3px; bottom: 11%; right: 6%; }
+.orbit-one { width: 410px; height: 410px; }
+.orbit-two { width: 300px; height: 300px; animation-delay: -2.1s; }
+
+.anatomy-scan-line {
+  position: absolute;
+  z-index: 3;
+  left: 9%;
+  right: 9%;
+  top: 14%;
+  height: 48px;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(78, 236, 215, .045) 38%, rgba(113, 248, 229, .28) 50%, rgba(78, 236, 215, .045) 62%, transparent);
+  filter: blur(.2px);
+  animation: anatomy-scan 6.2s linear infinite;
+}
+
+.anatomy-figure-wrap {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 230px);
+  display: grid;
+  justify-items: center;
+}
+.anatomy-figure-wrap > span {
+  margin-bottom: .35rem;
+  color: rgba(166, 204, 207, .34);
+  font: 700 .49rem/1 var(--app-font-mono);
+  letter-spacing: .16em;
+}
+
+.anatomy-figure {
+  width: 100%;
+  height: 405px;
+  overflow: visible;
+}
+
+.anatomy-silhouette {
+  fill: rgba(162, 197, 200, .055);
+  stroke: rgba(144, 195, 198, .18);
+  stroke-width: 1.35;
+}
+.anatomy-silhouette path:nth-of-type(3),
+.anatomy-silhouette path:nth-of-type(4),
+.anatomy-silhouette path:nth-of-type(5),
+.anatomy-silhouette path:nth-of-type(6) {
+  fill: none;
+  stroke-width: 18;
+  stroke-linecap: round;
+}
+
+.anatomy-region {
+  cursor: pointer;
+  opacity: var(--region-opacity);
+  transition: opacity .18s ease, transform .18s ease, filter .18s ease;
+  transform-origin: center;
+  animation: anatomy-region-pulse 5.2s ease-in-out infinite;
+}
+.anatomy-region > * {
+  fill: var(--region-fill);
+  stroke: color-mix(in srgb, var(--region-fill) 82%, white 18%);
+  stroke-width: .9;
+  filter: drop-shadow(0 0 7px var(--region-glow));
+}
+.anatomy-region > path {
+  fill: none;
+  stroke: var(--region-fill);
+  stroke-width: 17;
+  stroke-linecap: round;
+}
+.anatomy-region:hover,
+.anatomy-region.active {
+  opacity: 1;
+  filter: brightness(1.22) saturate(1.12);
+}
+.anatomy-region.active > * {
+  stroke: rgba(245, 255, 252, .78);
+  stroke-width: 1.35;
+  filter: drop-shadow(0 0 13px var(--region-glow));
+}
+.anatomy-region.active > path { stroke-width: 19; }
+
+.anatomy-whole-body {
+  cursor: pointer;
+  pointer-events: visiblePainted;
+}
+.anatomy-whole-body ellipse {
+  fill: none;
+  stroke: var(--region-fill);
+  stroke-width: 1.4;
+  stroke-dasharray: 5 7;
+  opacity: .7;
+  filter: drop-shadow(0 0 8px var(--region-glow));
+}
+.anatomy-whole-body.active ellipse { stroke-width: 2; opacity: 1; }
+
+.injury-anatomy-data {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(8, 20, 29, .98), rgba(5, 15, 22, .99));
+}
+
+.injury-anatomy-focus {
+  padding: .95rem;
+  border-bottom: 1px solid rgba(109, 161, 177, .1);
+  background: radial-gradient(circle at top right, rgba(84, 218, 201, .075), transparent 38%);
+}
+.injury-anatomy-focus h4 {
+  margin: .45rem 0 0;
+  color: rgba(246, 249, 247, .94);
+  font-size: 1.28rem;
+  letter-spacing: -.035em;
+}
+.injury-anatomy-focus-meta {
+  margin-top: .6rem;
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  align-items: center;
+}
+.injury-anatomy-focus-meta strong {
+  color: #7bd7cc;
+  font-size: .63rem;
+  font-weight: 700;
+}
+.injury-anatomy-focus-meta em {
+  color: #f1d19b;
+  font: 700 .82rem/1 var(--app-font-mono);
+  font-style: normal;
+}
+.injury-anatomy-focus-bar,
+.injury-anatomy-ranking button > div > span {
+  position: relative;
+  overflow: hidden;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.055);
+}
+.injury-anatomy-focus-bar { margin-top: .55rem; }
+.injury-anatomy-focus-bar i,
+.injury-anatomy-ranking button > div > span i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #54cfc1, #efb276 58%, #ef727c);
+  box-shadow: 0 0 12px rgba(97, 216, 203, .24);
+}
+
+.injury-anatomy-detail-list {
+  margin-top: .65rem;
+  display: grid;
+  gap: .28rem;
+}
+.injury-anatomy-detail-list > div {
+  position: relative;
+  padding-left: .75rem;
+  color: rgba(219, 231, 230, .56);
+  font-size: .63rem;
+  line-height: 1.42;
+}
+.injury-anatomy-detail-list > div::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: .55em;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #6ed6c9;
+  box-shadow: 0 0 8px rgba(110, 214, 201, .5);
+}
+
+.injury-anatomy-ranking {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: .9rem .95rem 1rem;
+}
+.injury-anatomy-ranking > span { margin-bottom: .55rem; }
+.injury-anatomy-ranking button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr) auto;
+  gap: .55rem;
+  align-items: center;
+  padding: .52rem .32rem;
+  border: 0;
+  border-bottom: 1px solid rgba(109, 161, 177, .065);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+}
+.injury-anatomy-ranking button:hover,
+.injury-anatomy-ranking button.active {
+  background: linear-gradient(90deg, rgba(77, 207, 191, .065), transparent);
+  transform: translateX(2px);
+}
+.injury-anatomy-ranking button > b {
+  color: rgba(107, 211, 199, .42);
+  font: 700 .55rem/1 var(--app-font-mono);
+}
+.injury-anatomy-ranking button > div {
+  min-width: 0;
+  display: grid;
+  gap: .18rem;
+}
+.injury-anatomy-ranking button strong {
+  color: rgba(239, 245, 242, .78);
+  font-size: .66rem;
+}
+.injury-anatomy-ranking button small {
+  color: rgba(211, 226, 225, .36);
+  font-size: .52rem;
+}
+.injury-anatomy-ranking button > div > span { width: 100%; margin-top: .08rem; }
+.injury-anatomy-ranking button > em {
+  color: rgba(243, 207, 150, .72);
+  font: 700 .6rem/1 var(--app-font-mono);
+  font-style: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anatomy-orbit,
+  .anatomy-scan-line,
+  .anatomy-region { animation: none !important; }
+}
+
+@media (max-width: 1120px) {
+  .injury-anatomy-shell { grid-template-columns: 1fr; }
+  .injury-anatomy-stage { border-right: 0; border-bottom: 1px solid rgba(109, 161, 177, .1); }
+  .injury-anatomy-data { display: grid; grid-template-columns: .8fr 1.2fr; }
+  .injury-anatomy-focus { border-bottom: 0; border-right: 1px solid rgba(109, 161, 177, .1); }
+}
