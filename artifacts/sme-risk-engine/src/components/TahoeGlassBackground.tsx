@@ -1,52 +1,44 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import "../styles/tahoe-glass.css";
 
 /**
- * Tahoe Glass Background Component
- * Renders floating orbs and cursor glow effect
+ * Full-screen luminous environment for the reviewer workstation.
+ * Keeps all effects decorative/pointer-transparent while exposing the mouse
+ * position to CSS for refractive highlight movement.
  */
 export const TahoeGlassBackground: React.FC = () => {
-  const cursorGlowRef = useRef<HTMLDivElement>(null);
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const fieldRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-
-      // Update cursor glow position
-      if (cursorGlowRef.current) {
-        cursorGlowRef.current.style.left = `${e.clientX}px`;
-        cursorGlowRef.current.style.top = `${e.clientY}px`;
+    const handlePointerMove = (event: PointerEvent) => {
+      const x = `${event.clientX}px`;
+      const y = `${event.clientY}px`;
+      document.documentElement.style.setProperty("--glass-pointer-x", x);
+      document.documentElement.style.setProperty("--glass-pointer-y", y);
+      if (fieldRef.current) {
+        fieldRef.current.style.setProperty("--local-pointer-x", x);
+        fieldRef.current.style.setProperty("--local-pointer-y", y);
       }
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-    };
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    return () => window.removeEventListener("pointermove", handlePointerMove);
   }, []);
 
   return (
-    <>
-      {/* Floating Orbs Background */}
-      <div className="tahoe-background">
-        <div className="orb orb-1"></div>
-        <div className="orb orb-2"></div>
-        <div className="orb orb-3"></div>
-        <div className="orb orb-4"></div>
-      </div>
-
-      {/* Cursor Glow Effect */}
-      <div
-        ref={cursorGlowRef}
-        className="cursor-glow active"
-        style={{
-          left: `${mousePos.x}px`,
-          top: `${mousePos.y}px`,
-        }}
-      ></div>
-    </>
+    <div ref={fieldRef} className="tahoe-light-field" aria-hidden="true">
+      <div className="tahoe-aurora tahoe-aurora-a" />
+      <div className="tahoe-aurora tahoe-aurora-b" />
+      <div className="tahoe-aurora tahoe-aurora-c" />
+      <div className="tahoe-caustic tahoe-caustic-a" />
+      <div className="tahoe-caustic tahoe-caustic-b" />
+      <div className="tahoe-prism-orb tahoe-prism-orb-a" />
+      <div className="tahoe-prism-orb tahoe-prism-orb-b" />
+      <div className="tahoe-prism-orb tahoe-prism-orb-c" />
+      <div className="tahoe-pointer-light" />
+      <div className="tahoe-vignette" />
+      <div className="tahoe-grain" />
+    </div>
   );
 };
 
