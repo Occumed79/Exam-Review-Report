@@ -45,8 +45,8 @@ const REGION_LABELS: Record<RegionKey, string> = {
   wholeBody: 'Whole body / multiple',
 };
 
-const FRONT_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/8/86/BodyParts3D_anatomy.svg';
-const BACK_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Human_skeleton_back_no-text_no-color.svg';
+const FRONT_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/a/a2/202403_human_anatomy_skeleton_and_organs.svg';
+const BACK_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Human_skeleton_back_no-text_no_color.svg';
 
 const HOTSPOT_POSITIONS: Record<'front' | 'back', Record<RegionKey, { x: number; y: number; w: number; h: number }>> = {
   front: {
@@ -79,98 +79,102 @@ const HOTSPOT_POSITIONS: Record<'front' | 'back', Record<RegionKey, { x: number;
   },
 };
 
-function metricRegion(label: string): RegionKey[] {
-  const value = label.toLowerCase();
-  const keys: RegionKey[] = [];
-  if (/head|brain|face|skull|cran/.test(value)) keys.push('head');
-  if (/neck|cervical/.test(value)) keys.push('neck');
-  if (/shoulder/.test(value)) keys.push('shoulder');
-  if (/chest|thorax|torso|trunk/.test(value)) keys.push('chest');
-  if (/back|lumbar|spine/.test(value)) keys.push('lowBack');
-  if (/arm|upper extrem|elbow|forearm/.test(value)) keys.push('upperExtremity');
-  if (/hand|wrist|finger/.test(value)) keys.push('hand');
-  if (/hip|pelvis|groin/.test(value)) keys.push('hip');
-  if (/knee/.test(value)) keys.push('knee');
-  if (/leg|lower extrem|calf|shin/.test(value)) keys.push('lowerExtremity');
-  if (/foot|feet|ankle|toe/.test(value)) keys.push('foot');
-  if (/multiple|body systems|whole body|systemic/.test(value)) keys.push('wholeBody');
-  return [...new Set(keys)];
+const BODY_PART_DATASET_IDS = new Set(['R10']);
+
+function metricToRegion(label: string): RegionKey | null {
+  const text = label.toLowerCase();
+  if (/head|face|cranial|skull/.test(text)) return 'head';
+  if (/neck|cervical/.test(text)) return 'neck';
+  if (/shoulder/.test(text)) return 'shoulder';
+  if (/chest|thorax|trunk|torso/.test(text)) return 'chest';
+  if (/back|lumbar/.test(text)) return 'lowBack';
+  if (/arm|upper extrem|elbow/.test(text)) return 'upperExtremity';
+  if (/hand|finger|wrist/.test(text)) return 'hand';
+  if (/hip|pelvis/.test(text)) return 'hip';
+  if (/knee/.test(text)) return 'knee';
+  if (/leg|lower extrem|calf|shin/.test(text)) return 'lowerExtremity';
+  if (/foot|feet|ankle|toe/.test(text)) return 'foot';
+  if (/multiple|whole body|body systems/.test(text)) return 'wholeBody';
+  return null;
 }
 
-function derivedRegion(label: string): RegionKey[] {
-  const value = label.toLowerCase();
-  const keys = metricRegion(value);
-  if (/cardiopulmonary|cardiovascular|respiratory/.test(value)) keys.push('chest');
-  if (/hearing|vision|vestibular|neurolog/.test(value)) keys.push('head');
-  if (/upper back/.test(value)) keys.push('chest');
-  return [...new Set(keys)];
+function bodyPartMetrics(measured: OccupationInjuryEvidence | null): InjuryMetric[] {
+  if (!measured) return [];
+  return measured.datasets
+    .filter((dataset) => BODY_PART_DATASET_IDS.has(dataset.id) && dataset.status === 'available')
+    .flatMap((dataset) => dataset.top);
 }
 
-function scoreColor(score: number): string {
-  const clamped = Math.max(0, Math.min(1, score));
-  const hue = 185 - clamped * 155;
-  return `hsla(${hue}, 96%, 64%, ${0.3 + clamped * 0.68})`;
+function derivedSignals(profile: OccupationalInjuryProfile | null): RegionSignal[] {
+  if (!profile) return [];
+  const regions = new Map<RegionKey, { score: number; detail: string[] }>();
+  const prominenceScore: Record<string, number> = {
+    'Very prominent': 1,
+    Prominent: 0.82,
+    Relevant: 0.62,
+    Contextual: 0.4,
+  };
+
+  for (const signal of profile.injurySignals) {
+    const score = prominenceScore[signal.prominence] ?? 0.4;
+    for (const regionLabel of signal.bodyRegions) {
+      const region = metricToRegion(regionLabel);
+      if (!region) continue;
+      const current = regions.get(region) ?? { score: 0, detail: [] };
+      current.score = Math.max(current.score, score);
+      if (signal.label && !current.detail.includes(signal.label)) current.detail.push(signal.label);
+      regions.set(region, current);
+    }
+  }
+
+  return [...regions.entries()].map(([key, value]) => ({
+    key,
+    label: REGION_LABELS[key],
+    score: value.score,
+    source: 'Derived context',
+    detail: value.detail,
+  }));
 }
 
 function buildRegionSignals(measured: OccupationInjuryEvidence | null, profile: OccupationalInjuryProfile | null): RegionSignal[] {
-  if (!profile) return [];
-  const measuredBody = measured?.datasets.find((dataset) => dataset.dimension === 'body-part' && dataset.status === 'available');
-  const measuredMap = new Map<RegionKey, { value: number; details: string[] }>();
-
-  if (measuredBody?.top.length) {
-    measuredBody.top.forEach((metric: InjuryMetric) => {
-      metricRegion(metric.label).forEach((key) => {
-        const current = measuredMap.get(key) ?? { value: 0, details: [] };
-        current.value += metric.value;
-        current.details.push(`${metric.label}: ${metric.value.toLocaleString('en-US')}`);
-        measuredMap.set(key, current);
-      });
-    });
+  const metrics = bodyPartMetrics(measured);
+  const measuredByRegion = new Map<RegionKey, { value: number; detail: string[] }>();
+  for (const metric of metrics) {
+    const region = metricToRegion(metric.label);
+    if (!region) continue;
+    const current = measuredByRegion.get(region) ?? { value: 0, detail: [] };
+    current.value += metric.value;
+    current.detail.push(`${metric.label}: ${metric.value.toLocaleString('en-US')}`);
+    measuredByRegion.set(region, current);
   }
 
-  const maxMeasured = Math.max(0, ...[...measuredMap.values()].map((item) => item.value));
-  const derivedMap = new Map<RegionKey, string[]>();
-  profile.injurySignals.forEach((signal) => {
-    signal.bodyRegions.forEach((bodyRegion) => {
-      derivedRegion(bodyRegion).forEach((key) => {
-        const current = derivedMap.get(key) ?? [];
-        current.push(signal.label);
-        derivedMap.set(key, current);
-      });
-    });
-  });
-
-  const keys = new Set<RegionKey>([...measuredMap.keys(), ...derivedMap.keys()]);
-  if (!keys.size) profile.dominantBodyRegions.forEach((label) => derivedRegion(label).forEach((key) => keys.add(key)));
-
-  return [...keys]
-    .map((key) => {
-      const measuredEntry = measuredMap.get(key);
-      const derived = derivedMap.get(key) ?? [];
-      if (measuredEntry && maxMeasured > 0) {
-        return {
-          key,
-          label: REGION_LABELS[key],
-          score: Math.max(0.18, measuredEntry.value / maxMeasured),
-          source: 'BLS measured' as const,
-          value: measuredEntry.value,
-          detail: measuredEntry.details.slice(0, 4),
-        };
-      }
-      return {
+  if (measuredByRegion.size) {
+    const max = Math.max(...[...measuredByRegion.values()].map((item) => item.value), 1);
+    return [...measuredByRegion.entries()]
+      .map(([key, value]) => ({
         key,
         label: REGION_LABELS[key],
-        score: Math.min(0.78, 0.34 + derived.length * 0.11),
-        source: 'Derived context' as const,
-        detail: derived.slice(0, 4),
-      };
-    })
-    .sort((a, b) => b.score - a.score);
+        score: value.value / max,
+        source: 'BLS measured' as const,
+        value: value.value,
+        detail: value.detail,
+      }))
+      .sort((a, b) => b.score - a.score);
+  }
+
+  return derivedSignals(profile).sort((a, b) => b.score - a.score);
+}
+
+function heatColor(score: number): string {
+  if (score >= 0.8) return '#ff5f76';
+  if (score >= 0.6) return '#ffb45e';
+  if (score >= 0.4) return '#7ae7cf';
+  return '#55c9e8';
 }
 
 function heatStyle(signal: RegionSignal): CSSProperties {
   return {
-    '--heat-color': scoreColor(signal.score),
+    '--heat-color': heatColor(signal.score),
     '--heat-strength': signal.score,
   } as CSSProperties;
 }
