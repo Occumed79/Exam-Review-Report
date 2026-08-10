@@ -1,0 +1,630 @@
+/*
+ * EXTRA-LUMINOUS TAHOE LIQUID GLASS
+ * Last-loaded material layer for the active reviewer toolkit.
+ * The goal is not generic glassmorphism: surfaces should feel optically layered,
+ * refractive, glossy, luminous and responsive to the ambient light field.
+ */
+
+:root {
+  --app-bg: transparent;
+  --app-fg: #f7fbff;
+  --liquid-glass-fill:
+    linear-gradient(135deg,
+      rgba(255,255,255,0.155) 0%,
+      rgba(255,255,255,0.075) 18%,
+      rgba(142,203,255,0.055) 44%,
+      rgba(168,116,255,0.045) 67%,
+      rgba(255,255,255,0.07) 100%);
+  --liquid-glass-fill-soft:
+    linear-gradient(135deg,
+      rgba(255,255,255,0.105),
+      rgba(255,255,255,0.035) 46%,
+      rgba(118,210,255,0.04));
+  --liquid-glass-fill-strong:
+    linear-gradient(135deg,
+      rgba(255,255,255,0.205),
+      rgba(255,255,255,0.085) 35%,
+      rgba(98,183,255,0.075) 64%,
+      rgba(202,118,255,0.07));
+  --liquid-glass-border: rgba(255,255,255,0.22);
+  --liquid-glass-border-soft: rgba(255,255,255,0.115);
+  --liquid-glass-highlight: rgba(255,255,255,0.52);
+  --liquid-glass-shadow:
+    0 24px 72px rgba(0, 3, 20, 0.34),
+    0 7px 24px rgba(0, 10, 34, 0.22),
+    inset 0 1px 0 rgba(255,255,255,0.24),
+    inset 0 -1px 0 rgba(101,196,255,0.06);
+  --liquid-glass-shadow-hover:
+    0 32px 96px rgba(0, 3, 22, 0.42),
+    0 12px 38px rgba(35, 123, 255, 0.14),
+    0 0 42px rgba(119, 225, 255, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.36),
+    inset 0 -1px 0 rgba(216,123,255,0.08);
+  --liquid-blur: blur(28px) saturate(185%);
+  --liquid-blur-heavy: blur(38px) saturate(205%);
+}
+
+html,
+body,
+#root {
+  background: #050913 !important;
+}
+
+body {
+  color: #f7fbff;
+}
+
+.reviewer-app-shell {
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: transparent;
+  color: var(--app-fg);
+}
+
+.reviewer-main-stage {
+  position: relative;
+  z-index: 5;
+  margin-left: 220px;
+  width: calc(100vw - 220px);
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 2rem 2.5rem 3rem;
+  background: transparent;
+  scrollbar-color: rgba(190,235,255,0.34) transparent;
+}
+
+.reviewer-main-stage::-webkit-scrollbar { width: 10px; }
+.reviewer-main-stage::-webkit-scrollbar-track { background: transparent; }
+.reviewer-main-stage::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(160,239,255,.6), rgba(166,124,255,.4)) padding-box;
+}
+
+.reviewer-stage-refraction {
+  position: fixed;
+  z-index: -1;
+  left: 220px;
+  right: 0;
+  top: 0;
+  height: 125px;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent),
+    radial-gradient(ellipse at 50% -30%, rgba(184,237,255,.18), transparent 62%);
+  border-bottom: 1px solid rgba(255,255,255,.055);
+  backdrop-filter: blur(4px);
+  mask-image: linear-gradient(black, transparent 96%);
+}
+
+.reviewer-stage-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Sidebar: floating luminous glass rail ---------- */
+.reviewer-sidebar {
+  width: 220px !important;
+  min-width: 220px !important;
+  z-index: 20 !important;
+  background:
+    linear-gradient(160deg, rgba(255,255,255,0.095), rgba(255,255,255,0.025) 34%, rgba(97,142,255,0.035) 75%),
+    rgba(4,10,22,0.48) !important;
+  border-right: 1px solid rgba(255,255,255,0.18) !important;
+  box-shadow:
+    20px 0 60px rgba(0,0,0,0.22),
+    1px 0 0 rgba(255,255,255,0.07) inset,
+    18px 0 80px rgba(78,170,255,0.06) !important;
+  backdrop-filter: blur(34px) saturate(210%) !important;
+  -webkit-backdrop-filter: blur(34px) saturate(210%) !important;
+}
+
+.reviewer-sidebar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 8%, rgba(126,239,255,.12), transparent 25%),
+    radial-gradient(circle at 90% 56%, rgba(188,112,255,.08), transparent 34%),
+    linear-gradient(90deg, rgba(255,255,255,.04), transparent 35%);
+  mix-blend-mode: screen;
+}
+
+.sidebar-brand {
+  position: relative;
+  border-bottom-color: rgba(255,255,255,.11) !important;
+}
+
+.sidebar-brand::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(126,242,255,.5), rgba(197,121,255,.32), transparent);
+  filter: drop-shadow(0 0 5px rgba(112,230,255,.45));
+}
+
+.sidebar-brand-mark {
+  border-radius: 11px !important;
+  color: white !important;
+  border-color: rgba(255,255,255,.28) !important;
+  background:
+    radial-gradient(circle at 28% 20%, rgba(255,255,255,.42), transparent 18%),
+    linear-gradient(145deg, rgba(107,240,255,.23), rgba(126,106,255,.14) 55%, rgba(255,109,210,.11)) !important;
+  box-shadow:
+    0 8px 24px rgba(37,175,255,.16),
+    inset 0 1px 0 rgba(255,255,255,.43),
+    0 0 18px rgba(107,231,255,.12) !important;
+  backdrop-filter: blur(16px) saturate(180%);
+}
+
+.sidebar-brand-title {
+  color: rgba(255,255,255,.96) !important;
+  text-shadow: 0 0 18px rgba(255,255,255,.15);
+}
+
+.sidebar-brand-subtitle,
+.reviewer-sidebar .sidebar-group-label {
+  color: rgba(224,239,255,.52) !important;
+}
+
+.sidebar-home,
+.reviewer-sidebar .nav-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px !important;
+  color: rgba(235,244,255,.67) !important;
+  transition: transform .2s ease, color .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease !important;
+}
+
+.sidebar-home::before,
+.reviewer-sidebar .nav-item::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: linear-gradient(115deg, rgba(255,255,255,.16), rgba(123,223,255,.07) 42%, rgba(191,122,255,.09));
+  transition: opacity .2s ease;
+}
+
+.sidebar-home:hover,
+.reviewer-sidebar .nav-item:hover {
+  color: white !important;
+  border-color: rgba(255,255,255,.13) !important;
+  background: rgba(255,255,255,.055) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.1), 0 9px 22px rgba(0,0,0,.12);
+  transform: translateX(2px) !important;
+}
+
+.sidebar-home:hover::before,
+.reviewer-sidebar .nav-item:hover::before { opacity: 1; }
+
+.sidebar-home.active,
+.reviewer-sidebar .nav-item.active {
+  color: #fff !important;
+  border-color: rgba(173,239,255,.34) !important;
+  background:
+    linear-gradient(110deg, rgba(130,240,255,.18), rgba(109,153,255,.09) 53%, rgba(207,120,255,.12)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.22),
+    inset 2px 0 0 rgba(158,250,255,.86),
+    0 8px 26px rgba(72,188,255,.12),
+    0 0 20px rgba(143,228,255,.08) !important;
+  text-shadow: 0 0 14px rgba(188,244,255,.22);
+}
+
+.reviewer-sidebar .nav-item.active::after,
+.sidebar-home.active::after {
+  content: "";
+  position: absolute;
+  right: 9px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #b8fbff;
+  box-shadow: 0 0 7px #79edff, 0 0 15px rgba(142,115,255,.75);
+  animation: tahoe-nav-pulse 2.1s ease-in-out infinite;
+}
+
+/* ---------- Typography: luminous, not dim ---------- */
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) h1 {
+  color: rgba(255,255,255,.99) !important;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.14),
+    0 0 28px rgba(151,228,255,.10),
+    0 0 54px rgba(170,111,255,.055);
+}
+
+:is(.workbench-kicker, .section-eyebrow, .injury-kicker, .job-kicker, .drug-kicker, .clinical-kicker, .condition-kicker, .standards-kicker, .deployment-kicker, .citation-kicker) {
+  color: #b5f9ff !important;
+  text-shadow: 0 0 12px rgba(105,235,255,.4), 0 0 26px rgba(163,119,255,.14);
+}
+
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) > header p,
+.workbench-header p {
+  color: rgba(233,242,255,.62) !important;
+}
+
+/* ---------- Core liquid glass surfaces ---------- */
+:is(
+  .command-panel,
+  .intelligence-lane,
+  .injury-search-panel,
+  .injury-occupation-strip,
+  .injury-anatomy-shell,
+  .injury-measured-section,
+  .injury-osha-section,
+  .injury-panel,
+  .injury-finding-panel,
+  .job-tabs,
+  .job-search-panel,
+  .job-profile-strip,
+  .job-profile-column,
+  .drug-search-panel,
+  .drug-selection-panel,
+  .drug-capability-panel,
+  .clinical-nav,
+  .clinical-panel,
+  .condition-categories,
+  .condition-summary,
+  .condition-questions,
+  .condition-side-panel,
+  .standards-table,
+  .deployment-country-list,
+  .deployment-profile,
+  .citation-search-panel,
+  .citation-results-panel,
+  .citation-side-panel,
+  .citation-official-panel,
+  .citation-saved-panel
+) {
+  position: relative;
+  overflow: hidden;
+  background: var(--liquid-glass-fill) !important;
+  border: 1px solid var(--liquid-glass-border) !important;
+  box-shadow: var(--liquid-glass-shadow) !important;
+  backdrop-filter: var(--liquid-blur) !important;
+  -webkit-backdrop-filter: var(--liquid-blur) !important;
+}
+
+:is(
+  .command-panel,
+  .intelligence-lane,
+  .injury-search-panel,
+  .injury-occupation-strip,
+  .injury-anatomy-shell,
+  .injury-measured-section,
+  .injury-osha-section,
+  .injury-panel,
+  .injury-finding-panel,
+  .job-search-panel,
+  .job-profile-strip,
+  .job-profile-column,
+  .drug-selection-panel,
+  .drug-capability-panel,
+  .clinical-panel,
+  .condition-summary,
+  .condition-questions,
+  .standards-table,
+  .deployment-profile,
+  .citation-search-panel,
+  .citation-results-panel,
+  .citation-side-panel
+)::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% -14%, rgba(255,255,255,.24), transparent 25%),
+    radial-gradient(circle at 90% 118%, rgba(106,222,255,.09), transparent 32%),
+    linear-gradient(115deg, transparent 4%, rgba(255,255,255,.065) 23%, transparent 41%, transparent 68%, rgba(214,122,255,.045) 82%, transparent 96%);
+  opacity: .92;
+}
+
+:is(
+  .command-panel,
+  .intelligence-lane,
+  .injury-search-panel,
+  .injury-occupation-strip,
+  .injury-anatomy-shell,
+  .injury-measured-section,
+  .injury-osha-section,
+  .injury-panel,
+  .injury-finding-panel,
+  .job-search-panel,
+  .job-profile-strip,
+  .job-profile-column,
+  .drug-selection-panel,
+  .drug-capability-panel,
+  .clinical-panel,
+  .condition-summary,
+  .condition-questions,
+  .standards-table,
+  .deployment-profile,
+  .citation-search-panel,
+  .citation-results-panel,
+  .citation-side-panel
+)::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: -28%;
+  top: -45%;
+  width: 58%;
+  height: 190%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.11), transparent);
+  transform: rotate(16deg);
+  opacity: .35;
+  animation: tahoe-glass-sweep 11s ease-in-out infinite;
+}
+
+:is(
+  .command-panel,
+  .intelligence-lane,
+  .injury-search-panel,
+  .injury-occupation-strip,
+  .injury-anatomy-shell,
+  .injury-measured-section,
+  .injury-osha-section,
+  .injury-panel,
+  .injury-finding-panel,
+  .job-search-panel,
+  .job-profile-strip,
+  .job-profile-column,
+  .drug-selection-panel,
+  .drug-capability-panel,
+  .clinical-panel,
+  .condition-summary,
+  .condition-questions,
+  .standards-table,
+  .deployment-profile,
+  .citation-search-panel,
+  .citation-results-panel,
+  .citation-side-panel
+) > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* cards / rows float as glass tiles */
+:is(.tool-row, .standards-row, .deployment-fact, .drug-card, .injury-measured-card, .injury-signal-row, .condition-standard-list > div, .citation-official-list > a, .citation-saved-list > div) {
+  border-color: rgba(255,255,255,.095) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.052), rgba(255,255,255,.014)) !important;
+  transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease !important;
+}
+
+:is(.tool-row, .standards-row, .deployment-fact, .drug-card, .injury-measured-card, .injury-signal-row, .condition-standard-list > div, .citation-official-list > a, .citation-saved-list > div):hover {
+  border-color: rgba(190,242,255,.22) !important;
+  background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(113,205,255,.045), rgba(203,123,255,.045)) !important;
+  box-shadow: 0 12px 34px rgba(0,5,24,.2), inset 0 1px rgba(255,255,255,.12) !important;
+  transform: translateY(-2px) scale(1.002);
+}
+
+/* top intelligence cards receive extra luminous depth */
+.intelligence-lane {
+  border-radius: 18px !important;
+  min-height: 160px;
+}
+
+.intelligence-lane.primary {
+  background:
+    radial-gradient(circle at 86% 18%, rgba(91,238,255,.19), transparent 30%),
+    radial-gradient(circle at 8% 100%, rgba(185,102,255,.13), transparent 38%),
+    var(--liquid-glass-fill-strong) !important;
+}
+
+.intelligence-lane:hover {
+  box-shadow: var(--liquid-glass-shadow-hover) !important;
+  transform: translateY(-4px) scale(1.006) !important;
+}
+
+/* ---------- Inputs and segmented controls ---------- */
+:is(.reviewer-stage-content input, .reviewer-stage-content select, .reviewer-stage-content textarea) {
+  color: rgba(255,255,255,.96) !important;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.028)) !important;
+  border-color: rgba(255,255,255,.18) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    inset 0 -1px 0 rgba(116,196,255,.035),
+    0 8px 22px rgba(0,0,0,.11) !important;
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+}
+
+:is(.reviewer-stage-content input, .reviewer-stage-content select, .reviewer-stage-content textarea)::placeholder {
+  color: rgba(226,239,255,.42) !important;
+}
+
+:is(.reviewer-stage-content input, .reviewer-stage-content select, .reviewer-stage-content textarea):focus {
+  border-color: rgba(155,242,255,.62) !important;
+  box-shadow:
+    0 0 0 1px rgba(132,239,255,.22),
+    0 0 0 4px rgba(117,194,255,.07),
+    0 0 34px rgba(86,211,255,.13),
+    inset 0 1px 0 rgba(255,255,255,.22) !important;
+}
+
+.command-input-wrap,
+.injury-input-wrap,
+.job-search-input,
+.drug-search-input,
+.condition-search,
+.standards-search,
+.deployment-search,
+.citation-search-input {
+  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.024)) !important;
+  border-color: rgba(255,255,255,.18) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.12) !important;
+  backdrop-filter: blur(22px) saturate(180%);
+}
+
+:is(.job-tabs, .hologram-view-toggle) {
+  background: rgba(255,255,255,.055) !important;
+  border-color: rgba(255,255,255,.13) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.10), 0 10px 28px rgba(0,0,0,.12) !important;
+  backdrop-filter: blur(18px) saturate(180%);
+}
+
+:is(.job-tabs button, .hologram-view-toggle button).active {
+  color: white !important;
+  background: linear-gradient(135deg, rgba(126,243,255,.20), rgba(116,142,255,.10), rgba(213,122,255,.11)) !important;
+  box-shadow: inset 0 1px rgba(255,255,255,.26), 0 0 20px rgba(101,220,255,.10) !important;
+  border-color: rgba(176,242,255,.24) !important;
+}
+
+/* ---------- Buttons ---------- */
+.reviewer-stage-content button:not(.nav-item):not(.sidebar-home),
+.reviewer-stage-content a[role="button"] {
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+}
+
+.reviewer-stage-content button:hover:not(:disabled),
+.reviewer-stage-content a[role="button"]:hover {
+  filter: brightness(1.08);
+}
+
+/* ---------- Anatomy: bright projected glass bay ---------- */
+.injury-anatomy-shell {
+  border-radius: 22px !important;
+  background:
+    radial-gradient(circle at 42% 52%, rgba(80,232,255,.12), transparent 32%),
+    radial-gradient(circle at 18% 18%, rgba(198,107,255,.08), transparent 30%),
+    linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.026) 56%, rgba(96,199,255,.04)) !important;
+  border-color: rgba(179,241,255,.24) !important;
+  box-shadow:
+    0 28px 90px rgba(0,4,25,.36),
+    0 0 48px rgba(69,218,255,.07),
+    inset 0 1px 0 rgba(255,255,255,.27),
+    inset 0 0 90px rgba(102,208,255,.035) !important;
+}
+
+.anatomy-real-stage {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(63,226,255,.075), transparent 31%),
+    linear-gradient(rgba(140,218,255,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,218,255,.025) 1px, transparent 1px) !important;
+  background-size: auto, 34px 34px, 34px 34px !important;
+}
+
+.anatomy-real-img.core-layer {
+  filter: contrast(1.07) saturate(.92) brightness(.98) drop-shadow(0 0 7px rgba(154,242,255,.32)) !important;
+  opacity: .93 !important;
+}
+
+.anatomy-real-img.glow-layer {
+  filter: brightness(1.1) saturate(.25) sepia(.25) hue-rotate(135deg) drop-shadow(0 0 16px rgba(107,237,255,.48)) blur(1px) !important;
+  opacity: .25 !important;
+  mix-blend-mode: screen;
+}
+
+.anatomy-real-hud {
+  border-color: rgba(134,238,255,.24) !important;
+  box-shadow: 0 0 30px rgba(80,218,255,.07), inset 0 0 30px rgba(125,137,255,.025);
+}
+
+.anatomy-real-scan {
+  background: linear-gradient(90deg, transparent, rgba(206,251,255,.65), rgba(123,236,255,.88), transparent) !important;
+  box-shadow: 0 0 15px rgba(125,238,255,.62), 0 0 42px rgba(114,174,255,.24) !important;
+}
+
+/* ---------- Page-specific luminous signatures ---------- */
+.job-profile-column {
+  border-radius: 16px !important;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(102,220,255,.07), transparent 34%),
+    var(--liquid-glass-fill-soft) !important;
+}
+
+.drug-selection-panel {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(123,238,255,.07), transparent 25%),
+    radial-gradient(circle at 73% 30%, rgba(212,116,255,.055), transparent 34%),
+    var(--liquid-glass-fill) !important;
+}
+
+.clinical-panel {
+  background:
+    radial-gradient(circle at 88% 15%, rgba(119,234,255,.07), transparent 32%),
+    linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.035) 48%, rgba(115,135,255,.045)) !important;
+}
+
+.condition-summary {
+  background:
+    radial-gradient(circle at 86% 8%, rgba(199,113,255,.09), transparent 30%),
+    radial-gradient(circle at 12% 100%, rgba(89,224,255,.07), transparent 36%),
+    var(--liquid-glass-fill) !important;
+}
+
+.standards-table {
+  border-radius: 20px !important;
+}
+
+.standards-row {
+  border-bottom-color: rgba(255,255,255,.075) !important;
+}
+
+.deployment-profile {
+  background:
+    radial-gradient(circle at 93% 10%, rgba(111,242,255,.12), transparent 27%),
+    radial-gradient(circle at 45% 110%, rgba(172,103,255,.075), transparent 38%),
+    var(--liquid-glass-fill) !important;
+}
+
+.citation-results-panel {
+  background:
+    radial-gradient(circle at 50% 42%, rgba(89,225,255,.055), transparent 25%),
+    linear-gradient(rgba(140,218,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(140,218,255,.018) 1px, transparent 1px),
+    var(--liquid-glass-fill) !important;
+  background-size: auto, 32px 32px, 32px 32px, auto !important;
+}
+
+/* ---------- status lights ---------- */
+:is(.source-status-items span, .injury-source-state, .job-source-status, .drug-status) {
+  color: rgba(236,246,255,.72) !important;
+}
+
+.injury-source-dot.active,
+.source-status-items i,
+.job-source-status::before {
+  box-shadow: 0 0 8px rgba(130,244,255,.9), 0 0 18px rgba(114,151,255,.35) !important;
+}
+
+/* ---------- brighter supporting copy ---------- */
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) p,
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) small {
+  color: rgba(226,238,251,.58);
+}
+
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) strong {
+  color: rgba(249,252,255,.91);
+}
+
+/* ---------- animations ---------- */
+@keyframes tahoe-glass-sweep {
+  0%, 12% { transform: translateX(-20%) rotate(16deg); opacity: 0; }
+  28% { opacity: .28; }
+  48% { transform: translateX(205%) rotate(16deg); opacity: .12; }
+  49%, 100% { transform: translateX(205%) rotate(16deg); opacity: 0; }
+}
+
+@keyframes tahoe-nav-pulse {
+  0%, 100% { transform: scale(.9); opacity: .7; }
+  50% { transform: scale(1.25); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reviewer-stage-content *,
+  .reviewer-sidebar * {
+    animation: none !important;
+  }
+}
