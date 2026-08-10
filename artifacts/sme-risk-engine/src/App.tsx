@@ -16,6 +16,7 @@ import ClinicalCalculator from "@/pages/ClinicalCalculatorV3";
 import Citations from "@/pages/CitationFinderV2";
 import "@/pages/injury-osha.css";
 import "@/pages/reviewer-readability.css";
+import "@/pages/reviewer-effects.css";
 
 function AppRouter() {
   const store = useStore();
