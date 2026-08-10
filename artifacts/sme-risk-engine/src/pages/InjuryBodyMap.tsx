@@ -5,6 +5,7 @@ import type { InjuryMetric, OccupationInjuryEvidence } from '@/lib/liveOccupatio
 import './injury-anatomy.css';
 import './injury-anatomy-v2.css';
 import './injury-anatomy-v4.css';
+import './injury-anatomy-v5.css';
 
 type RegionKey =
   | 'head'
@@ -29,9 +30,6 @@ type RegionSignal = {
   detail: string[];
 };
 
-const FRONT_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/a/a2/202403_human_anatomy_skeleton_and_organs.svg';
-const BACK_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/7/7b/Human_skeleton_back_no-text_no-color.svg';
-
 const REGION_LABELS: Record<RegionKey, string> = {
   head: 'Head',
   neck: 'Neck',
@@ -47,34 +45,37 @@ const REGION_LABELS: Record<RegionKey, string> = {
   wholeBody: 'Whole body / multiple',
 };
 
+const FRONT_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/8/86/BodyParts3D_anatomy.svg';
+const BACK_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Human_skeleton_back_no-text_no-color.svg';
+
 const HOTSPOT_POSITIONS: Record<'front' | 'back', Record<RegionKey, { x: number; y: number; w: number; h: number }>> = {
   front: {
-    head: { x: 50, y: 11, w: 18, h: 13 },
-    neck: { x: 50, y: 21, w: 14, h: 8 },
-    shoulder: { x: 50, y: 29, w: 43, h: 12 },
-    chest: { x: 50, y: 37, w: 34, h: 19 },
-    lowBack: { x: 50, y: 51, w: 28, h: 14 },
-    upperExtremity: { x: 50, y: 43, w: 62, h: 31 },
-    hand: { x: 50, y: 59, w: 74, h: 11 },
-    hip: { x: 50, y: 57, w: 28, h: 14 },
-    knee: { x: 50, y: 73, w: 31, h: 10 },
-    lowerExtremity: { x: 50, y: 79, w: 31, h: 30 },
-    foot: { x: 50, y: 94, w: 34, h: 9 },
-    wholeBody: { x: 50, y: 51, w: 78, h: 90 },
+    head: { x: 50, y: 10, w: 15, h: 12 },
+    neck: { x: 50, y: 19, w: 10, h: 8 },
+    shoulder: { x: 50, y: 27, w: 40, h: 14 },
+    chest: { x: 50, y: 37, w: 31, h: 19 },
+    lowBack: { x: 50, y: 50, w: 28, h: 14 },
+    upperExtremity: { x: 50, y: 43, w: 63, h: 31 },
+    hand: { x: 50, y: 57, w: 78, h: 17 },
+    hip: { x: 50, y: 58, w: 30, h: 14 },
+    knee: { x: 50, y: 75, w: 28, h: 12 },
+    lowerExtremity: { x: 50, y: 82, w: 36, h: 30 },
+    foot: { x: 50, y: 96, w: 34, h: 9 },
+    wholeBody: { x: 50, y: 53, w: 72, h: 88 },
   },
   back: {
-    head: { x: 50, y: 11, w: 18, h: 13 },
-    neck: { x: 50, y: 21, w: 14, h: 8 },
-    shoulder: { x: 50, y: 29, w: 44, h: 12 },
-    chest: { x: 50, y: 38, w: 35, h: 18 },
-    lowBack: { x: 50, y: 52, w: 31, h: 16 },
-    upperExtremity: { x: 50, y: 43, w: 62, h: 31 },
-    hand: { x: 50, y: 59, w: 74, h: 11 },
-    hip: { x: 50, y: 58, w: 30, h: 14 },
-    knee: { x: 50, y: 74, w: 32, h: 10 },
-    lowerExtremity: { x: 50, y: 80, w: 32, h: 29 },
-    foot: { x: 50, y: 94, w: 34, h: 9 },
-    wholeBody: { x: 50, y: 51, w: 78, h: 90 },
+    head: { x: 50, y: 10, w: 15, h: 12 },
+    neck: { x: 50, y: 19, w: 10, h: 8 },
+    shoulder: { x: 50, y: 27, w: 40, h: 14 },
+    chest: { x: 50, y: 37, w: 31, h: 18 },
+    lowBack: { x: 50, y: 50, w: 30, h: 18 },
+    upperExtremity: { x: 50, y: 43, w: 63, h: 31 },
+    hand: { x: 50, y: 57, w: 78, h: 17 },
+    hip: { x: 50, y: 59, w: 32, h: 15 },
+    knee: { x: 50, y: 75, w: 28, h: 12 },
+    lowerExtremity: { x: 50, y: 82, w: 36, h: 30 },
+    foot: { x: 50, y: 96, w: 34, h: 9 },
+    wholeBody: { x: 50, y: 53, w: 72, h: 88 },
   },
 };
 
@@ -103,6 +104,12 @@ function derivedRegion(label: string): RegionKey[] {
   if (/hearing|vision|vestibular|neurolog/.test(value)) keys.push('head');
   if (/upper back/.test(value)) keys.push('chest');
   return [...new Set(keys)];
+}
+
+function scoreColor(score: number): string {
+  const clamped = Math.max(0, Math.min(1, score));
+  const hue = 185 - clamped * 155;
+  return `hsla(${hue}, 96%, 64%, ${0.3 + clamped * 0.68})`;
 }
 
 function buildRegionSignals(measured: OccupationInjuryEvidence | null, profile: OccupationalInjuryProfile | null): RegionSignal[] {
@@ -161,12 +168,10 @@ function buildRegionSignals(measured: OccupationInjuryEvidence | null, profile: 
     .sort((a, b) => b.score - a.score);
 }
 
-function heatStyle(signal?: RegionSignal): CSSProperties {
-  const score = signal?.score ?? 0;
-  const hue = 184 - Math.max(0, Math.min(1, score)) * 158;
+function heatStyle(signal: RegionSignal): CSSProperties {
   return {
-    '--heat-color': `hsla(${hue}, 100%, 64%, ${0.46 + score * 0.48})`,
-    '--heat-strength': `${0.18 + score * 0.82}`,
+    '--heat-color': scoreColor(signal.score),
+    '--heat-strength': signal.score,
   } as CSSProperties;
 }
 
