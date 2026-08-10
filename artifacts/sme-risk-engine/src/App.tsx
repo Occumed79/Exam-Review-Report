@@ -17,6 +17,7 @@ import Citations from "@/pages/CitationFinderV2";
 import "@/pages/injury-osha.css";
 import "@/pages/reviewer-readability.css";
 import "@/pages/reviewer-effects.css";
+import "@/pages/workbench-showcase.css";
 
 function AppRouter() {
   const store = useStore();
