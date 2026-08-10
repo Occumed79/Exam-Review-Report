@@ -222,7 +222,10 @@ export default function InjuryBodyMap({
   profile: OccupationalInjuryProfile | null;
 }) {
   const signals = useMemo(() => buildRegionSignals(measured, profile), [measured, profile]);
-  const signalMap = useMemo(() => new Map(signals.map((signal) => [signal.key, signal])), [signals]);
+  const signalMap = useMemo(
+    () => new Map<RegionKey, RegionSignal>(signals.map((signal) => [signal.key, signal] as const)),
+    [signals],
+  );
   const [active, setActive] = useState<RegionKey | null>(signals[0]?.key ?? null);
   const idle = !profile;
 
@@ -231,7 +234,8 @@ export default function InjuryBodyMap({
     else if (!active || !signalMap.has(active)) setActive(signals[0].key);
   }, [signals, signalMap, active]);
 
-  const activeSignal = signalMap.get(active ?? signals[0]?.key) ?? signals[0];
+  const activeKey = active ?? signals[0]?.key ?? null;
+  const activeSignal = activeKey ? signalMap.get(activeKey) : undefined;
   const hasMeasured = signals.some((signal) => signal.source === 'BLS measured');
 
   return (
