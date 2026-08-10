@@ -8,20 +8,38 @@ export type OnetSearchMatch = {
 
 type OnetRecord = Record<string, unknown>;
 
+const ONET_KEY_NAMES = ["ONET_API_KEY", "ONET_V2_API_KEY", "O_NET_API_KEY"] as const;
+
+function configuredKey() {
+  for (const name of ONET_KEY_NAMES) {
+    const value = process.env[name]?.trim();
+    if (value) return { name, value };
+  }
+  return null;
+}
+
 function apiKey(): string | undefined {
-  return process.env.ONET_API_KEY?.trim() || undefined;
+  return configuredKey()?.value;
 }
 
 export function getOnetStatus() {
+  const configured = configuredKey();
   return {
-    configured: Boolean(apiKey()),
+    configured: Boolean(configured),
     source: "O*NET Web Services API v2",
+    authMode: "X-API-Key",
+    keyVariable: configured?.name ?? "ONET_API_KEY",
+    note: configured
+      ? `O*NET v2 credential is visible to the server through ${configured.name}.`
+      : "No O*NET v2 API key is visible to this running server process.",
   };
 }
 
-async function getJson(path: string): Promise<unknown> {
+async function request(path: string, attempt = 0): Promise<Response> {
   const key = apiKey();
-  if (!key) throw new Error("ONET_API_KEY is not configured on the server.");
+  if (!key) {
+    throw new Error("O*NET API key is not visible to this Render service. Add ONET_API_KEY to this service's Environment and redeploy.");
+  }
 
   const response = await fetch(`${ONET_BASE_URL}${path}`, {
     method: "GET",
@@ -31,9 +49,34 @@ async function getJson(path: string): Promise<unknown> {
     },
   });
 
+  if (response.status === 429 && attempt < 2) {
+    await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));
+    return request(path, attempt + 1);
+  }
+
+  return response;
+}
+
+async function getJson(path: string): Promise<unknown> {
+  const response = await request(path);
+
   if (!response.ok) {
     const body = await response.text().catch(() => "");
-    throw new Error(`O*NET request failed (${response.status})${body ? `: ${body.slice(0, 180)}` : ""}`);
+    let detail = body.slice(0, 180);
+    try {
+      const parsed = JSON.parse(body) as { error?: unknown };
+      if (typeof parsed.error === "string") detail = parsed.error;
+    } catch {
+      // Keep the short response body when the service does not return JSON.
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      throw new Error(`O*NET rejected the configured API key (${response.status})${detail ? `: ${detail}` : ""}. Confirm this is a version 2 API key.`);
+    }
+    if (response.status === 429) {
+      throw new Error("O*NET is temporarily rate-limiting requests. Local occupation intelligence remains available.");
+    }
+    throw new Error(`O*NET request failed (${response.status})${detail ? `: ${detail}` : ""}`);
   }
 
   return response.json();
