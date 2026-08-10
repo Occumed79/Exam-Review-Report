@@ -1,81 +1,42 @@
-# 🚀 Render Deployment Guide: SME Risk Intelligence Engine
+# Render Deployment Guide — Exam Reviewer Toolkit
 
-This guide provides "hand-held" instructions to deploy your **Exam Review Report** (SME Risk Intelligence Engine) on Render. Since this is a **pnpm workspace** (monorepo), we need to configure Render to target the specific application folder.
+This repository is a **pnpm workspace**. The production service must run the Express API server, which also serves the built frontend. Do **not** deploy only `artifacts/sme-risk-engine`, because frontend-only hosting will cause `/api/*` requests to return the SPA HTML instead of JSON.
 
-## 1. Create a New Web Service on Render
-
-1.  Log in to your [Render Dashboard](https://dashboard.render.com/).
-2.  Click the **"New +"** button and select **"Web Service"**.
-3.  Connect your GitHub account and select the **`Exam-Review-Report`** repository.
-
-## 2. Configure Basic Settings
-
-Fill in the following details in the Render configuration form:
+## Required Render settings
 
 | Field | Value |
-| :--- | :--- |
-| **Name** | `sme-risk-intelligence-engine` (or your preferred name) |
-| **Region** | Select the one closest to you (e.g., `Oregon (US West)`) |
-| **Branch** | `main` |
-| **Root Directory** | `artifacts/sme-risk-engine` |
-| **Runtime** | `Node` |
+| --- | --- |
+| Branch | `main` |
+| Root Directory | **leave blank** |
+| Runtime | `Node` |
+| Build Command | `pnpm install --frozen-lockfile && pnpm run render:build` |
+| Start Command | `pnpm start` |
+| Health Check Path | `/api/health` |
 
-## 3. Configure Build & Start Commands
+The root `render:build` script builds both:
 
-Since we are using a **Root Directory**, Render will run these commands *inside* the `artifacts/sme-risk-engine` folder.
+- `@workspace/sme-risk-engine`
+- `@workspace/api-server`
 
-| Field | Value |
-| :--- | :--- |
-| **Build Command** | `pnpm install && pnpm run build` |
-| **Start Command** | `pnpm run serve` |
+The root `start` script starts `@workspace/api-server`. Express registers `/api/*` first, then serves the built SPA for normal browser routes.
 
-> **Note**: Render automatically detects `pnpm` if a `pnpm-lock.yaml` is present. If it fails, you can use `npm install -g pnpm && pnpm install && pnpm run build` as the build command.
+## Environment variables
 
-## 4. Set Up Environment Variables (The Full Arsenal)
+Add server-side credentials to the **same Render Web Service** that runs the app. Relevant variables include:
 
-This is the most critical step for the **"Nuclear Warhead"** features to work. You have **16 elite APIs** integrated.
+- `ONET_API_KEY`
+- `BLS_API_KEY`
+- other source credentials used by enabled server integrations
 
-1.  Scroll down to the **"Environment Variables"** section.
-2.  Click **"Add Environment Variable"** for each of the following:
+Do not prefix server-side credentials with `VITE_` unless a browser-exposed variable is explicitly required.
 
-| Key | Purpose |
-| :--- | :--- |
-| **`VITE_GROQ_KEY`** | Ultra-fast LLM inference |
-| **`VITE_OPENROUTER_KEY`** | Claude Advanced Reasoning |
-| **`VITE_GEMINI_KEY`** | Gemini Multi-modal Vision |
-| **`VITE_TAVILY_KEY`** | Real-time Medical Research |
-| **`VITE_EXA_KEY`** | Deep Semantic Search |
-| **`VITE_FIRECRAWL_KEY`** | Intelligent Web Crawling |
-| **`VITE_BROWSERBASE_KEY`** | Headless Browser Automation |
-| **`VITE_YOU_API_KEY`** | Real-time Web Search |
-| **`VITE_JINA_KEY`** | AI-powered Content Extraction |
-| **`VITE_SERPER_KEY`** | Google-like Search Results |
-| **`VITE_BROWSE_AI_KEY`** | No-code Web Automation |
-| **`VITE_BROWSERLESS_KEY`** | Headless Browser Service |
-| **`VITE_OCR_SPACE_KEY`** | Free Medical Document OCR |
-| **`VITE_CLOUD_KEY`** | Custom Intelligence Layer |
-| **`VITE_MINIMAX_KEY`** | Advanced Multimodal Vision |
-| **`VITE_OLOSTEP_KEY`** | Transparent AI Reasoning |
+## Verification after deployment
 
-## 5. Advanced Settings (Optional but Recommended)
+Open these paths on the deployed service:
 
-1.  **Auto-Deploy**: Set to **"Yes"** so every time you push to GitHub, Render updates your site.
-2.  **Health Check Path**: Set to `/` (the root of your app).
-3.  **Publish Directory**: Set this to `dist/public`. This is where your built application files are located within the `artifacts/sme-risk-engine` directory.
+- `/api/health` → must return JSON
+- `/api/intelligence/status` → must return JSON
+- `/api/occupations/search?q=firefighter` → must return JSON, not `index.html`
+- `/injury-intelligence` → must load the SPA route
 
-## 6. Deploy!
-
-1.  Click **"Create Web Service"**.
-2.  Render will start the build process. You can watch the logs in the dashboard.
-3.  Once the build is finished and the status turns to **"Live"**, your elite SME Risk Intelligence Engine will be accessible via the provided `.onrender.com` URL.
-
-## 💡 Troubleshooting
-
--   **Build Fails**: Ensure that the **Root Directory** is correctly set to `artifacts/sme-risk-engine`.
--   **Blank Page**: This often means the **Publish Directory** is incorrect or assets are not loading. Ensure it is set to `dist/public`.
--   **Port Issues**: Vite's `serve` command (preview) defaults to port 4173. Render usually detects this, but if not, you can add an environment variable `PORT` with value `4173`.
-
----
-
-**Status**: 💎 Elite Deployment Ready
-**Support**: If you hit any snags, just let me know!
+If an `/api/*` path returns `text/html`, Render is running a frontend-only server or the Root Directory / Start Command is wrong.
