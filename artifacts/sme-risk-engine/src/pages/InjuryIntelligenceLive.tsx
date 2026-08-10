@@ -304,13 +304,7 @@ export default function InjuryIntelligenceLive() {
         {notice && <div className="injury-notice">{notice}</div>}
       </section>
 
-      {!selectedJob && (
-        <section className="injury-empty-state">
-          <div className="injury-empty-number">01</div>
-          <div><strong>Search an occupation.</strong><p>The selected occupation drives the BLS surveillance lookup, BLS industry bridge for OSHA context, and separate O*NET-derived review signals.</p></div>
-          <div className="injury-empty-examples"><span>Firefighter</span><span>Electrician</span><span>Aircraft mechanic</span><span>Truck driver</span></div>
-        </section>
-      )}
+      {!selectedJob && <InjuryBodyMap measured={null} profile={null} />}
 
       {selectedJob && profile && (
         <>
