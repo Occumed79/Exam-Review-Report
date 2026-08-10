@@ -71,7 +71,7 @@ export default function StandardsMatrixV2() {
           <h1>Standards Matrix</h1>
           <p>Current source starting points for occupational frameworks reviewers repeatedly need to locate. No scoring and no clearance output.</p>
         </div>
-        <div className="standards-search"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Framework, topic, standard…" /></div>
+        <div className="standards-search liquid-glass"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Framework, topic, standard…" /></div>
       </header>
 
       <div className="standards-table-head"><span>FRAMEWORK</span><span>USE / SCOPE</span><span>KEY TOPICS</span><span>SOURCE</span></div>

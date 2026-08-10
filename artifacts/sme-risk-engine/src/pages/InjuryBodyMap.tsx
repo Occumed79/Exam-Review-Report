@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { Activity, Database, RotateCcw, Search, Sparkles } from 'lucide-react';
+import { Activity, Database, Search, Sparkles } from 'lucide-react';
 import type { OccupationalInjuryProfile } from '@/lib/occupationalInjuryIntelligence';
 import type { InjuryMetric, OccupationInjuryEvidence } from '@/lib/liveOccupationalApi';
 import './injury-anatomy.css';
@@ -179,6 +179,45 @@ function heatStyle(signal: RegionSignal): CSSProperties {
   } as CSSProperties;
 }
 
+function BundledAnatomy({ view }: { view: 'front' | 'back' }) {
+  const isFront = view === 'front';
+
+  return (
+    <svg
+      className="anatomy-inline-fallback"
+      viewBox="0 0 260 520"
+      role="img"
+      aria-label={`${isFront ? 'Anterior' : 'Posterior'} anatomical skeleton illustration`}
+    >
+      <g className="anatomy-fallback-outline">
+        <ellipse cx="130" cy="42" rx="29" ry="34" />
+        <path d="M112 73c-4 12-12 18-25 24-14 7-28 13-34 29-6 18-4 50 2 79 4 22 0 42-5 61l-12 57 18 4 20-67 4-67 13-55 8 119-12 88 4 149h26l11-132 10-73 10 73 11 132h26l4-149-12-88 8-119 13 55 4 67 20 67 18-4-12-57c-5-19-9-39-5-61 6-29 8-61 2-79-6-16-20-22-34-29-13-6-21-12-25-24z" />
+      </g>
+      <g className="anatomy-fallback-bones">
+        <ellipse cx="130" cy="41" rx="22" ry="27" />
+        <path d="M118 62c8 5 16 5 24 0M130 69v179M98 103l32 12 32-12M102 113c-19 17-19 60 5 77M158 113c19 17 19 60-5 77M106 124c16 9 32 9 48 0M103 137c18 10 36 10 54 0M102 151c18 11 38 11 56 0M104 166c17 10 35 10 52 0M109 181c14 8 28 8 42 0" />
+        <path d="M99 101L70 130 61 203 46 269M161 101l29 29 9 73 15 66M104 204l26 25 26-25M106 207l-8 42 32 16 32-16-8-42" />
+        <path d="M112 260l-12 95 4 132M148 260l12 95-4 132M100 355l-11 131M160 355l11 131" />
+        <circle cx="70" cy="130" r="5" /><circle cx="190" cy="130" r="5" />
+        <circle cx="61" cy="203" r="5" /><circle cx="199" cy="203" r="5" />
+        <circle cx="100" cy="355" r="6" /><circle cx="160" cy="355" r="6" />
+        <path d="M89 486l-19 17h36M171 486l19 17h-36" />
+        {isFront ? (
+          <>
+            <path className="anatomy-fallback-detail" d="M130 110v80M118 78l12 20 12-20M118 191l12 11 12-11" />
+            <path className="anatomy-fallback-organ" d="M112 132c4-10 14-12 18-3 4-9 14-7 18 3 5 14-6 25-18 34-12-9-23-20-18-34z" />
+          </>
+        ) : (
+          <>
+            <path className="anatomy-fallback-detail" d="M104 111l24 20-20 30M156 111l-24 20 20 30M114 183l16 15 16-15" />
+            <path className="anatomy-fallback-detail" d="M121 82l9 16 9-16" />
+          </>
+        )}
+      </g>
+    </svg>
+  );
+}
+
 export default function InjuryBodyMap({
   measured,
   profile,
@@ -212,7 +251,7 @@ export default function InjuryBodyMap({
             <h3>{idle ? 'Occupation-linked anatomical projection' : 'Interactive body-region injury projection'}</h3>
           </div>
           <div className="anatomy-real-controls">
-            <div className="hologram-view-toggle">
+            <div className="hologram-view-toggle liquid-glass">
               <button className={view === 'front' ? 'active' : ''} onClick={() => { setView('front'); setAssetFailed(false); }}>ANTERIOR</button>
               <button className={view === 'back' ? 'active' : ''} onClick={() => { setView('back'); setAssetFailed(false); }}>POSTERIOR</button>
             </div>
@@ -243,7 +282,7 @@ export default function InjuryBodyMap({
                 />
               </>
             ) : (
-              <div className="anatomy-real-fallback"><RotateCcw size={24} /><strong>Anatomy source unavailable</strong><span>The injury data remains available in the ranking panel.</span></div>
+              <BundledAnatomy view={view} />
             )}
 
             {!idle && Object.entries(HOTSPOT_POSITIONS[view]).map(([key, position]) => {
@@ -254,6 +293,7 @@ export default function InjuryBodyMap({
                 <button
                   key={region}
                   className={`anatomy-real-hotspot${active === region ? ' active' : ''}`}
+                  data-source={signal.source === 'BLS measured' ? 'measured' : 'derived'}
                   style={{
                     left: `${position.x}%`,
                     top: `${position.y}%`,
@@ -274,7 +314,9 @@ export default function InjuryBodyMap({
         </div>
 
         <div className="anatomy-real-credit">
-          {view === 'front'
+          {assetFailed
+            ? 'Bundled anatomical linework shown because the reference artwork could not be reached.'
+            : view === 'front'
             ? 'Anatomy base: DataBase Center for Life Science (DBCLS), CC BY 4.0 · holographic styling applied.'
             : 'Posterior skeleton base: LadyofHats / Wikimedia Commons, public domain · holographic styling applied.'}
         </div>
@@ -310,7 +352,7 @@ export default function InjuryBodyMap({
             <div className="injury-anatomy-ranking">
               <span>REGION RANKING</span>
               {signals.slice(0, 8).map((signal, index) => (
-                <button key={signal.key} className={active === signal.key ? 'active' : ''} onMouseEnter={() => setActive(signal.key)} onClick={() => setActive(signal.key)}>
+                <button key={signal.key} className={active === signal.key ? 'active' : ''} data-source={signal.source === 'BLS measured' ? 'measured' : 'derived'} onMouseEnter={() => setActive(signal.key)} onClick={() => setActive(signal.key)}>
                   <b>{String(index + 1).padStart(2, '0')}</b>
                   <div>
                     <strong>{signal.label}</strong>

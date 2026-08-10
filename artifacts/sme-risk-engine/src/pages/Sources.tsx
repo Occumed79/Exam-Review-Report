@@ -59,7 +59,7 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
         </button>
       </div>
 
-      <div className="glass-card" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem", display: "flex", gap: "0.875rem", alignItems: "center" }}>
+      <div className="liquid-toolbar liquid-glass" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem", display: "flex", gap: "0.875rem", alignItems: "center" }}>
         <div style={{ position: "relative", flex: 1 }}>
           <Search size={14} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }} />
           <input className="glass-input" style={{ ...inp, paddingLeft: "2.25rem" }} placeholder="Search sources..." value={search} onChange={e => setSearch(e.target.value)} data-testid="input-search-sources" />

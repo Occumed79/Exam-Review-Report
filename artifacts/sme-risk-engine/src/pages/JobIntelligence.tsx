@@ -287,13 +287,13 @@ export default function JobIntelligence() {
           <h1>Job Intelligence</h1>
           <p>Resolve a job title to occupational functions and demands, then keep only the functions useful to the review.</p>
         </div>
-        <div className="job-source-status">
+        <div className="job-source-status liquid-glass">
           <span className={status?.onet.configured ? 'active' : ''} />
           <div><strong>O*NET</strong><small>{status?.onet.configured ? 'live API configured' : 'local fallback available'}</small></div>
         </div>
       </header>
 
-      <div className="job-tabs" role="tablist" aria-label="Job Intelligence views">
+      <div className="job-tabs liquid-glass" role="tablist" aria-label="Job Intelligence views">
         <button className={view === 'lookup' ? 'active' : ''} onClick={() => setView('lookup')}><Search size={14} /> Lookup</button>
         <button className={view === 'workspace' ? 'active' : ''} onClick={() => setView('workspace')}><BookOpen size={14} /> Function Workspace <span>{duties.length}</span></button>
         <button className={view === 'paste' ? 'active' : ''} onClick={() => setView('paste')}><FileText size={14} /> Paste JD</button>
@@ -305,7 +305,7 @@ export default function JobIntelligence() {
 
       {view === 'lookup' && (
         <>
-          <section className="job-search-panel">
+          <section className="job-search-panel liquid-glass">
             <label>JOB TITLE / SOC</label>
             <div className="job-search-input">
               {searching || loadingProfile ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}

@@ -15,11 +15,6 @@ import DrugChecker from "@/pages/DrugCheckerV2";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV3";
 import Citations from "@/pages/CitationFinderV2";
 import "@/pages/injury-osha.css";
-import "@/pages/reviewer-readability.css";
-import "@/pages/reviewer-effects.css";
-import "@/pages/workbench-showcase.css";
-import "@/pages/tool-showcase-effects.css";
-import "@/pages/tool-showcase-v2.css";
 
 function AppRouter() {
   const store = useStore();
