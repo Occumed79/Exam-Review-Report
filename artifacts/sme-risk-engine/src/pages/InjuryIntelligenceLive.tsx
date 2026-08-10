@@ -45,9 +45,17 @@ function localMatches(query: string): LiveOccupationMatch[] {
     .map((job) => ({ title: job.title, code: job.socCode }));
 }
 
-function SourceState({ active, label, detail }: { active: boolean; label: string; detail: string }) {
+function exactLocalJob(query: string): ONetJob | undefined {
+  const normalized = query.trim().toLowerCase();
+  if (!normalized) return undefined;
+  return searchONetJobs(query).find((job) =>
+    job.title.trim().toLowerCase() === normalized || job.socCode.trim().toLowerCase() === normalized
+  );
+}
+
+function SourceState({ active, label, detail, title }: { active: boolean; label: string; detail: string; title?: string }) {
   return (
-    <div className="injury-source-state">
+    <div className="injury-source-state" title={title}>
       <span className={`injury-source-dot${active ? ' active' : ''}`} />
       <span>{label}</span>
       <small>{detail}</small>
@@ -143,6 +151,14 @@ export default function InjuryIntelligenceLive() {
   const [oshaLoading, setOshaLoading] = useState(false);
   const [oshaError, setOshaError] = useState('');
 
+  function activateLocalOccupation(job: ONetJob, message: string) {
+    setSelectedJob(job);
+    setSourceMode('local-fallback');
+    setJobSearch(job.title);
+    setMatches([]);
+    setNotice(message);
+  }
+
   useEffect(() => {
     fetchIntelligenceStatus().then(setStatus).catch(() => setStatus(null));
   }, []);
@@ -160,11 +176,27 @@ export default function InjuryIntelligenceLive() {
       setSearching(true);
       try {
         const live = await searchLiveOccupations(query);
-        setMatches(live.length ? live : localMatches(query));
-        setNotice(live.length ? '' : 'No live O*NET match returned. Showing the local occupation fallback.');
-      } catch {
-        setMatches(localMatches(query));
-        setNotice('Live O*NET is unavailable. Local occupation intelligence is still available.');
+        if (live.length) {
+          setMatches(live);
+          setNotice('');
+        } else {
+          const exact = exactLocalJob(query);
+          if (exact) {
+            activateLocalOccupation(exact, 'No live O*NET result returned. Using the exact local occupation profile.');
+          } else {
+            setMatches(localMatches(query));
+            setNotice('No live O*NET match returned. Showing the local occupation fallback.');
+          }
+        }
+      } catch (error) {
+        const exact = exactLocalJob(query);
+        const reason = error instanceof Error ? error.message : 'Live O*NET request failed.';
+        if (exact) {
+          activateLocalOccupation(exact, `${reason} Using the exact local occupation profile.`);
+        } else {
+          setMatches(localMatches(query));
+          setNotice(`${reason} Local occupation intelligence is still available.`);
+        }
       } finally {
         setSearching(false);
       }
@@ -238,16 +270,13 @@ export default function InjuryIntelligenceLive() {
       setSourceMode('live-onet');
       setJobSearch(live.title);
       setMatches([]);
-    } catch {
+    } catch (error) {
       const local = getJobByCode(match.code) ?? searchONetJobs(match.title)[0];
+      const reason = error instanceof Error ? error.message : 'Live occupation detail was unavailable.';
       if (local) {
-        setSelectedJob(local);
-        setSourceMode('local-fallback');
-        setJobSearch(local.title);
-        setMatches([]);
-        setNotice('Live occupation detail was unavailable. Using the local O*NET-oriented profile.');
+        activateLocalOccupation(local, `${reason} Using the local O*NET-oriented profile.`);
       } else {
-        setNotice('Unable to load that occupation. Try a broader title.');
+        setNotice(`${reason} Unable to load a local fallback for that occupation.`);
       }
     } finally {
       setLoadingProfile(false);
@@ -272,7 +301,12 @@ export default function InjuryIntelligenceLive() {
           <p>Measured BLS surveillance, OSHA severe-injury context, occupation demands, and reviewer context. Each source keeps its own meaning and denominator.</p>
         </div>
         <div className="injury-source-stack">
-          <SourceState active={Boolean(status?.onet?.configured)} label="O*NET" detail={status?.onet?.configured ? 'live' : 'fallback'} />
+          <SourceState
+            active={Boolean(status?.onet?.configured)}
+            label="O*NET"
+            detail={status ? (status.onet.configured ? 'configured' : 'key missing') : 'checking'}
+            title={status?.onet?.note}
+          />
           <SourceState active={Boolean(status?.bls?.measuredTables || status?.bls?.configured)} label="BLS" detail={status?.bls?.measuredTables ? 'measured tables' : 'public'} />
           <SourceState active={Boolean(status?.osha?.publicSevereInjuryData)} label="OSHA" detail={status?.osha?.publicSevereInjuryData ? 'current SIR' : 'unavailable'} />
         </div>
