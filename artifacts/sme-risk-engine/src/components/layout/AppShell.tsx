@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
+import TahoeGlassBackground from "../TahoeGlassBackground";
 
 interface AppShellProps {
   children: ReactNode;
@@ -7,30 +8,13 @@ interface AppShellProps {
 
 export default function AppShell({ children }: AppShellProps) {
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "var(--app-bg)",
-        color: "var(--app-fg)",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+    <div className="reviewer-app-shell">
+      <TahoeGlassBackground />
       <Sidebar />
 
-      <main
-        style={{
-          position: "relative",
-          zIndex: 1,
-          marginLeft: "220px",
-          width: "calc(100vw - 220px)",
-          height: "100vh",
-          overflowY: "auto",
-          overflowX: "hidden",
-          padding: "2rem 2.5rem 3rem",
-        }}
-      >
-        {children}
+      <main className="reviewer-main-stage">
+        <div className="reviewer-stage-refraction" aria-hidden="true" />
+        <div className="reviewer-stage-content">{children}</div>
       </main>
     </div>
   );
