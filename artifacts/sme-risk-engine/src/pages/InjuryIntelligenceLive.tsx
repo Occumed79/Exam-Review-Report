@@ -29,6 +29,7 @@ import {
   type OccupationInjuryEvidence,
   type OshaSevereInjuryContext,
 } from '@/lib/liveOccupationalApi';
+import InjuryBodyMap from './InjuryBodyMap';
 import './injury-workbench.css';
 
 const PROMINENCE_RANK: Record<ReviewProminence, number> = {
@@ -62,6 +63,7 @@ function formatMetric(value: number): string {
 
 function DatasetCard({ dataset }: { dataset: InjuryDataset }) {
   const available = dataset.status === 'available';
+  const max = Math.max(0, ...dataset.top.map((metric) => metric.value));
   return (
     <article className={`injury-measured-card${available ? '' : ' unavailable'}`}>
       <div className="injury-measured-card-head">
@@ -91,8 +93,9 @@ function DatasetCard({ dataset }: { dataset: InjuryDataset }) {
           )}
           <div className="injury-measured-list">
             {dataset.top.slice(0, 6).map((metric) => (
-              <div key={`${dataset.id}-${metric.label}`}>
+              <div key={`${dataset.id}-${metric.label}`} className="injury-measured-metric">
                 <span>{metric.label}</span>
+                <i><b style={{ width: `${max ? Math.max(5, Math.round(metric.value / max * 100)) : 0}%` }} /></i>
                 <strong>{formatMetric(metric.value)}</strong>
               </div>
             ))}
@@ -107,12 +110,14 @@ function DatasetCard({ dataset }: { dataset: InjuryDataset }) {
 }
 
 function OshaMetricList({ title, metrics }: { title: string; metrics: InjuryMetric[] }) {
+  const max = Math.max(0, ...metrics.map((metric) => metric.value));
   return (
     <div className="injury-osha-list">
       <span>{title}</span>
       {metrics.slice(0, 5).map((metric) => (
         <div key={`${title}-${metric.label}`}>
           <small>{metric.label}</small>
+          <i><b style={{ width: `${max ? Math.max(5, Math.round(metric.value / max * 100)) : 0}%` }} /></i>
           <strong>{formatMetric(metric.value)}</strong>
         </div>
       ))}
@@ -147,7 +152,7 @@ export default function InjuryIntelligenceLive() {
     if (selectedJob && query === selectedJob.title) return;
 
     if (query.length < 2) {
-      setMatches(query ? localMatches(query) : searchONetJobs('').slice(0, 6).map((job) => ({ title: job.title, code: job.socCode })));
+      setMatches(query ? localMatches(query) : []);
       return;
     }
 
@@ -320,6 +325,8 @@ export default function InjuryIntelligenceLive() {
               <a href={selectedJob.onetUrl} target="_blank" rel="noreferrer">O*NET profile <ExternalLink size={11} /></a>
             </div>
           </section>
+
+          <InjuryBodyMap measured={measured} profile={profile} />
 
           <section className="injury-measured-section">
             <div className="injury-measured-heading">
