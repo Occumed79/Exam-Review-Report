@@ -1,14 +1,7 @@
 /*
- * Alpine blue UI refresh.
- * Palette sampled from the user-provided reference:
- *   deep blue  #2F6E87
- *   cyan       #259CBD
- *   ice blue   #95B4C4
- *   stone      #4E4741
- *   warm gray  #868481
- *
- * This file is intentionally imported last so it can correct the legacy
- * ultra-dark / micro-type styles without rewriting every tool stylesheet.
+ * Alpine UI correction pass.
+ * Imported last. The goal is one coherent blue/ice/stone system with
+ * readable desktop typography and zero near-black content slabs.
  */
 
 :root {
@@ -18,607 +11,607 @@
   --alpine-stone: #4e4741;
   --alpine-gray: #868481;
 
-  --canvas-black: #102b36;
-  --canvas-graphite: #153743;
-  --canvas-blue-black: #173d4b;
-  --content-1: #1c4655;
-  --content-2: #183d4a;
-  --content-3: #235262;
-  --content-border: rgba(149, 180, 196, 0.22);
-  --content-border-strong: rgba(149, 180, 196, 0.36);
+  --app-bg-deep: #173641;
+  --app-bg: #1d4451;
+  --app-bg-high: #285665;
+  --surface-1: #244b58;
+  --surface-2: #1f414d;
+  --surface-3: #2d5967;
+  --surface-soft: rgba(47, 110, 135, 0.24);
+  --input-bg: #193944;
 
-  --text-primary: rgba(250, 253, 254, 0.98);
-  --text-secondary: rgba(236, 246, 249, 0.82);
-  --text-tertiary: rgba(221, 238, 243, 0.66);
-  --text-quaternary: rgba(210, 229, 235, 0.52);
-  --ice: #95b4c4;
-  --ice-bright: #dff8ff;
-  --ice-muted: #77b5c9;
+  --ui-text: #f7fbfc;
+  --ui-text-2: #dce9ed;
+  --ui-text-3: #b8cdd3;
+  --ui-text-4: #91aeb7;
+  --ui-border: rgba(149, 180, 196, 0.32);
+  --ui-border-soft: rgba(149, 180, 196, 0.18);
+  --ui-accent: #39a8c5;
+  --ui-accent-soft: #95b4c4;
+  --ui-warning: #b9aaa2;
 
-  --glass-fill: rgba(32, 79, 94, 0.76);
-  --glass-fill-strong: rgba(37, 87, 103, 0.86);
-  --glass-border: rgba(192, 224, 234, 0.24);
-  --glass-shadow:
-    0 22px 55px rgba(7, 27, 34, 0.24),
-    0 6px 18px rgba(7, 27, 34, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 -1px 0 rgba(149, 180, 196, 0.08);
+  --canvas-black: var(--app-bg-deep);
+  --canvas-graphite: var(--app-bg);
+  --canvas-blue-black: #204956;
+  --content-1: var(--surface-1);
+  --content-2: var(--surface-2);
+  --content-3: var(--surface-3);
+  --content-border: var(--ui-border-soft);
+  --content-border-strong: var(--ui-border);
+  --text-primary: var(--ui-text);
+  --text-secondary: var(--ui-text-2);
+  --text-tertiary: var(--ui-text-3);
+  --text-quaternary: var(--ui-text-4);
+  --ice: var(--alpine-ice);
+  --ice-bright: #dff6fb;
+  --ice-muted: #7fb7c7;
 
-  --background: 196 53% 15%;
-  --foreground: 195 38% 97%;
-  --border: 197 25% 45%;
-  --input: 196 34% 25%;
+  --background: 195 47% 19%;
+  --foreground: 195 35% 98%;
+  --border: 198 24% 53%;
+  --input: 195 37% 18%;
   --ring: 191 67% 44%;
-  --card: 196 39% 21%;
-  --card-foreground: 195 38% 97%;
-  --card-border: 197 25% 40%;
-  --popover: 196 40% 19%;
-  --popover-foreground: 195 38% 97%;
-  --popover-border: 197 25% 42%;
-  --primary: 191 67% 44%;
-  --primary-foreground: 196 55% 10%;
-  --secondary: 197 33% 27%;
-  --secondary-foreground: 195 32% 95%;
-  --muted: 197 28% 24%;
-  --muted-foreground: 195 22% 75%;
+  --card: 195 31% 25%;
+  --card-foreground: 195 35% 98%;
+  --card-border: 198 24% 49%;
+  --popover: 195 32% 23%;
+  --popover-foreground: 195 35% 98%;
+  --popover-border: 198 24% 49%;
+  --primary: 191 67% 46%;
+  --primary-foreground: 195 55% 9%;
+  --secondary: 196 31% 30%;
+  --secondary-foreground: 195 30% 96%;
+  --muted: 196 26% 27%;
+  --muted-foreground: 195 18% 76%;
   --accent: 199 28% 68%;
-  --accent-foreground: 196 55% 10%;
-  --sidebar: 197 42% 20%;
-  --sidebar-foreground: 195 35% 96%;
-  --sidebar-border: 197 26% 45%;
+  --accent-foreground: 195 55% 9%;
+  --sidebar: 196 40% 29%;
+  --sidebar-foreground: 195 35% 97%;
+  --sidebar-border: 198 25% 56%;
+
+  --glass-fill: rgba(39, 83, 97, 0.84);
+  --glass-fill-strong: rgba(45, 89, 103, 0.9);
+  --glass-border: rgba(194, 222, 230, 0.28);
+  --glass-shadow:
+    0 20px 48px rgba(12, 36, 44, 0.22),
+    0 5px 16px rgba(12, 36, 44, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 html,
 body,
 #root {
-  background: #102b36 !important;
+  background: var(--app-bg-deep) !important;
 }
 
 html {
   color-scheme: dark;
-  font-size: 16px;
+  font-size: 17px;
 }
 
 body {
-  color: var(--text-primary) !important;
-  font-size: 16px;
-  line-height: 1.5;
-  letter-spacing: -0.002em;
+  color: var(--ui-text) !important;
+  font-size: 1rem;
+  line-height: 1.55;
+  letter-spacing: 0;
 }
 
 .tahoe-environment {
   background:
-    radial-gradient(circle at 82% 9%, rgba(37, 156, 189, 0.22), transparent 31%),
-    radial-gradient(circle at 6% 94%, rgba(149, 180, 196, 0.15), transparent 34%),
-    linear-gradient(145deg, #183e4c 0%, #143541 44%, #102b36 100%) !important;
+    radial-gradient(circle at 90% 5%, rgba(37, 156, 189, 0.16), transparent 30%),
+    radial-gradient(circle at 7% 92%, rgba(149, 180, 196, 0.11), transparent 34%),
+    linear-gradient(145deg, #285564 0%, #204a58 42%, #183a46 100%) !important;
 }
 
 .tahoe-environment::before {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 22%) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 22%) !important;
 }
 
 .tahoe-environment::after {
-  background: linear-gradient(90deg, rgba(12, 35, 43, 0.14), transparent 24%, transparent 80%, rgba(12, 35, 43, 0.12)) !important;
+  background: linear-gradient(90deg, rgba(78, 71, 65, 0.06), transparent 22%, transparent 82%, rgba(78, 71, 65, 0.06)) !important;
 }
 
 .reviewer-main-stage {
-  padding-top: 2.2rem !important;
+  padding: 2.1rem 2.5rem 3.5rem !important;
   background: transparent !important;
 }
 
 .reviewer-scroll-edge {
-  background: linear-gradient(180deg, rgba(16, 43, 54, 0.88), rgba(16, 43, 54, 0.32) 50%, transparent) !important;
+  background: linear-gradient(180deg, rgba(28, 67, 80, 0.88), rgba(28, 67, 80, 0.28) 50%, transparent) !important;
 }
 
-/* ---- Global readability floor ------------------------------------------------ */
-.reviewer-main-stage p:not(.report-preview p) {
-  font-size: 0.94rem !important;
-  line-height: 1.62 !important;
-}
-
-.reviewer-main-stage small:not(.report-preview small) {
-  font-size: 0.78rem !important;
-  line-height: 1.42 !important;
-}
-
-.reviewer-main-stage label:not(.report-preview label),
-.reviewer-main-stage input,
-.reviewer-main-stage select,
-.reviewer-main-stage textarea,
-.reviewer-main-stage button {
-  font-size: 0.88rem;
-}
-
-.reviewer-main-stage h1:not(.report-preview h1) {
-  font-size: clamp(2.15rem, 3vw, 2.85rem) !important;
-  line-height: 1.04 !important;
-}
-
-.reviewer-main-stage h2:not(.report-preview h2) {
-  font-size: clamp(1.35rem, 1.8vw, 1.7rem) !important;
-  line-height: 1.15 !important;
-}
-
-.reviewer-main-stage h3:not(.report-preview h3) {
-  font-size: 1.08rem !important;
-  line-height: 1.25 !important;
-}
-
-.section-label,
-.sidebar-group-label,
-.workbench-kicker,
-.section-eyebrow,
-.command-label,
-.source-status-label,
-.deployment-kicker,
-.deployment-title > div > span,
-.deployment-watch > span {
-  font-size: 0.69rem !important;
-  line-height: 1.25 !important;
-  letter-spacing: 0.105em !important;
-}
-
-/* ---- Glass / content materials ---------------------------------------------- */
+/* ---------------------------- Glass --------------------------------------- */
 .liquid-glass,
 .glow-btn {
-  --glass-fill: rgba(35, 82, 98, 0.74);
-  border-color: rgba(188, 222, 233, 0.25) !important;
+  --glass-fill: rgba(43, 86, 100, 0.82);
+  border-color: var(--ui-border) !important;
   background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.025) 42%, rgba(37, 156, 189, 0.055) 75%),
-    rgba(35, 82, 98, 0.74) !important;
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018) 42%, rgba(37, 156, 189, 0.04) 78%),
+    rgba(43, 86, 100, 0.82) !important;
   box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(22px) saturate(118%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(118%) !important;
 }
 
 .liquid-glass::before,
 .glow-btn::before {
-  background:
-    radial-gradient(circle at var(--glass-light-x) var(--glass-light-y), rgba(255, 255, 255, 0.22), rgba(149, 180, 196, 0.09) 20%, transparent 46%),
-    linear-gradient(118deg, rgba(255, 255, 255, 0.075), transparent 34%, transparent 72%, rgba(37, 156, 189, 0.06)) !important;
+  background: linear-gradient(130deg, rgba(255,255,255,.11), transparent 34%, transparent 74%, rgba(149,180,196,.05)) !important;
+  opacity: .55 !important;
 }
 
 .glass-card {
-  border-color: rgba(149, 180, 196, 0.22) !important;
-  background: linear-gradient(150deg, rgba(35, 79, 94, 0.96), rgba(25, 61, 74, 0.96)) !important;
-  box-shadow: 0 15px 34px rgba(8, 31, 39, 0.2) !important;
+  color: var(--ui-text-2) !important;
+  border-color: var(--ui-border-soft) !important;
+  background: linear-gradient(150deg, #294f5c, #21444f) !important;
+  box-shadow: 0 14px 34px rgba(11, 35, 43, 0.18) !important;
 }
 
 .glass-input {
-  color: rgba(250, 253, 254, 0.96) !important;
-  border-color: rgba(149, 180, 196, 0.27) !important;
-  background: rgba(15, 48, 59, 0.72) !important;
+  color: var(--ui-text) !important;
+  border-color: var(--ui-border) !important;
+  background: var(--input-bg) !important;
 }
 
-.glass-input::placeholder {
-  color: rgba(218, 237, 243, 0.55) !important;
-}
-
+.glass-input::placeholder { color: var(--ui-text-4) !important; }
 .glass-input:focus {
-  border-color: rgba(37, 156, 189, 0.72) !important;
-  box-shadow: 0 0 0 3px rgba(37, 156, 189, 0.14) !important;
+  border-color: rgba(37, 156, 189, .8) !important;
+  box-shadow: 0 0 0 3px rgba(37, 156, 189, .15) !important;
 }
 
-/* ---- Sidebar ---------------------------------------------------------------- */
+/* ---------------------------- Sidebar ------------------------------------- */
 .reviewer-sidebar {
-  --glass-fill: rgba(38, 79, 94, 0.86);
+  --glass-fill: rgba(45, 92, 108, .91);
   background:
-    linear-gradient(180deg, rgba(47, 110, 135, 0.36), rgba(24, 60, 73, 0.74)),
-    rgba(31, 70, 84, 0.9) !important;
-  border-color: rgba(181, 216, 227, 0.28) !important;
+    linear-gradient(180deg, rgba(54, 113, 136, .92), rgba(37, 78, 94, .94)) !important;
+  border-color: rgba(198, 226, 234, .34) !important;
   box-shadow:
-    0 28px 68px rgba(7, 27, 34, 0.28),
-    inset 0 1px 0 rgba(255, 255, 255, 0.17),
-    inset 1px 0 0 rgba(255, 255, 255, 0.06) !important;
+    0 24px 60px rgba(9, 31, 39, .24),
+    inset 0 1px 0 rgba(255,255,255,.15) !important;
 }
 
 .sidebar-brand {
-  min-height: 86px !important;
-  border-bottom-color: rgba(190, 220, 230, 0.17) !important;
+  min-height: 88px !important;
+  border-bottom-color: rgba(213, 235, 241, .2) !important;
 }
 
 .sidebar-brand-mark {
-  width: 38px !important;
-  height: 38px !important;
-  color: #ecfbff !important;
-  background: linear-gradient(145deg, rgba(37, 156, 189, 0.45), rgba(47, 110, 135, 0.34)) !important;
-  border-color: rgba(218, 242, 249, 0.3) !important;
-  font-size: 0.76rem !important;
+  width: 39px !important;
+  height: 39px !important;
+  border-radius: 10px !important;
+  color: #fff !important;
+  border-color: rgba(224, 244, 249, .38) !important;
+  background: linear-gradient(145deg, #3e91ad, #2f6e87) !important;
+  font-size: .78rem !important;
 }
 
 .sidebar-brand-title {
-  color: #f7fcfe !important;
-  font-size: 0.86rem !important;
-  letter-spacing: 0.035em !important;
+  color: #fff !important;
+  font-size: .9rem !important;
+  letter-spacing: .035em !important;
 }
 
 .sidebar-brand-subtitle {
-  color: rgba(225, 241, 246, 0.66) !important;
-  font-size: 0.76rem !important;
+  color: rgba(232, 245, 248, .72) !important;
+  font-size: .78rem !important;
 }
 
-.sidebar-nav {
-  padding: 0.95rem 0.7rem 1.1rem !important;
+.sidebar-nav { padding: .95rem .7rem 1.1rem !important; }
+.sidebar-group { margin-bottom: 1.02rem !important; }
+.sidebar-group-label {
+  margin-bottom: .38rem !important;
+  padding-left: .72rem !important;
+  color: rgba(222, 239, 244, .67) !important;
+  font: 750 .7rem/1.2 var(--app-font-sans) !important;
+  letter-spacing: .1em !important;
 }
 
 .sidebar-home,
 .reviewer-sidebar .nav-item {
-  min-height: 42px !important;
-  gap: 0.72rem !important;
-  padding: 0.58rem 0.7rem !important;
+  min-height: 44px !important;
+  gap: .72rem !important;
+  padding: .6rem .72rem !important;
   border-radius: 11px !important;
-  color: rgba(231, 245, 249, 0.78) !important;
-  font-size: 0.88rem !important;
-  font-weight: 610 !important;
+  color: rgba(242, 249, 251, .82) !important;
+  font-size: .91rem !important;
+  font-weight: 620 !important;
 }
 
 .sidebar-home svg,
 .reviewer-sidebar .nav-item svg {
-  width: 17px !important;
-  height: 17px !important;
+  width: 18px !important;
+  height: 18px !important;
 }
 
 .sidebar-home:hover,
 .reviewer-sidebar .nav-item:hover {
-  color: #ffffff !important;
-  border-color: rgba(188, 222, 233, 0.18) !important;
-  background: rgba(149, 180, 196, 0.1) !important;
+  color: #fff !important;
+  border-color: rgba(225, 243, 248, .18) !important;
+  background: rgba(255,255,255,.07) !important;
 }
 
 .sidebar-home.active,
 .reviewer-sidebar .nav-item.active {
-  color: #ffffff !important;
-  border-color: rgba(201, 235, 244, 0.32) !important;
-  background:
-    linear-gradient(135deg, rgba(37, 156, 189, 0.32), rgba(47, 110, 135, 0.26)) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    0 9px 22px rgba(9, 38, 47, 0.18) !important;
+  color: #fff !important;
+  border-color: rgba(222, 244, 249, .38) !important;
+  background: linear-gradient(135deg, rgba(37,156,189,.34), rgba(149,180,196,.18)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 7px 18px rgba(11,39,47,.14) !important;
 }
 
-.sidebar-group {
-  margin-bottom: 1.05rem !important;
+/* ---------------------------- Readability --------------------------------- */
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) {
+  color: var(--ui-text-2) !important;
 }
 
-.sidebar-group-label {
-  margin-bottom: 0.38rem !important;
-  padding-left: 0.7rem !important;
-  color: rgba(203, 230, 237, 0.58) !important;
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) p {
+  color: var(--ui-text-2) !important;
+  font-size: .92rem !important;
+  line-height: 1.6 !important;
 }
 
-/* ---- Workbench and shared tool surfaces ------------------------------------ */
-.workbench-header,
-.deployment-header {
-  border-bottom-color: rgba(149, 180, 196, 0.22) !important;
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) small {
+  color: var(--ui-text-3) !important;
+  font-size: .76rem !important;
+  line-height: 1.4 !important;
 }
 
-.workbench-kicker,
-.section-eyebrow,
-.command-label,
-.source-status-label,
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) span {
+  font-size: .78rem !important;
+}
+
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) strong {
+  font-size: .86rem !important;
+}
+
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) button,
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) input,
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) select,
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) textarea {
+  font-size: .88rem !important;
+}
+
+:where(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) {
+  border-bottom-color: var(--ui-border-soft) !important;
+}
+
+:where(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) h1 {
+  color: #fff !important;
+  font-size: clamp(2.2rem, 3vw, 2.8rem) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.045em !important;
+}
+
+:where(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) p {
+  max-width: 860px !important;
+  margin-top: .65rem !important;
+  color: #d6e5e9 !important;
+  font-size: .96rem !important;
+  line-height: 1.55 !important;
+}
+
+.job-kicker,
+.drug-kicker,
+.clinical-kicker,
+.condition-kicker,
+.standards-kicker,
+.citation-kicker,
+.injury-kicker,
 .deployment-kicker,
+.job-summary-title,
+.job-standards > span,
+.job-paste-panel > div > span,
+.job-profile-column > span,
+.job-summary-job > span,
+.drug-search-panel > label,
+.drug-panel-head span,
+.drug-card-head > div:first-child > span,
+.drug-side-label,
+.clinical-nav-label,
+.clinical-panel-head > div:first-child > span,
+.clinical-result > div:first-child > span,
+.condition-list-label,
+.condition-summary .condition-title-row span,
+.condition-context > span,
+.condition-trigger > span,
+.condition-section-head > span,
+.condition-side-label,
+.condition-side-head > span,
+.citation-panel-head span,
+.citation-side-head > span,
+.citation-examples > span,
+.injury-strip-label,
+.injury-measured-heading span,
+.injury-panel-heading span,
+.injury-mini-heading,
+.injury-finding-head > div > span,
+.injury-finding-grid > div > span,
+.injury-anatomy-stage-head > div:first-child > span,
+.injury-anatomy-focus > span,
+.injury-anatomy-ranking > span,
 .deployment-title > div > span,
 .deployment-watch > span {
-  color: #8fd8eb !important;
+  color: #9bd8e6 !important;
+  font: 750 .72rem/1.25 var(--app-font-sans) !important;
+  letter-spacing: .095em !important;
+  text-transform: uppercase;
 }
 
-.workbench-header h1,
-.deployment-header h1,
-.deployment-title h2 {
-  color: #f7fcfe !important;
-}
-
-.workbench-header p,
-.deployment-header p,
-.lane-copy p,
-.tool-row-copy small,
-.deployment-title p,
-.deployment-fact p,
-.deployment-warning {
-  color: rgba(229, 243, 247, 0.73) !important;
-}
-
-.command-panel,
-.intelligence-lane,
-.deployment-map-card,
+/* ---------------------------- Shared surfaces ------------------------------ */
+.job-search-panel,
+.job-empty-state,
+.job-profile-strip,
+.job-profile-column,
+.job-paste-panel,
+.drug-search-panel,
+.drug-selected-panel,
+.drug-side-panel,
+.drug-card,
+.drug-identity-only,
+.clinical-nav,
+.clinical-panel,
+.clinical-result,
+.condition-category-list,
+.condition-summary,
+.condition-questions,
+.condition-evidence-column > section,
+.standards-row,
+.citation-search-panel,
+.citation-results-panel,
+.citation-side > section,
+.injury-search-panel,
+.injury-empty-state,
+.injury-occupation-strip,
+.injury-measured-section,
+.injury-measured-card,
+.injury-panel,
+.injury-finding-panel,
+.injury-osha-section,
+.injury-osha-list,
+.injury-anatomy-shell,
+.injury-anatomy-data,
 .deployment-detail {
-  border-color: rgba(149, 180, 196, 0.22) !important;
-  background: linear-gradient(150deg, rgba(34, 78, 93, 0.94), rgba(23, 58, 70, 0.96)) !important;
-  box-shadow: 0 18px 48px rgba(8, 31, 39, 0.18) !important;
+  color: var(--ui-text-2) !important;
+  border-color: var(--ui-border-soft) !important;
+  background: linear-gradient(145deg, #294f5c 0%, #21434f 100%) !important;
+  box-shadow: 0 12px 30px rgba(10, 34, 42, .16) !important;
 }
 
-.intelligence-lane.primary {
-  background:
-    radial-gradient(circle at 88% 18%, rgba(37, 156, 189, 0.18), transparent 34%),
-    linear-gradient(145deg, rgba(38, 87, 103, 0.97), rgba(23, 61, 73, 0.97)) !important;
-  border-color: rgba(91, 188, 212, 0.34) !important;
-}
-
-.lane-icon,
-.tool-row-icon {
-  color: #b7ecf7 !important;
-  background: rgba(37, 156, 189, 0.13) !important;
-  border-color: rgba(149, 180, 196, 0.24) !important;
-}
-
-/* ---- AOR / deployment page ------------------------------------------------- */
-.deployment-workbench {
-  max-width: 1600px !important;
-}
-
-.deployment-header {
-  padding-bottom: 1.25rem !important;
-}
-
-.deployment-header p {
-  max-width: 900px !important;
-  margin-top: 0.72rem !important;
-}
-
-.deployment-static {
-  min-width: 210px !important;
-  color: #91d5e6 !important;
-  border-left-color: rgba(149, 180, 196, 0.2) !important;
-}
-
-.deployment-static strong {
-  color: rgba(245, 251, 253, 0.9) !important;
-  font-size: 0.82rem !important;
-}
-
-.deployment-static small {
-  color: rgba(224, 240, 245, 0.64) !important;
-}
-
-.deployment-toolbar {
-  margin-top: 1rem !important;
-}
-
-.deployment-search-wrap {
-  width: min(470px, 100%) !important;
-}
-
-.deployment-search {
-  min-height: 50px !important;
-  gap: 0.65rem !important;
-  padding: 0 0.9rem !important;
-  border-radius: 13px !important;
-  border-color: rgba(149, 180, 196, 0.28) !important;
-  background: rgba(21, 60, 72, 0.78) !important;
-  color: #9de0f0 !important;
-}
-
-.deployment-search:focus-within {
-  border-color: rgba(37, 156, 189, 0.7) !important;
-  box-shadow: 0 0 0 3px rgba(37, 156, 189, 0.14) !important;
-}
-
-.deployment-search input {
-  color: #f7fcfe !important;
-  font-size: 0.94rem !important;
-}
-
-.deployment-search input::placeholder {
-  color: rgba(222, 239, 244, 0.56) !important;
-}
-
-.deployment-search-results {
-  border-color: rgba(149, 180, 196, 0.28) !important;
-  background: rgba(21, 55, 67, 0.98) !important;
-}
-
-.deployment-search-results button {
-  min-height: 52px !important;
-  padding: 0.7rem 0.8rem !important;
-  color: #f4fbfd !important;
-}
-
-.deployment-search-results strong {
-  color: #f4fbfd !important;
-  font-size: 0.88rem !important;
-}
-
-.deployment-search-results small {
-  color: rgba(219, 238, 243, 0.66) !important;
-}
-
-.deployment-source-links {
-  gap: 0.5rem !important;
-}
-
-.deployment-source-links a {
-  padding: 0.5rem 0.7rem !important;
-  border-radius: 9px !important;
-  border-color: rgba(149, 180, 196, 0.24) !important;
-  color: #a7e5f2 !important;
-  background: rgba(32, 76, 90, 0.58) !important;
-  font-size: 0.78rem !important;
-  font-weight: 620 !important;
-}
-
-.deployment-source-links a:hover {
-  color: #e7fbff !important;
-  border-color: rgba(37, 156, 189, 0.55) !important;
-  background: rgba(37, 156, 189, 0.17) !important;
-}
-
-.deployment-map-layout {
-  margin-top: 0.9rem !important;
-  grid-template-columns: minmax(0, 1.55fr) minmax(390px, 0.86fr) !important;
-  gap: 0.9rem !important;
-}
-
-.deployment-map-card,
-.deployment-detail {
-  border-radius: 16px !important;
-}
-
-.deployment-map-card {
-  min-height: 680px !important;
-  background: #d8edf3 !important;
-}
-
-/* Leave the actual MapTiler Streets artwork untouched. */
-.deployment-map-canvas {
-  background: #d8edf3 !important;
-}
-
-.deployment-map-canvas .maplibregl-ctrl-group {
-  border-color: rgba(47, 110, 135, 0.25) !important;
-  background: rgba(244, 251, 253, 0.9) !important;
-  box-shadow: 0 8px 22px rgba(47, 110, 135, 0.16) !important;
-}
-
-.deployment-map-canvas .maplibregl-ctrl-group button {
-  filter: none !important;
-}
-
-.deployment-map-canvas .maplibregl-ctrl-attrib {
-  background: rgba(247, 252, 253, 0.86) !important;
-  color: #4e6871 !important;
-}
-
-.deployment-map-canvas .maplibregl-ctrl-attrib a {
-  color: #2f6e87 !important;
-}
-
-.deployment-map-overlay {
-  border-color: rgba(149, 180, 196, 0.48) !important;
-  background: rgba(25, 65, 78, 0.88) !important;
-  box-shadow: 0 10px 28px rgba(18, 59, 71, 0.2) !important;
-}
-
-.deployment-map-legend {
-  grid-template-columns: 1fr !important;
-  min-width: 170px !important;
-  padding: 0.68rem 0.78rem !important;
-  border-radius: 12px !important;
-}
-
-.deployment-map-legend strong {
-  color: #ffffff !important;
-  font-size: 0.88rem !important;
-}
-
-.deployment-map-legend small {
-  color: rgba(228, 244, 248, 0.7) !important;
-}
-
-.deployment-map-hint {
-  padding: 0.55rem 0.82rem !important;
-  color: rgba(242, 251, 253, 0.86) !important;
-  font: 650 0.76rem/1 var(--app-font-sans) !important;
-  letter-spacing: 0 !important;
-}
-
-.deployment-detail {
-  padding: 1.1rem !important;
-}
-
-.deployment-title {
-  padding-bottom: 0.9rem !important;
-  border-bottom-color: rgba(149, 180, 196, 0.18) !important;
-}
-
-.deployment-title p {
-  margin-top: 0.35rem !important;
-}
-
-.deployment-facts {
-  margin-top: 0.8rem !important;
-  gap: 0.58rem !important;
-}
-
-.deployment-fact {
-  grid-template-columns: 24px 1fr !important;
-  gap: 0.62rem !important;
-  padding: 0.78rem 0.82rem !important;
-  border-radius: 10px !important;
-  border-color: rgba(149, 180, 196, 0.18) !important;
-  background: rgba(149, 180, 196, 0.055) !important;
-  color: #98deed !important;
-}
-
-.deployment-fact span {
-  color: #9fe0ee !important;
-  font: 700 0.68rem/1.25 var(--app-font-sans) !important;
-  letter-spacing: 0.07em !important;
-}
-
-.deployment-fact p {
-  margin-top: 0.35rem !important;
-}
-
-.deployment-watch {
-  margin-top: 0.78rem !important;
-  padding: 0.82rem !important;
-  border-radius: 10px !important;
-  border-color: rgba(149, 180, 196, 0.18) !important;
-  background: rgba(149, 180, 196, 0.045) !important;
-}
-
-.deployment-watch > div {
-  gap: 0.42rem !important;
-  margin-top: 0.55rem !important;
-}
-
-.deployment-watch > div > span {
-  padding: 0.38rem 0.56rem !important;
-  border-radius: 999px !important;
-  border-color: rgba(149, 180, 196, 0.23) !important;
-  color: #b7e9f3 !important;
-  background: rgba(37, 156, 189, 0.1) !important;
-  font-size: 0.76rem !important;
-}
-
-.deployment-warning {
-  margin-top: 0.78rem !important;
-  padding: 0.72rem 0.8rem !important;
-  border-left-color: rgba(149, 180, 196, 0.42) !important;
-  background: rgba(149, 180, 196, 0.055) !important;
-}
-
-/* Common compact controls: stop the micro-font creep across the application. */
-.tab-btn,
-.glow-btn,
-.command-results button,
-.tool-row,
-.job-tabs button,
-.hologram-view-toggle button {
-  font-size: 0.86rem !important;
-}
-
-.command-input-wrap input,
-.injury-input-wrap input,
-.injury-input,
 .job-search-input,
 .drug-search-input,
-.citation-search-input {
-  font-size: 0.92rem !important;
+.clinical-field input,
+.clinical-field select,
+.condition-search,
+.standards-search,
+.citation-search-input,
+.injury-input-wrap,
+.injury-input,
+.command-input-wrap {
+  color: var(--ui-text) !important;
+  border-color: var(--ui-border) !important;
+  background: var(--input-bg) !important;
 }
 
-.command-hint,
-.section-note,
-.lane-number {
-  font-size: 0.7rem !important;
+.job-search-input input,
+.drug-search-input input,
+.condition-search input,
+.standards-search input,
+.citation-search-input input,
+.injury-input-wrap input,
+.injury-input {
+  color: var(--ui-text) !important;
+  font-size: .94rem !important;
 }
 
-.command-results strong,
-.tool-row-copy strong {
-  font-size: 0.86rem !important;
+.job-search-input input::placeholder,
+.drug-search-input input::placeholder,
+.condition-search input::placeholder,
+.standards-search input::placeholder,
+.citation-search-input input::placeholder,
+.injury-input-wrap input::placeholder,
+.injury-input::placeholder {
+  color: #8eabb4 !important;
+  opacity: 1 !important;
 }
 
-.command-results small,
-.tool-row-copy small {
-  font-size: 0.76rem !important;
+.job-match-list,
+.drug-results,
+.citation-search-results,
+.injury-match-list,
+.deployment-search-results {
+  color: var(--ui-text-2) !important;
+  border-color: var(--ui-border) !important;
+  background: #214550 !important;
+  box-shadow: 0 20px 50px rgba(9, 31, 38, .3) !important;
 }
 
-/* Preserve the printable report/document preview's paper styling. */
+/* ---------------------------- Job ------------------------------------------ */
+.job-source-status strong { color: var(--ui-text) !important; font-size: .8rem !important; }
+.job-source-status small { color: var(--ui-text-3) !important; }
+.job-tabs {
+  border-color: var(--ui-border) !important;
+  background: rgba(28, 63, 75, .86) !important;
+  border-radius: 10px !important;
+}
+.job-tabs button { min-height: 38px !important; color: var(--ui-text-3) !important; }
+.job-tabs button.active { color: #fff !important; border-color: rgba(120,211,231,.35) !important; background: rgba(37,156,189,.24) !important; }
+.job-search-panel { padding: .9rem !important; border-radius: 13px !important; }
+.job-search-panel > label { color: #b9d5dc !important; font-size: .75rem !important; }
+.job-search-input { min-height: 50px !important; border-radius: 9px !important; }
+.job-empty-state { min-height: 220px !important; border-radius: 12px !important; }
+.job-empty-state strong { color: #fff !important; font-size: 1rem !important; }
+.job-example-list span { color: var(--ui-text-3) !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; }
+.job-profile-strip h2 { color: #fff !important; font-size: 1.2rem !important; }
+
+/* ---------------------------- Drug ----------------------------------------- */
+.drug-status strong { color: var(--ui-text) !important; font-size: .8rem !important; }
+.drug-search-panel { padding: .9rem !important; border-radius: 13px !important; }
+.drug-search-panel > label { color: #b9d5dc !important; font-size: .75rem !important; }
+.drug-search-input { min-height: 50px !important; border-radius: 9px !important; }
+.drug-layout { grid-template-columns: minmax(0,1fr) 320px !important; gap: .85rem !important; }
+.drug-selected-panel,.drug-side-panel { border-radius: 12px !important; }
+.drug-selected-panel { padding: 1rem !important; }
+.drug-panel-head h2 { color: #fff !important; font-size: 1.35rem !important; }
+.drug-empty strong { color: #eaf5f7 !important; font-size: .9rem !important; }
+.drug-empty p { color: var(--ui-text-3) !important; }
+.drug-capability { color: #8fd4e3 !important; border-bottom-color: var(--ui-border-soft) !important; }
+.drug-capability strong { color: #f1f8fa !important; font-size: .82rem !important; }
+.drug-capability p { color: var(--ui-text-3) !important; }
+
+/* ---------------------------- Clinical ------------------------------------- */
+.clinical-scope {
+  color: #d8e8ec !important;
+  border-color: var(--ui-border) !important;
+  background: rgba(31, 70, 82, .72) !important;
+  font-size: .78rem !important;
+}
+.clinical-layout { grid-template-columns: 235px minmax(0,1fr) !important; gap: .85rem !important; }
+.clinical-nav,.clinical-panel { border-radius: 12px !important; }
+.clinical-nav-label { color: #b8cfd6 !important; font-size: .72rem !important; }
+.clinical-nav button { min-height: 62px !important; color: var(--ui-text-3) !important; }
+.clinical-nav button strong { font-size: .82rem !important; }
+.clinical-nav button small { font-size: .74rem !important; color: #9fb8c0 !important; }
+.clinical-nav button.active { color: #fff !important; border-left-color: #4fb4ce !important; background: rgba(37,156,189,.17) !important; }
+.clinical-panel { padding: 1.05rem !important; }
+.clinical-panel-head h2 { color: #fff !important; font-size: 1.45rem !important; }
+.clinical-panel-head p { color: var(--ui-text-3) !important; }
+.clinical-field > span { color: #c9dce1 !important; font-size: .74rem !important; }
+.clinical-field input,.clinical-field select { min-height: 44px !important; font-size: .9rem !important; }
+.clinical-actions button { min-height: 40px !important; color: #d5e5e9 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.07) !important; }
+.clinical-actions button.primary { color: #fff !important; border-color: rgba(81,180,204,.45) !important; background: rgba(37,156,189,.22) !important; }
+.clinical-disclaimer { color: #d4c8c2 !important; border-color: rgba(185,170,162,.3) !important; background: rgba(78,71,65,.14) !important; font-size: .78rem !important; }
+.clinical-reference > button { color: #c2d5da !important; font-size: .8rem !important; }
+
+/* ---------------------------- Condition ------------------------------------ */
+.condition-search { min-width: 310px !important; min-height: 46px !important; border-radius: 10px !important; }
+.condition-layout { grid-template-columns: 220px minmax(0,1fr) 330px !important; gap: .82rem !important; }
+.condition-category-list,.condition-summary,.condition-questions,.condition-evidence-column > section { border-radius: 12px !important; }
+.condition-list-label { color: #b9cfd6 !important; font-size: .72rem !important; }
+.condition-category-list button { min-height: 62px !important; color: var(--ui-text-3) !important; }
+.condition-category-list strong { font-size: .8rem !important; }
+.condition-category-list small { color: #9eb7bf !important; font-size: .73rem !important; }
+.condition-category-list button.active { color: #fff !important; border-left-color: #4fb4ce !important; background: rgba(37,156,189,.17) !important; }
+.condition-tabs button { padding: .42rem .62rem !important; color: #aec5cc !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.05) !important; }
+.condition-tabs button.active { color: #fff !important; border-color: rgba(80,184,208,.44) !important; background: rgba(37,156,189,.2) !important; }
+.condition-summary { padding: 1rem !important; }
+.condition-title-row h2 { color: #fff !important; font-size: 1.45rem !important; }
+.condition-evidence { color: #9eb8bf !important; font-size: .72rem !important; }
+.condition-limits > span { color: #c0d3d8 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; }
+.condition-context p,.condition-trigger p,.condition-questions p { color: #d6e4e8 !important; }
+.condition-trigger > span { color: #c8b5ab !important; }
+.condition-trigger p { color: #d3c7c0 !important; }
+.condition-standard-list > div,.condition-article-list a { color: #c8d9de !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.055) !important; }
+.condition-side-note,.condition-side-empty { color: #9fb8bf !important; font-size: .75rem !important; }
+
+/* ---------------------------- Standards ------------------------------------ */
+.standards-search { min-width: 285px !important; min-height: 46px !important; border-radius: 10px !important; }
+.standards-table-head {
+  color: #a9c1c8 !important;
+  font: 750 .72rem/1.2 var(--app-font-sans) !important;
+  letter-spacing: .08em !important;
+}
+.standards-list { border-top-color: var(--ui-border-soft) !important; }
+.standards-row {
+  min-height: 112px !important;
+  padding: .9rem !important;
+  border-bottom-color: var(--ui-border-soft) !important;
+  box-shadow: none !important;
+}
+.standards-row:hover { background: linear-gradient(90deg, #305c6a, #264b57) !important; }
+.standards-icon { color: #9bdce9 !important; border-color: var(--ui-border-soft) !important; background: rgba(37,156,189,.12) !important; }
+.standards-framework strong { color: #f5fbfc !important; font-size: .86rem !important; }
+.standards-framework small { color: #acd0d9 !important; font-size: .76rem !important; }
+.standards-row > p { color: #d8e6e9 !important; font-size: .88rem !important; line-height: 1.5 !important; }
+.standards-topics span { color: #bcd1d7 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; font-size: .72rem !important; }
+.standards-source > a { color: #91d5e5 !important; font-size: .76rem !important; }
+.standards-source > span { color: #a9bfc5 !important; font-size: .75rem !important; }
+.standards-footnote { color: #a8bec5 !important; border-left-color: var(--ui-border) !important; font-size: .76rem !important; }
+
+/* ---------------------------- Citation ------------------------------------- */
+.citation-search-panel { padding: .9rem !important; border-radius: 13px !important; }
+.citation-search-input { min-height: 50px !important; border-radius: 9px !important; }
+.citation-search-input button { min-height: 38px !important; color: #e6f7fa !important; border-color: rgba(80,184,208,.38) !important; background: rgba(37,156,189,.2) !important; font-size: .82rem !important; }
+.citation-examples button { padding: .35rem .5rem !important; color: #a9c2c9 !important; border-color: var(--ui-border-soft) !important; font-size: .73rem !important; }
+.citation-layout { grid-template-columns: minmax(0,1fr) 330px !important; gap: .85rem !important; }
+.citation-results-panel,.citation-side > section { border-radius: 12px !important; }
+.citation-results-panel { padding: 1rem !important; }
+.citation-panel-head h2 { color: #fff !important; font-size: 1.35rem !important; }
+.citation-empty strong { color: #eaf4f7 !important; font-size: .9rem !important; }
+.citation-empty p { color: #a9bec5 !important; }
+.citation-official-list a { border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.055) !important; }
+.citation-official-list strong { color: #edf6f8 !important; font-size: .78rem !important; }
+.citation-official-list small { color: #a9c0c7 !important; font-size: .72rem !important; }
+.citation-side-empty { color: #a7bdc4 !important; font-size: .76rem !important; }
+
+/* ---------------------------- Injury --------------------------------------- */
+.injury-source-state { color: #d2e2e6 !important; font-size: .78rem !important; }
+.injury-source-state small { color: #a4bcc3 !important; }
+.injury-search-panel { padding: .95rem !important; border-radius: 13px !important; }
+.injury-field label { color: #bdd3d9 !important; font: 750 .74rem/1.2 var(--app-font-sans) !important; letter-spacing: .08em !important; }
+.injury-field label span { color: #9eb5bc !important; font-size: .72rem !important; }
+.injury-input-wrap,.injury-input { min-height: 50px !important; border-radius: 9px !important; }
+.injury-empty-state { border-radius: 12px !important; }
+.injury-empty-state strong { color: #fff !important; font-size: 1rem !important; }
+.injury-empty-examples span { color: #b2c8ce !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; }
+.injury-occupation-strip h2 { color: #fff !important; font-size: 1.2rem !important; }
+.injury-measured-section,.injury-osha-section,.injury-anatomy-shell { border-radius: 13px !important; }
+.injury-measured-heading h3,.injury-panel-heading h3,.injury-osha-heading h3,.injury-anatomy-stage-head h3 { color: #fff !important; font-size: 1.05rem !important; }
+.injury-measured-card { min-height: 225px !important; }
+.injury-measured-card-head > div > strong { color: #f0f8fa !important; font-size: .82rem !important; }
+.injury-measured-meta,.injury-osha-meta { color: #a8bec5 !important; font-size: .72rem !important; }
+.injury-measured-total strong { color: #9edeea !important; font-size: 1.2rem !important; }
+.injury-measured-list span,.injury-measured-list p,.injury-measured-unavailable { color: #bed0d5 !important; font-size: .76rem !important; }
+.injury-measured-list strong { color: #edf5f7 !important; font-size: .78rem !important; }
+.injury-measured-caveat,.injury-osha-caveat { color: #afc4ca !important; font-size: .75rem !important; }
+.injury-panel-heading small { color: #a5bcc3 !important; }
+.injury-signal-title strong { color: #f4fafb !important; font-size: .86rem !important; }
+.injury-signal-copy p,.injury-demand-list div,.injury-source-note p,.injury-finding-panel > p,.injury-finding-grid > div > div { color: #cbdde1 !important; font-size: .82rem !important; }
+.injury-signal-tags span,.injury-chip-grid span { color: #b9cfd5 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; font-size: .72rem !important; }
+.injury-osha-heading span,.injury-osha-list > span { color: #c8b8b0 !important; }
+.injury-osha-summary strong { color: #e0d4ce !important; }
+.injury-osha-list small { color: #bfd0d4 !important; }
+.injury-osha-list strong { color: #f2f7f8 !important; }
+.injury-anatomy-stage {
+  border-right-color: var(--ui-border-soft) !important;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(37,156,189,.14), transparent 35%),
+    linear-gradient(rgba(149,180,196,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(149,180,196,.045) 1px, transparent 1px),
+    #1d3d49 !important;
+  background-size: auto, 24px 24px, 24px 24px, auto !important;
+}
+.injury-anatomy-data { background: linear-gradient(180deg, #244b58, #1f414d) !important; }
+.injury-anatomy-mode { color: #bad0d6 !important; border-color: var(--ui-border-soft) !important; background: rgba(25,57,68,.72) !important; font-size: .75rem !important; }
+
+/* ---------------------------- Deployment ----------------------------------- */
+.deployment-workbench { max-width: 1600px !important; }
+.deployment-search { min-height: 50px !important; border-radius: 12px !important; border-color: var(--ui-border) !important; background: rgba(34,75,88,.9) !important; }
+.deployment-search input { color: #fff !important; font-size: .94rem !important; }
+.deployment-source-links a { padding: .5rem .7rem !important; color: #b7e2eb !important; border-color: var(--ui-border-soft) !important; background: rgba(47,110,135,.18) !important; font-size: .76rem !important; }
+.deployment-map-layout { grid-template-columns: minmax(0,1.55fr) minmax(390px,.86fr) !important; gap: .9rem !important; }
+.deployment-map-card { min-height: 680px !important; border-radius: 16px !important; background: #d8edf3 !important; }
+.deployment-map-canvas { background: #d8edf3 !important; }
+.deployment-map-canvas .maplibregl-ctrl-group { border-color: rgba(47,110,135,.25) !important; background: rgba(247,252,253,.92) !important; box-shadow: 0 7px 20px rgba(47,110,135,.15) !important; }
+.deployment-map-canvas .maplibregl-ctrl-group button { filter: none !important; }
+.deployment-map-canvas .maplibregl-ctrl-attrib { background: rgba(247,252,253,.86) !important; color: #4e6871 !important; }
+.deployment-map-canvas .maplibregl-ctrl-attrib a { color: #2f6e87 !important; }
+.deployment-map-overlay { border-color: rgba(149,180,196,.52) !important; background: rgba(31,69,81,.9) !important; }
+.deployment-map-legend { grid-template-columns: 1fr !important; min-width: 180px !important; padding: .7rem .8rem !important; border-radius: 11px !important; }
+.deployment-map-legend strong { color: #fff !important; font-size: .88rem !important; }
+.deployment-map-hint { color: #edf8fa !important; font: 650 .77rem/1 var(--app-font-sans) !important; }
+.deployment-detail { padding: 1.1rem !important; border-radius: 16px !important; }
+.deployment-title h2 { color: #fff !important; font-size: 1.7rem !important; }
+.deployment-fact,.deployment-watch { border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; border-radius: 10px !important; }
+.deployment-fact { padding: .8rem !important; }
+.deployment-fact span { color: #a8dce7 !important; font-size: .72rem !important; }
+.deployment-watch > div > span { color: #c2e4eb !important; border-color: var(--ui-border-soft) !important; background: rgba(37,156,189,.1) !important; font-size: .74rem !important; }
+.deployment-warning { color: #c9d7db !important; border-left-color: var(--ui-border) !important; background: rgba(149,180,196,.055) !important; }
+
+/* Keep printable documents as documents, not as themed UI. */
 .report-preview,
-.report-preview * {
-  font-family: var(--app-font-serif);
-}
+.report-preview * { font-family: var(--app-font-serif); }
 
-@media (max-width: 1120px) {
-  .deployment-map-layout {
-    grid-template-columns: minmax(0, 1fr) 360px !important;
-  }
+@media (max-width: 1180px) {
+  .condition-layout { grid-template-columns: 200px minmax(0,1fr) !important; }
+  .condition-evidence-column { grid-column: 1 / -1 !important; }
+  .standards-row { grid-template-columns: 205px 1fr !important; }
+  .deployment-map-layout { grid-template-columns: minmax(0,1fr) 365px !important; }
 }
