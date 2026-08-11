@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ExternalLink, Globe2, MapPin, Search, ShieldCheck, Stethoscope, Thermometer } from 'lucide-react';
-import { AOR_COLOR_EXPRESSION, AOR_PROFILE_BY_ISO, AOR_PROFILES, type AorCountryProfile } from '../data/aorProfiles';
+import { AOR_PROFILE_BY_ISO, AOR_PROFILES, type AorCountryProfile } from '../data/aorProfiles';
 import './deployment-reference.css';
 
 declare global {
@@ -93,7 +93,7 @@ export default function DeploymentReferenceV2() {
         sdk.config.apiKey = config.apiKey;
         const map = new sdk.Map({
           container: mapContainerRef.current,
-          style: sdk.MapStyle.DATAVIZ.DARK,
+          style: sdk.MapStyle.STREETS,
           center: [8, 18],
           zoom: 1.35,
           minZoom: 1,
@@ -110,29 +110,45 @@ export default function DeploymentReferenceV2() {
           const firstSymbol = map.getStyle()?.layers?.find((layer: any) => layer.type === 'symbol')?.id;
           const before = firstSymbol || undefined;
 
+          // Transparent hit area keeps the whole country clickable without recoloring the basemap.
           map.addLayer({
-            id: 'aor-country-fill',
+            id: 'aor-country-hit',
             type: 'fill',
             source: 'aor-countries',
             'source-layer': 'administrative',
             filter: ['==', ['get', 'level'], 0],
             paint: {
-              'fill-color': AOR_COLOR_EXPRESSION,
-              'fill-opacity': 0.78,
-              'fill-outline-color': 'rgba(5, 10, 16, 0.88)',
+              'fill-color': '#ffffff',
+              'fill-opacity': 0.001,
             },
           }, before);
 
+          // Hover is border-only and intentionally subtle.
           map.addLayer({
-            id: 'aor-country-hover',
-            type: 'fill',
+            id: 'aor-country-hover-line',
+            type: 'line',
             source: 'aor-countries',
             'source-layer': 'administrative',
             filter: emptyIsoFilter,
             paint: {
-              'fill-color': '#ffffff',
-              'fill-opacity': 0.19,
-              'fill-outline-color': 'rgba(255,255,255,0.78)',
+              'line-color': '#52b7cc',
+              'line-width': 1.4,
+              'line-opacity': 0.58,
+            },
+          }, before);
+
+          // Soft outer glow makes the selected country border feel illuminated without filling it.
+          map.addLayer({
+            id: 'aor-country-selected-glow',
+            type: 'line',
+            source: 'aor-countries',
+            'source-layer': 'administrative',
+            filter: isoFilter(selectedIso),
+            paint: {
+              'line-color': '#6ee7ff',
+              'line-width': 7,
+              'line-opacity': 0.34,
+              'line-blur': 3.5,
             },
           }, before);
 
@@ -143,27 +159,27 @@ export default function DeploymentReferenceV2() {
             'source-layer': 'administrative',
             filter: isoFilter(selectedIso),
             paint: {
-              'line-color': '#f5ffff',
-              'line-width': 2.35,
-              'line-opacity': 0.96,
+              'line-color': '#bdf7ff',
+              'line-width': 2.6,
+              'line-opacity': 1,
             },
           }, before);
 
-          map.on('mousemove', 'aor-country-fill', (event: any) => {
+          map.on('mousemove', 'aor-country-hit', (event: any) => {
             map.getCanvas().style.cursor = 'pointer';
             const iso2 = event.features?.[0]?.properties?.iso_a2;
             if (!iso2 || !AOR_PROFILE_BY_ISO.has(iso2)) return;
             setHoveredIso(iso2);
-            map.setFilter('aor-country-hover', isoFilter(iso2));
+            map.setFilter('aor-country-hover-line', isoFilter(iso2));
           });
 
-          map.on('mouseleave', 'aor-country-fill', () => {
+          map.on('mouseleave', 'aor-country-hit', () => {
             map.getCanvas().style.cursor = '';
             setHoveredIso(null);
-            map.setFilter('aor-country-hover', emptyIsoFilter);
+            map.setFilter('aor-country-hover-line', emptyIsoFilter);
           });
 
-          map.on('click', 'aor-country-fill', (event: any) => {
+          map.on('click', 'aor-country-hit', (event: any) => {
             const iso2 = event.features?.[0]?.properties?.iso_a2;
             if (!iso2 || !AOR_PROFILE_BY_ISO.has(iso2)) return;
             setSelectedIso(iso2);
@@ -191,16 +207,22 @@ export default function DeploymentReferenceV2() {
   }, []);
 
   useEffect(() => {
-    if (mapStatus !== 'ready' || !mapRef.current?.getLayer?.('aor-country-selected-line')) return;
-    mapRef.current.setFilter('aor-country-selected-line', isoFilter(selectedIso));
+    if (mapStatus !== 'ready' || !mapRef.current) return;
+    const selectedFilter = isoFilter(selectedIso);
+    if (mapRef.current.getLayer?.('aor-country-selected-glow')) {
+      mapRef.current.setFilter('aor-country-selected-glow', selectedFilter);
+    }
+    if (mapRef.current.getLayer?.('aor-country-selected-line')) {
+      mapRef.current.setFilter('aor-country-selected-line', selectedFilter);
+    }
   }, [selectedIso, mapStatus]);
 
   function chooseCountry(profile: AorCountryProfile) {
     setSelectedIso(profile.iso2);
     setQuery('');
     setHoveredIso(null);
-    if (mapRef.current?.getLayer?.('aor-country-hover')) {
-      mapRef.current.setFilter('aor-country-hover', emptyIsoFilter);
+    if (mapRef.current?.getLayer?.('aor-country-hover-line')) {
+      mapRef.current.setFilter('aor-country-hover-line', emptyIsoFilter);
     }
   }
 
@@ -228,7 +250,6 @@ export default function DeploymentReferenceV2() {
             <div className="deployment-search-results liquid-glass">
               {matches.length > 0 ? matches.map((profile) => (
                 <button key={profile.iso2} onClick={() => chooseCountry(profile)}>
-                  <span className="country-color-dot" style={{ background: profile.mapFill }} />
                   <span><strong>{profile.name}</strong><small>{profile.region} · {profile.iso2}</small></span>
                 </button>
               )) : <div className="deployment-empty">No matching country profile.</div>}
@@ -244,10 +265,9 @@ export default function DeploymentReferenceV2() {
         <section className="deployment-map-card liquid-glass">
           <div ref={mapContainerRef} className="deployment-map-canvas" />
           <div className="deployment-map-overlay deployment-map-legend">
-            <span className="legend-swatch" style={{ background: selected.mapFill }} />
-            <div><strong>{hovered?.name ?? selected.name}</strong><small>{hovered ? 'Click to open profile' : 'Selected country'}</small></div>
+            <div><strong>{hovered?.name ?? selected.name}</strong><small>{hovered ? 'Click to select country' : 'Selected country'}</small></div>
           </div>
-          <div className="deployment-map-overlay deployment-map-hint">Each country has its own color · hover to highlight · click to select</div>
+          <div className="deployment-map-overlay deployment-map-hint">Click a country to illuminate its border</div>
           {mapStatus === 'loading' && <div className="deployment-map-state"><Globe2 size={24} /><strong>Loading world map…</strong></div>}
           {mapStatus === 'error' && <div className="deployment-map-state error"><ShieldCheck size={24} /><strong>Map connection needed</strong><span>{mapError}</span></div>}
         </section>
@@ -259,7 +279,6 @@ export default function DeploymentReferenceV2() {
               <h2>{selected.name}</h2>
               <p>{selected.region} · Medical access: {selected.medicalTier}</p>
             </div>
-            <span className="deployment-country-swatch" style={{ background: selected.mapFill }} />
           </div>
 
           <div className="deployment-facts">
