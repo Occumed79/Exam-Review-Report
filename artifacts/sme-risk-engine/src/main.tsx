@@ -4,5 +4,6 @@ import "./index.css";
 import "./pages/workbench.css";
 import "./tahoe-liquid-glass.css";
 import "./alpine-ui-theme.css";
+import "./palette-balance.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
