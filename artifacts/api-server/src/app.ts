@@ -38,6 +38,17 @@ app.head("/api/health", (_req, res) => {
   res.status(200).end();
 });
 
+// MapTiler SDK runs in the browser, but the key is managed as a normal Render
+// environment variable so deployment configuration stays in one place.
+app.get("/api/map-config", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  const apiKey = process.env.MAP_TILER_API_KEY?.trim() ?? "";
+  res.status(apiKey ? 200 : 503).json({
+    configured: Boolean(apiKey),
+    apiKey,
+  });
+});
+
 app.use("/api", router);
 
 const frontendDir = path.resolve(import.meta.dirname, "../../sme-risk-engine/dist/public");
