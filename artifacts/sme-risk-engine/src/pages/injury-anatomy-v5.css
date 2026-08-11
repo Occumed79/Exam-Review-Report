@@ -76,6 +76,46 @@
   opacity: .5;
 }
 
+.anatomy-inline-fallback {
+  position: absolute;
+  inset: 1% 15%;
+  z-index: 3;
+  width: 70%;
+  height: 98%;
+  overflow: visible;
+  color: rgba(194, 246, 239, .9);
+  filter: drop-shadow(0 0 5px rgba(95, 222, 211, .34)) drop-shadow(0 0 18px rgba(46, 150, 190, .16));
+}
+
+.anatomy-fallback-outline {
+  fill: rgba(96, 187, 187, .045);
+  stroke: rgba(145, 207, 207, .2);
+  stroke-width: 1;
+}
+
+.anatomy-fallback-bones {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.anatomy-fallback-bones circle {
+  fill: rgba(196, 246, 239, .2);
+}
+
+.anatomy-fallback-detail {
+  stroke: rgba(106, 213, 203, .62);
+  stroke-width: 1.6;
+}
+
+.anatomy-fallback-organ {
+  fill: rgba(222, 103, 118, .12);
+  stroke: rgba(241, 142, 153, .66);
+  stroke-width: 1.5;
+}
+
 /* Localized BLS heat sits above the anatomy and is now visually distinct. */
 .anatomy-real-hotspot {
   z-index: 9;

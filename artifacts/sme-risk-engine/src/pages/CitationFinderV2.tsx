@@ -76,7 +76,7 @@ export default function CitationFinderV2() {
         </div>
       </header>
 
-      <section className="citation-search-panel">
+      <section className="citation-search-panel liquid-glass">
         <div className="citation-search-input"><Search size={17} /><input value={query} onChange={(event) => setQuery(event.target.value)} onKeyDown={(event) => { if (event.key === 'Enter') search(); }} placeholder="Condition + occupation + question…" autoFocus /><button onClick={() => search()} disabled={!query.trim()}>Search</button></div>
         <div className="citation-examples"><span>EXAMPLES</span>{EXAMPLE_QUERIES.map((example) => <button key={example} onClick={() => search(example)}>{example}</button>)}</div>
       </section>

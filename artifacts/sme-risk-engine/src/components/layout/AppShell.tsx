@@ -13,7 +13,7 @@ export default function AppShell({ children }: AppShellProps) {
       <Sidebar />
 
       <main className="reviewer-main-stage">
-        <div className="reviewer-stage-refraction" aria-hidden="true" />
+        <div className="reviewer-scroll-edge" aria-hidden="true" />
         <div className="reviewer-stage-content">{children}</div>
       </main>
     </div>

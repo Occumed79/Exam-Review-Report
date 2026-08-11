@@ -164,7 +164,7 @@ export default function Dashboard() {
           <p>Independent occupational, clinical, deployment, and evidence tools. Open the one you need; no case setup or required sequence.</p>
         </div>
 
-        <div className="source-status" aria-label="Intelligence source availability">
+        <div className="source-status liquid-glass" aria-label="Intelligence source availability">
           <div className="source-status-label">SOURCE STATUS</div>
           <div className="source-status-items">
             <span><StatusDot active={Boolean(status?.onet?.configured)} /> O*NET</span>
@@ -174,7 +174,7 @@ export default function Dashboard() {
         </div>
       </header>
 
-      <section className="command-panel">
+      <section className="command-panel liquid-glass">
         <div className="command-label">FIND A TOOL</div>
         <div className="command-input-wrap">
           <Search size={19} />

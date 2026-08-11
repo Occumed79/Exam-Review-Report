@@ -1,102 +1,112 @@
 /*
- * EXTRA-LUMINOUS TAHOE LIQUID GLASS
- * Last-loaded material layer for the active reviewer toolkit.
- * The goal is not generic glassmorphism: surfaces should feel optically layered,
- * refractive, glossy, luminous and responsive to the ambient light field.
+ * Canonical macOS Tahoe visual system.
+ *
+ * Liquid Glass is reserved for the functional layer: navigation, search,
+ * segmented controls, transient actions, and compact status inspectors.
+ * Clinical information, tables, anatomy, and results use grounded content
+ * materials so the interface hierarchy remains clear.
  */
 
 :root {
-  --app-bg: transparent;
-  --app-fg: #f7fbff;
-  --liquid-glass-fill:
-    linear-gradient(135deg,
-      rgba(255,255,255,0.155) 0%,
-      rgba(255,255,255,0.075) 18%,
-      rgba(142,203,255,0.055) 44%,
-      rgba(168,116,255,0.045) 67%,
-      rgba(255,255,255,0.07) 100%);
-  --liquid-glass-fill-soft:
-    linear-gradient(135deg,
-      rgba(255,255,255,0.105),
-      rgba(255,255,255,0.035) 46%,
-      rgba(118,210,255,0.04));
-  --liquid-glass-fill-strong:
-    linear-gradient(135deg,
-      rgba(255,255,255,0.205),
-      rgba(255,255,255,0.085) 35%,
-      rgba(98,183,255,0.075) 64%,
-      rgba(202,118,255,0.07));
-  --liquid-glass-border: rgba(255,255,255,0.22);
-  --liquid-glass-border-soft: rgba(255,255,255,0.115);
-  --liquid-glass-highlight: rgba(255,255,255,0.52);
-  --liquid-glass-shadow:
-    0 24px 72px rgba(0, 3, 20, 0.34),
-    0 7px 24px rgba(0, 10, 34, 0.22),
-    inset 0 1px 0 rgba(255,255,255,0.24),
-    inset 0 -1px 0 rgba(101,196,255,0.06);
-  --liquid-glass-shadow-hover:
-    0 32px 96px rgba(0, 3, 22, 0.42),
-    0 12px 38px rgba(35, 123, 255, 0.14),
-    0 0 42px rgba(119, 225, 255, 0.08),
-    inset 0 1px 0 rgba(255,255,255,0.36),
-    inset 0 -1px 0 rgba(216,123,255,0.08);
-  --liquid-blur: blur(28px) saturate(185%);
-  --liquid-blur-heavy: blur(38px) saturate(205%);
+  --canvas-black: #07090d;
+  --canvas-graphite: #0a0d12;
+  --canvas-blue-black: #0a0f16;
+  --content-1: #111720;
+  --content-2: #0d131b;
+  --content-3: #151c26;
+  --content-border: rgba(188, 210, 229, 0.09);
+  --content-border-strong: rgba(188, 218, 238, 0.15);
+  --content-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+
+  --text-primary: rgba(248, 250, 252, 0.96);
+  --text-secondary: rgba(218, 228, 237, 0.68);
+  --text-tertiary: rgba(204, 217, 228, 0.48);
+  --text-quaternary: rgba(196, 211, 224, 0.34);
+  --ice: #b9ebfb;
+  --ice-bright: #dcf7ff;
+  --ice-muted: #88c9e2;
+  --violet-optical: #c6c2f3;
+  --danger: #ef858d;
+  --warning: #e2ba73;
+  --success: #8fd6b8;
+
+  --radius-window: 24px;
+  --radius-panel: 13px;
+  --radius-control: 11px;
+  --radius-capsule: 999px;
+
+  --pointer-x: 74%;
+  --pointer-y: 20%;
+  --glass-light-x: 50%;
+  --glass-light-y: 0%;
+  --glass-fill: rgba(24, 31, 41, 0.62);
+  --glass-fill-strong: rgba(29, 38, 49, 0.72);
+  --glass-border: rgba(207, 230, 245, 0.13);
+  --glass-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.3),
+    0 5px 16px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(120, 164, 196, 0.035);
+  --glass-filter: blur(24px) saturate(138%) brightness(1.035) contrast(1.025);
+  --ease-liquid: cubic-bezier(0.2, 0.78, 0.2, 1);
+  --ease-direct: cubic-bezier(0.22, 0.68, 0.28, 1);
 }
 
 html,
 body,
 #root {
-  background: #050913 !important;
+  min-height: 100%;
+  background: var(--canvas-black) !important;
 }
 
 body {
-  color: #f7fbff;
+  color: var(--text-primary);
+}
+
+.tahoe-environment {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(132deg, rgba(166, 210, 239, 0.026) 0%, transparent 19%),
+    linear-gradient(315deg, rgba(151, 145, 205, 0.022) 0%, transparent 24%),
+    linear-gradient(165deg, var(--canvas-blue-black) 0%, var(--canvas-graphite) 44%, var(--canvas-black) 100%);
+}
+
+.tahoe-environment::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 18%);
+}
+
+.tahoe-environment::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.2), transparent 21%, transparent 82%, rgba(0, 0, 0, 0.12));
 }
 
 .reviewer-app-shell {
-  min-height: 100vh;
   position: relative;
+  min-height: 100vh;
   overflow: hidden;
+  color: var(--text-primary);
   background: transparent;
-  color: var(--app-fg);
 }
 
 .reviewer-main-stage {
   position: relative;
-  z-index: 5;
-  margin-left: 220px;
-  width: calc(100vw - 220px);
+  z-index: 2;
+  width: calc(100vw - 254px);
   height: 100vh;
-  overflow-y: auto;
+  margin-left: 254px;
+  padding: 2rem 2.45rem 3.25rem;
   overflow-x: hidden;
-  padding: 2rem 2.5rem 3rem;
+  overflow-y: auto;
   background: transparent;
-  scrollbar-color: rgba(190,235,255,0.34) transparent;
-}
-
-.reviewer-main-stage::-webkit-scrollbar { width: 10px; }
-.reviewer-main-stage::-webkit-scrollbar-track { background: transparent; }
-.reviewer-main-stage::-webkit-scrollbar-thumb {
-  border: 3px solid transparent;
-  border-radius: 999px;
-  background: linear-gradient(180deg, rgba(160,239,255,.6), rgba(166,124,255,.4)) padding-box;
-}
-
-.reviewer-stage-refraction {
-  position: fixed;
-  z-index: -1;
-  left: 220px;
-  right: 0;
-  top: 0;
-  height: 125px;
-  pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.045), transparent),
-    radial-gradient(ellipse at 50% -30%, rgba(184,237,255,.18), transparent 62%);
-  border-bottom: 1px solid rgba(255,255,255,.055);
-  backdrop-filter: blur(4px);
-  mask-image: linear-gradient(black, transparent 96%);
+  scrollbar-color: rgba(194, 215, 230, 0.2) transparent;
 }
 
 .reviewer-stage-content {
@@ -104,527 +114,774 @@ body {
   z-index: 1;
 }
 
-/* ---------- Sidebar: floating luminous glass rail ---------- */
-.reviewer-sidebar {
-  width: 220px !important;
-  min-width: 220px !important;
-  z-index: 20 !important;
-  background:
-    linear-gradient(160deg, rgba(255,255,255,0.095), rgba(255,255,255,0.025) 34%, rgba(97,142,255,0.035) 75%),
-    rgba(4,10,22,0.48) !important;
-  border-right: 1px solid rgba(255,255,255,0.18) !important;
-  box-shadow:
-    20px 0 60px rgba(0,0,0,0.22),
-    1px 0 0 rgba(255,255,255,0.07) inset,
-    18px 0 80px rgba(78,170,255,0.06) !important;
-  backdrop-filter: blur(34px) saturate(210%) !important;
-  -webkit-backdrop-filter: blur(34px) saturate(210%) !important;
+.reviewer-scroll-edge {
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  left: 254px;
+  height: 58px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7, 9, 13, 0.78), rgba(7, 9, 13, 0.26) 48%, transparent);
+  opacity: 0.72;
 }
 
-.reviewer-sidebar::before {
+/* One web approximation of Apple's Regular Liquid Glass variant. */
+.liquid-glass,
+.glow-btn {
+  --glass-light-x: 50%;
+  --glass-light-y: 0%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--glass-border) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018) 38%, rgba(117, 170, 204, 0.025) 72%),
+    var(--glass-fill) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: var(--glass-filter) !important;
+  -webkit-backdrop-filter: var(--glass-filter) !important;
+}
+
+.liquid-glass::before,
+.glow-btn::before {
   content: "";
   position: absolute;
+  z-index: 0;
   inset: 0;
+  border-radius: inherit;
   pointer-events: none;
   background:
-    radial-gradient(circle at 15% 8%, rgba(126,239,255,.12), transparent 25%),
-    radial-gradient(circle at 90% 56%, rgba(188,112,255,.08), transparent 34%),
-    linear-gradient(90deg, rgba(255,255,255,.04), transparent 35%);
-  mix-blend-mode: screen;
+    radial-gradient(circle at var(--glass-light-x) var(--glass-light-y), rgba(255, 255, 255, 0.2) 0%, rgba(210, 239, 251, 0.075) 17%, transparent 44%),
+    linear-gradient(118deg, rgba(255, 255, 255, 0.06), transparent 31%, transparent 72%, rgba(170, 182, 230, 0.035));
+  opacity: 0.66;
+  transition: opacity 180ms var(--ease-direct), transform 220ms var(--ease-liquid);
+}
+
+.liquid-glass::after,
+.glow-btn::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(128deg, rgba(255, 255, 255, 0.46), rgba(220, 244, 255, 0.12) 17%, transparent 39%, transparent 68%, rgba(182, 178, 237, 0.13) 83%, transparent 96%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.58;
+}
+
+.liquid-glass > *,
+.glow-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.liquid-glass:hover::before,
+.liquid-glass:focus-within::before,
+.glow-btn:hover::before,
+.glow-btn:focus-visible::before {
+  opacity: 0.94;
+}
+
+.window-inactive .liquid-glass,
+.window-inactive .glow-btn {
+  --glass-fill: rgba(25, 30, 38, 0.78);
+  filter: saturate(0.78);
+}
+
+/* Floating macOS sidebar: one glass surface, with filled overlays inside. */
+.reviewer-sidebar {
+  position: fixed;
+  z-index: 20;
+  inset: 12px auto 12px 12px;
+  width: 226px !important;
+  min-width: 226px !important;
+  height: calc(100vh - 24px);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-window) !important;
+  --glass-fill: rgba(18, 25, 35, 0.66);
+  --glass-filter: blur(30px) saturate(142%) brightness(1.02) contrast(1.035);
+  box-shadow:
+    0 30px 72px rgba(0, 0, 0, 0.38),
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 1px 0 0 rgba(255, 255, 255, 0.04) !important;
 }
 
 .sidebar-brand {
   position: relative;
-  border-bottom-color: rgba(255,255,255,.11) !important;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(204, 225, 240, 0.075);
 }
 
 .sidebar-brand::after {
   content: "";
   position: absolute;
-  left: 18px;
   right: 18px;
   bottom: -1px;
+  left: 18px;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(126,242,255,.5), rgba(197,121,255,.32), transparent);
-  filter: drop-shadow(0 0 5px rgba(112,230,255,.45));
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(218, 243, 253, 0.18), transparent);
 }
 
 .sidebar-brand-mark {
-  border-radius: 11px !important;
-  color: white !important;
-  border-color: rgba(255,255,255,.28) !important;
-  background:
-    radial-gradient(circle at 28% 20%, rgba(255,255,255,.42), transparent 18%),
-    linear-gradient(145deg, rgba(107,240,255,.23), rgba(126,106,255,.14) 55%, rgba(255,109,210,.11)) !important;
-  box-shadow:
-    0 8px 24px rgba(37,175,255,.16),
-    inset 0 1px 0 rgba(255,255,255,.43),
-    0 0 18px rgba(107,231,255,.12) !important;
-  backdrop-filter: blur(16px) saturate(180%);
+  width: 33px;
+  height: 33px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(191, 225, 243, 0.16) !important;
+  border-radius: 10px !important;
+  color: rgba(238, 249, 253, 0.94) !important;
+  background: linear-gradient(145deg, rgba(159, 211, 234, 0.16), rgba(38, 53, 68, 0.38)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 7px 18px rgba(0, 0, 0, 0.2) !important;
+  font: 720 0.68rem/1 var(--app-font-mono);
+  letter-spacing: 0.05em;
 }
 
 .sidebar-brand-title {
-  color: rgba(255,255,255,.96) !important;
-  text-shadow: 0 0 18px rgba(255,255,255,.15);
+  color: rgba(248, 251, 253, 0.95) !important;
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.045em;
 }
 
-.sidebar-brand-subtitle,
-.reviewer-sidebar .sidebar-group-label {
-  color: rgba(224,239,255,.52) !important;
+.sidebar-brand-subtitle {
+  margin-top: 0.16rem;
+  color: rgba(207, 220, 231, 0.48) !important;
+  font-size: 0.63rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.85rem 0.68rem 1rem;
+  overflow-y: auto;
 }
 
 .sidebar-home,
 .reviewer-sidebar .nav-item {
   position: relative;
-  overflow: hidden;
-  border-radius: 10px !important;
-  color: rgba(235,244,255,.67) !important;
-  transition: transform .2s ease, color .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease !important;
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 0.62rem;
+  padding: 0.46rem 0.62rem;
+  border: 1px solid transparent !important;
+  border-radius: 9px !important;
+  color: rgba(218, 229, 238, 0.64) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 0.74rem;
+  font-weight: 590;
+  transition: color 160ms ease, background-color 160ms ease, transform 180ms var(--ease-direct), border-color 160ms ease !important;
 }
 
-.sidebar-home::before,
-.reviewer-sidebar .nav-item::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  background: linear-gradient(115deg, rgba(255,255,255,.16), rgba(123,223,255,.07) 42%, rgba(191,122,255,.09));
-  transition: opacity .2s ease;
+.sidebar-home {
+  margin-bottom: 0.8rem;
+  color: rgba(235, 242, 247, 0.82) !important;
 }
 
 .sidebar-home:hover,
 .reviewer-sidebar .nav-item:hover {
-  color: white !important;
-  border-color: rgba(255,255,255,.13) !important;
-  background: rgba(255,255,255,.055) !important;
-  box-shadow: inset 0 1px rgba(255,255,255,.1), 0 9px 22px rgba(0,0,0,.12);
-  transform: translateX(2px) !important;
+  color: #ffffff !important;
+  border-color: rgba(207, 232, 246, 0.07) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  transform: translateX(1px);
 }
-
-.sidebar-home:hover::before,
-.reviewer-sidebar .nav-item:hover::before { opacity: 1; }
 
 .sidebar-home.active,
 .reviewer-sidebar .nav-item.active {
-  color: #fff !important;
-  border-color: rgba(173,239,255,.34) !important;
+  color: #ffffff !important;
+  border-color: rgba(190, 227, 244, 0.16) !important;
   background:
-    linear-gradient(110deg, rgba(130,240,255,.18), rgba(109,153,255,.09) 53%, rgba(207,120,255,.12)) !important;
+    linear-gradient(135deg, rgba(255, 255, 255, 0.115), rgba(161, 212, 237, 0.07) 58%, rgba(174, 169, 224, 0.055)) !important;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.22),
-    inset 2px 0 0 rgba(158,250,255,.86),
-    0 8px 26px rgba(72,188,255,.12),
-    0 0 20px rgba(143,228,255,.08) !important;
-  text-shadow: 0 0 14px rgba(188,244,255,.22);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 8px 20px rgba(0, 0, 0, 0.18) !important;
+  transform: none;
 }
 
 .reviewer-sidebar .nav-item.active::after,
 .sidebar-home.active::after {
-  content: "";
-  position: absolute;
-  right: 9px;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #b8fbff;
-  box-shadow: 0 0 7px #79edff, 0 0 15px rgba(142,115,255,.75);
-  animation: tahoe-nav-pulse 2.1s ease-in-out infinite;
+  content: none !important;
 }
 
-/* ---------- Typography: luminous, not dim ---------- */
+.sidebar-group {
+  margin-bottom: 0.92rem;
+}
+
+.sidebar-group-label {
+  margin-bottom: 0.3rem;
+  padding: 0 0.6rem;
+  color: rgba(188, 207, 220, 0.44) !important;
+  font: 700 0.55rem/1.2 var(--app-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Compact functional glass surfaces. */
+.command-panel,
+.injury-search-panel,
+.job-search-panel,
+.drug-search-panel,
+.citation-search-panel,
+.liquid-toolbar {
+  border-radius: 16px !important;
+  --glass-fill: rgba(25, 32, 42, 0.62);
+}
+
+.source-status,
+.injury-source-stack,
+.job-source-status,
+.drug-status {
+  border-radius: 13px !important;
+  --glass-fill: rgba(23, 30, 39, 0.56);
+  --glass-filter: blur(18px) saturate(132%) brightness(1.025);
+}
+
+.job-tabs,
+.hologram-view-toggle {
+  border-radius: var(--radius-capsule) !important;
+  --glass-fill: rgba(27, 35, 45, 0.62);
+  --glass-filter: blur(18px) saturate(136%) brightness(1.03);
+}
+
+.condition-search,
+.standards-search,
+.deployment-search {
+  border-radius: 12px !important;
+  --glass-fill: rgba(24, 31, 41, 0.64);
+  --glass-filter: blur(20px) saturate(136%) brightness(1.025);
+}
+
+.clinical-nav {
+  border-radius: 15px !important;
+  --glass-fill: rgba(20, 27, 36, 0.68);
+  --glass-filter: blur(22px) saturate(132%) brightness(1.02);
+}
+
+/* Search fields are thin overlays within their one glass container. */
+.command-input-wrap,
+.injury-input-wrap,
+.injury-input,
+.job-search-input,
+.drug-search-input,
+.citation-search-input,
+.liquid-toolbar .glass-input {
+  border: 1px solid rgba(202, 224, 240, 0.13) !important;
+  border-radius: 10px !important;
+  color: var(--text-primary) !important;
+  background: rgba(5, 9, 14, 0.3) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
+}
+
+.condition-search input,
+.standards-search input,
+.deployment-search input,
+.command-input-wrap input,
+.injury-input-wrap input,
+.injury-input,
+.job-search-input input,
+.drug-search-input input,
+.citation-search-input input {
+  color: rgba(249, 252, 254, 0.95) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.condition-search input::placeholder,
+.standards-search input::placeholder,
+.deployment-search input::placeholder,
+.command-input-wrap input::placeholder,
+.injury-input-wrap input::placeholder,
+.injury-input::placeholder,
+.job-search-input input::placeholder,
+.drug-search-input input::placeholder,
+.citation-search-input input::placeholder {
+  color: rgba(207, 220, 231, 0.4) !important;
+}
+
+.command-input-wrap:focus-within,
+.injury-input-wrap:focus-within,
+.job-search-input:focus-within,
+.drug-search-input:focus-within,
+.condition-search:focus-within,
+.standards-search:focus-within,
+.deployment-search:focus-within,
+.citation-search-input:focus-within,
+.liquid-toolbar:focus-within {
+  border-color: rgba(180, 228, 247, 0.32) !important;
+  box-shadow:
+    0 0 0 3px rgba(137, 203, 231, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Segmented controls use filled overlays, avoiding glass-on-glass. */
+.job-tabs button,
+.hologram-view-toggle button,
+.clinical-nav button {
+  transition: color 160ms ease, background-color 180ms var(--ease-liquid), transform 160ms var(--ease-direct), box-shadow 180ms ease !important;
+}
+
+.job-tabs button.active,
+.hologram-view-toggle button.active,
+.clinical-nav button.active {
+  color: #f8fcfe !important;
+  border-color: rgba(194, 228, 245, 0.13) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(143, 203, 229, 0.08)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 6px 15px rgba(0, 0, 0, 0.16) !important;
+}
+
+.job-tabs button:active,
+.hologram-view-toggle button:active,
+.clinical-nav button:active {
+  transform: scale(0.985);
+}
+
+/* Buttons are glass controls; color tint is reserved for primary/destructive intent. */
+.glow-btn {
+  --glass-fill: rgba(46, 67, 80, 0.64);
+  --glass-filter: blur(18px) saturate(138%) brightness(1.035);
+  border-radius: 10px !important;
+  color: rgba(249, 252, 254, 0.96) !important;
+  transition: transform 160ms var(--ease-direct), box-shadow 190ms ease, border-color 180ms ease !important;
+}
+
+.glow-btn:hover:not(:disabled) {
+  border-color: rgba(208, 237, 250, 0.22) !important;
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.28),
+    0 5px 15px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  transform: translateY(-1px) scale(1.006);
+}
+
+.glow-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.982);
+  transition-duration: 90ms !important;
+}
+
+.glow-btn-secondary {
+  --glass-fill: rgba(28, 35, 45, 0.68);
+  color: rgba(232, 240, 246, 0.86) !important;
+}
+
+.glow-btn-danger {
+  --glass-fill: rgba(105, 43, 49, 0.74);
+  border-color: rgba(245, 143, 151, 0.24) !important;
+  color: #fff6f7 !important;
+}
+
+/* Grounded content layer. No backdrop blur, refraction, sweeps, or float. */
+.intelligence-lane,
+.injury-occupation-strip,
+.injury-anatomy-shell,
+.injury-measured-section,
+.injury-osha-section,
+.injury-panel,
+.injury-finding-panel,
+.job-profile-strip,
+.job-profile-column,
+.drug-selection-panel,
+.drug-selected-panel,
+.drug-capability-panel,
+.clinical-panel,
+.condition-categories,
+.condition-summary,
+.condition-questions,
+.condition-side-panel,
+.standards-table,
+.deployment-country-list,
+.deployment-profile,
+.deployment-detail,
+.citation-results-panel,
+.citation-side-panel,
+.citation-official-panel,
+.citation-saved-panel {
+  border-color: var(--content-border) !important;
+  background: linear-gradient(155deg, rgba(17, 23, 32, 0.99), rgba(11, 16, 23, 0.99)) !important;
+  box-shadow: var(--content-shadow) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.glass-card,
+.intelligence-lane,
+.injury-panel,
+.injury-finding-panel,
+.job-profile-column,
+.drug-card,
+.drug-capability,
+.condition-summary,
+.condition-questions,
+.standards-row,
+.deployment-fact,
+.citation-official-list a {
+  transform: none !important;
+}
+
+.glass-card:hover,
+.intelligence-lane:hover,
+.injury-panel:hover,
+.injury-finding-panel:hover,
+.job-profile-column:hover,
+.drug-card:hover,
+.drug-capability:hover,
+.condition-summary:hover,
+.condition-questions:hover,
+.standards-row:hover,
+.deployment-fact:hover,
+.citation-official-list a:hover {
+  border-color: var(--content-border-strong) !important;
+  box-shadow: var(--content-shadow) !important;
+  transform: none !important;
+}
+
+/* Workbench hierarchy: one glass command, then grounded intelligence. */
+.workbench,
+.injury-workbench,
+.job-workbench,
+.drug-workbench,
+.clinical-workbench,
+.condition-reference,
+.standards-workbench,
+.deployment-workbench,
+.citation-workbench {
+  color: var(--text-primary);
+}
+
 :is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) h1 {
-  color: rgba(255,255,255,.99) !important;
-  text-shadow:
-    0 1px 0 rgba(255,255,255,.14),
-    0 0 28px rgba(151,228,255,.10),
-    0 0 54px rgba(170,111,255,.055);
+  color: var(--text-primary) !important;
+  text-shadow: none !important;
 }
 
-:is(.workbench-kicker, .section-eyebrow, .injury-kicker, .job-kicker, .drug-kicker, .clinical-kicker, .condition-kicker, .standards-kicker, .deployment-kicker, .citation-kicker) {
-  color: #b5f9ff !important;
-  text-shadow: 0 0 12px rgba(105,235,255,.4), 0 0 26px rgba(163,119,255,.14);
+:is(.workbench-kicker, .section-eyebrow, .injury-kicker, .job-kicker, .drug-kicker, .clinical-kicker, .condition-kicker, .standards-kicker, .deployment-kicker, .citation-kicker, .command-label) {
+  color: rgba(174, 225, 245, 0.82) !important;
+  text-shadow: none !important;
 }
 
-:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) > header p,
-.workbench-header p {
-  color: rgba(233,242,255,.62) !important;
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) p {
+  color: var(--text-secondary);
 }
 
-/* ---------- Core liquid glass surfaces ---------- */
-:is(
-  .command-panel,
-  .intelligence-lane,
-  .injury-search-panel,
-  .injury-occupation-strip,
-  .injury-anatomy-shell,
-  .injury-measured-section,
-  .injury-osha-section,
-  .injury-panel,
-  .injury-finding-panel,
-  .job-tabs,
-  .job-search-panel,
-  .job-profile-strip,
-  .job-profile-column,
-  .drug-search-panel,
-  .drug-selection-panel,
-  .drug-capability-panel,
-  .clinical-nav,
-  .clinical-panel,
-  .condition-categories,
-  .condition-summary,
-  .condition-questions,
-  .condition-side-panel,
-  .standards-table,
-  .deployment-country-list,
-  .deployment-profile,
-  .citation-search-panel,
-  .citation-results-panel,
-  .citation-side-panel,
-  .citation-official-panel,
-  .citation-saved-panel
-) {
-  position: relative;
-  overflow: hidden;
-  background: var(--liquid-glass-fill) !important;
-  border: 1px solid var(--liquid-glass-border) !important;
-  box-shadow: var(--liquid-glass-shadow) !important;
-  backdrop-filter: var(--liquid-blur) !important;
-  -webkit-backdrop-filter: var(--liquid-blur) !important;
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) small {
+  color: var(--text-tertiary);
 }
 
-:is(
-  .command-panel,
-  .intelligence-lane,
-  .injury-search-panel,
-  .injury-occupation-strip,
-  .injury-anatomy-shell,
-  .injury-measured-section,
-  .injury-osha-section,
-  .injury-panel,
-  .injury-finding-panel,
-  .job-search-panel,
-  .job-profile-strip,
-  .job-profile-column,
-  .drug-selection-panel,
-  .drug-capability-panel,
-  .clinical-panel,
-  .condition-summary,
-  .condition-questions,
-  .standards-table,
-  .deployment-profile,
-  .citation-search-panel,
-  .citation-results-panel,
-  .citation-side-panel
-)::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 12% -14%, rgba(255,255,255,.24), transparent 25%),
-    radial-gradient(circle at 90% 118%, rgba(106,222,255,.09), transparent 32%),
-    linear-gradient(115deg, transparent 4%, rgba(255,255,255,.065) 23%, transparent 41%, transparent 68%, rgba(214,122,255,.045) 82%, transparent 96%);
-  opacity: .92;
+.workbench-header,
+.injury-header,
+.job-header,
+.drug-header,
+.clinical-header,
+.condition-header,
+.standards-header,
+.deployment-header,
+.citation-header {
+  border-bottom-color: rgba(181, 205, 223, 0.085) !important;
 }
 
-:is(
-  .command-panel,
-  .intelligence-lane,
-  .injury-search-panel,
-  .injury-occupation-strip,
-  .injury-anatomy-shell,
-  .injury-measured-section,
-  .injury-osha-section,
-  .injury-panel,
-  .injury-finding-panel,
-  .job-search-panel,
-  .job-profile-strip,
-  .job-profile-column,
-  .drug-selection-panel,
-  .drug-capability-panel,
-  .clinical-panel,
-  .condition-summary,
-  .condition-questions,
-  .standards-table,
-  .deployment-profile,
-  .citation-search-panel,
-  .citation-results-panel,
-  .citation-side-panel
-)::after {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  left: -28%;
-  top: -45%;
-  width: 58%;
-  height: 190%;
-  pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.11), transparent);
-  transform: rotate(16deg);
-  opacity: .35;
-  animation: tahoe-glass-sweep 11s ease-in-out infinite;
+.source-status {
+  padding: 0.58rem 0.72rem !important;
 }
 
-:is(
-  .command-panel,
-  .intelligence-lane,
-  .injury-search-panel,
-  .injury-occupation-strip,
-  .injury-anatomy-shell,
-  .injury-measured-section,
-  .injury-osha-section,
-  .injury-panel,
-  .injury-finding-panel,
-  .job-search-panel,
-  .job-profile-strip,
-  .job-profile-column,
-  .drug-selection-panel,
-  .drug-capability-panel,
-  .clinical-panel,
-  .condition-summary,
-  .condition-questions,
-  .standards-table,
-  .deployment-profile,
-  .citation-search-panel,
-  .citation-results-panel,
-  .citation-side-panel
-) > * {
-  position: relative;
-  z-index: 1;
+.command-panel {
+  margin-top: 1.1rem !important;
+  padding: 0.88rem !important;
 }
 
-/* cards / rows float as glass tiles */
-:is(.tool-row, .standards-row, .deployment-fact, .drug-card, .injury-measured-card, .injury-signal-row, .condition-standard-list > div, .citation-official-list > a, .citation-saved-list > div) {
-  border-color: rgba(255,255,255,.095) !important;
-  background: linear-gradient(135deg, rgba(255,255,255,.052), rgba(255,255,255,.014)) !important;
-  transition: transform .2s ease, border-color .2s ease, background .2s ease, box-shadow .2s ease !important;
-}
-
-:is(.tool-row, .standards-row, .deployment-fact, .drug-card, .injury-measured-card, .injury-signal-row, .condition-standard-list > div, .citation-official-list > a, .citation-saved-list > div):hover {
-  border-color: rgba(190,242,255,.22) !important;
-  background: linear-gradient(135deg, rgba(255,255,255,.10), rgba(113,205,255,.045), rgba(203,123,255,.045)) !important;
-  box-shadow: 0 12px 34px rgba(0,5,24,.2), inset 0 1px rgba(255,255,255,.12) !important;
-  transform: translateY(-2px) scale(1.002);
-}
-
-/* top intelligence cards receive extra luminous depth */
 .intelligence-lane {
-  border-radius: 18px !important;
-  min-height: 160px;
+  min-height: 150px;
+  border-radius: 15px !important;
+  text-align: left;
 }
 
 .intelligence-lane.primary {
-  background:
-    radial-gradient(circle at 86% 18%, rgba(91,238,255,.19), transparent 30%),
-    radial-gradient(circle at 8% 100%, rgba(185,102,255,.13), transparent 38%),
-    var(--liquid-glass-fill-strong) !important;
+  border-color: rgba(137, 210, 239, 0.18) !important;
+  background: linear-gradient(145deg, rgba(20, 34, 46, 0.99), rgba(12, 20, 29, 0.99)) !important;
 }
 
-.intelligence-lane:hover {
-  box-shadow: var(--liquid-glass-shadow-hover) !important;
-  transform: translateY(-4px) scale(1.006) !important;
+.lane-icon,
+.tool-row-icon {
+  color: var(--ice-muted) !important;
+  border-color: rgba(139, 207, 234, 0.12) !important;
+  background: rgba(139, 207, 234, 0.055) !important;
 }
 
-/* ---------- Inputs and segmented controls ---------- */
-:is(.reviewer-stage-content input, .reviewer-stage-content select, .reviewer-stage-content textarea) {
-  color: rgba(255,255,255,.96) !important;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.085), rgba(255,255,255,.028)) !important;
-  border-color: rgba(255,255,255,.18) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.12),
-    inset 0 -1px 0 rgba(116,196,255,.035),
-    0 8px 22px rgba(0,0,0,.11) !important;
-  backdrop-filter: blur(18px) saturate(170%);
-  -webkit-backdrop-filter: blur(18px) saturate(170%);
+.tool-row {
+  background: transparent !important;
+  border-color: rgba(183, 207, 225, 0.075) !important;
 }
 
-:is(.reviewer-stage-content input, .reviewer-stage-content select, .reviewer-stage-content textarea)::placeholder {
-  color: rgba(226,239,255,.42) !important;
+.tool-row:hover {
+  background: linear-gradient(90deg, rgba(150, 210, 234, 0.045), transparent) !important;
 }
 
-:is(.reviewer-stage-content input, .reviewer-stage-content select, .reviewer-stage-content textarea):focus {
-  border-color: rgba(155,242,255,.62) !important;
-  box-shadow:
-    0 0 0 1px rgba(132,239,255,.22),
-    0 0 0 4px rgba(117,194,255,.07),
-    0 0 34px rgba(86,211,255,.13),
-    inset 0 1px 0 rgba(255,255,255,.22) !important;
-}
-
-.command-input-wrap,
-.injury-input-wrap,
-.job-search-input,
-.drug-search-input,
-.condition-search,
-.standards-search,
-.deployment-search,
-.citation-search-input {
-  background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.024)) !important;
-  border-color: rgba(255,255,255,.18) !important;
-  box-shadow: inset 0 1px rgba(255,255,255,.10), 0 10px 30px rgba(0,0,0,.12) !important;
-  backdrop-filter: blur(22px) saturate(180%);
-}
-
-:is(.job-tabs, .hologram-view-toggle) {
-  background: rgba(255,255,255,.055) !important;
-  border-color: rgba(255,255,255,.13) !important;
-  box-shadow: inset 0 1px rgba(255,255,255,.10), 0 10px 28px rgba(0,0,0,.12) !important;
-  backdrop-filter: blur(18px) saturate(180%);
-}
-
-:is(.job-tabs button, .hologram-view-toggle button).active {
-  color: white !important;
-  background: linear-gradient(135deg, rgba(126,243,255,.20), rgba(116,142,255,.10), rgba(213,122,255,.11)) !important;
-  box-shadow: inset 0 1px rgba(255,255,255,.26), 0 0 20px rgba(101,220,255,.10) !important;
-  border-color: rgba(176,242,255,.24) !important;
-}
-
-/* ---------- Buttons ---------- */
-.reviewer-stage-content button:not(.nav-item):not(.sidebar-home),
-.reviewer-stage-content a[role="button"] {
-  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
-}
-
-.reviewer-stage-content button:hover:not(:disabled),
-.reviewer-stage-content a[role="button"]:hover {
-  filter: brightness(1.08);
-}
-
-/* ---------- Anatomy: bright projected glass bay ---------- */
+/* Injury Intelligence stays the visual showpiece, but anatomy is content. */
 .injury-anatomy-shell {
-  border-radius: 22px !important;
-  background:
-    radial-gradient(circle at 42% 52%, rgba(80,232,255,.12), transparent 32%),
-    radial-gradient(circle at 18% 18%, rgba(198,107,255,.08), transparent 30%),
-    linear-gradient(145deg, rgba(255,255,255,.105), rgba(255,255,255,.026) 56%, rgba(96,199,255,.04)) !important;
-  border-color: rgba(179,241,255,.24) !important;
-  box-shadow:
-    0 28px 90px rgba(0,4,25,.36),
-    0 0 48px rgba(69,218,255,.07),
-    inset 0 1px 0 rgba(255,255,255,.27),
-    inset 0 0 90px rgba(102,208,255,.035) !important;
+  overflow: hidden;
+  border-radius: 17px !important;
+  border-color: rgba(129, 200, 225, 0.16) !important;
+  background: #081019 !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3) !important;
 }
 
 .anatomy-real-stage {
   background:
-    radial-gradient(circle at 50% 48%, rgba(63,226,255,.075), transparent 31%),
-    linear-gradient(rgba(140,218,255,.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(140,218,255,.025) 1px, transparent 1px) !important;
-  background-size: auto, 34px 34px, 34px 34px !important;
-}
-
-.anatomy-real-img.core-layer {
-  filter: contrast(1.07) saturate(.92) brightness(.98) drop-shadow(0 0 7px rgba(154,242,255,.32)) !important;
-  opacity: .93 !important;
-}
-
-.anatomy-real-img.glow-layer {
-  filter: brightness(1.1) saturate(.25) sepia(.25) hue-rotate(135deg) drop-shadow(0 0 16px rgba(107,237,255,.48)) blur(1px) !important;
-  opacity: .25 !important;
-  mix-blend-mode: screen;
-}
-
-.anatomy-real-hud {
-  border-color: rgba(134,238,255,.24) !important;
-  box-shadow: 0 0 30px rgba(80,218,255,.07), inset 0 0 30px rgba(125,137,255,.025);
-}
-
-.anatomy-real-scan {
-  background: linear-gradient(90deg, transparent, rgba(206,251,255,.65), rgba(123,236,255,.88), transparent) !important;
-  box-shadow: 0 0 15px rgba(125,238,255,.62), 0 0 42px rgba(114,174,255,.24) !important;
-}
-
-/* ---------- Page-specific luminous signatures ---------- */
-.job-profile-column {
-  border-radius: 16px !important;
-  background:
-    radial-gradient(circle at 100% 0%, rgba(102,220,255,.07), transparent 34%),
-    var(--liquid-glass-fill-soft) !important;
-}
-
-.drug-selection-panel {
-  background:
-    radial-gradient(circle at 50% 48%, rgba(123,238,255,.07), transparent 25%),
-    radial-gradient(circle at 73% 30%, rgba(212,116,255,.055), transparent 34%),
-    var(--liquid-glass-fill) !important;
-}
-
-.clinical-panel {
-  background:
-    radial-gradient(circle at 88% 15%, rgba(119,234,255,.07), transparent 32%),
-    linear-gradient(145deg, rgba(255,255,255,.13), rgba(255,255,255,.035) 48%, rgba(115,135,255,.045)) !important;
-}
-
-.condition-summary {
-  background:
-    radial-gradient(circle at 86% 8%, rgba(199,113,255,.09), transparent 30%),
-    radial-gradient(circle at 12% 100%, rgba(89,224,255,.07), transparent 36%),
-    var(--liquid-glass-fill) !important;
-}
-
-.standards-table {
-  border-radius: 20px !important;
-}
-
-.standards-row {
-  border-bottom-color: rgba(255,255,255,.075) !important;
-}
-
-.deployment-profile {
-  background:
-    radial-gradient(circle at 93% 10%, rgba(111,242,255,.12), transparent 27%),
-    radial-gradient(circle at 45% 110%, rgba(172,103,255,.075), transparent 38%),
-    var(--liquid-glass-fill) !important;
-}
-
-.citation-results-panel {
-  background:
-    radial-gradient(circle at 50% 42%, rgba(89,225,255,.055), transparent 25%),
-    linear-gradient(rgba(140,218,255,.018) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(140,218,255,.018) 1px, transparent 1px),
-    var(--liquid-glass-fill) !important;
+    radial-gradient(ellipse at 48% 50%, rgba(74, 197, 218, 0.09), transparent 37%),
+    linear-gradient(rgba(121, 176, 196, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(121, 176, 196, 0.025) 1px, transparent 1px),
+    #071019 !important;
   background-size: auto, 32px 32px, 32px 32px, auto !important;
 }
 
-/* ---------- status lights ---------- */
-:is(.source-status-items span, .injury-source-state, .job-source-status, .drug-status) {
-  color: rgba(236,246,255,.72) !important;
+.anatomy-real-data {
+  background: linear-gradient(180deg, #0b151e, #080f17) !important;
 }
 
-.injury-source-dot.active,
-.source-status-items i,
-.job-source-status::before {
-  box-shadow: 0 0 8px rgba(130,244,255,.9), 0 0 18px rgba(114,151,255,.35) !important;
+.anatomy-real-hud {
+  opacity: 0.36;
 }
 
-/* ---------- brighter supporting copy ---------- */
-:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) p,
-:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) small {
-  color: rgba(226,238,251,.58);
+.anatomy-real-scan {
+  opacity: 0.44;
 }
 
-:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) strong {
-  color: rgba(249,252,255,.91);
+.anatomy-real-hotspot[data-source="derived"] {
+  border-style: dashed;
 }
 
-/* ---------- animations ---------- */
-@keyframes tahoe-glass-sweep {
-  0%, 12% { transform: translateX(-20%) rotate(16deg); opacity: 0; }
-  28% { opacity: .28; }
-  48% { transform: translateX(205%) rotate(16deg); opacity: .12; }
-  49%, 100% { transform: translateX(205%) rotate(16deg); opacity: 0; }
+.anatomy-real-hotspot[data-source="measured"] {
+  border-style: solid;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
-@keyframes tahoe-nav-pulse {
-  0%, 100% { transform: scale(.9); opacity: .7; }
-  50% { transform: scale(1.25); opacity: 1; }
+.injury-anatomy-ranking button[data-source="derived"] > div > span {
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 6px, transparent 6px 9px);
+}
+
+.injury-anatomy-ranking button[data-source="measured"] {
+  border-left: 2px solid rgba(133, 216, 240, 0.16);
+}
+
+.injury-measured-metric,
+.injury-osha-list > div {
+  grid-template-columns: minmax(0, 1fr) minmax(44px, 0.7fr) auto !important;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.injury-measured-metric > i,
+.injury-osha-list > div > i {
+  display: block;
+  min-width: 42px;
+  height: 3px;
+  overflow: hidden;
+  border-radius: var(--radius-capsule);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.injury-measured-metric > i > b,
+.injury-osha-list > div > i > b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #78cde7, #e8bd76 68%, #ec7e89);
+}
+
+/* Dense clinical text remains readable at the intended desktop widths. */
+:is(.injury-header, .job-header, .drug-header, .clinical-header, .condition-header, .standards-header, .deployment-header, .citation-header) p {
+  color: var(--text-secondary) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.55;
+}
+
+:is(.injury-input-wrap input, .injury-input, .job-search-input input, .drug-search-input input, .clinical-field input, .clinical-field select, .condition-search input, .standards-search input, .deployment-search input, .citation-search-input input) {
+  font-size: 0.78rem !important;
+}
+
+.injury-search-panel:has(.injury-input-wrap input:placeholder-shown) .injury-match-list,
+.job-search-panel:has(.job-search-input input:placeholder-shown) .job-match-list {
+  display: none;
+}
+
+.job-source-status strong,
+.injury-source-state,
+.drug-status strong { color: rgba(234, 241, 246, 0.82) !important; font-size: 0.68rem; }
+.job-source-status small,
+.injury-source-state small,
+.drug-status small { color: var(--text-tertiary) !important; font-size: 0.59rem; }
+.job-tabs button { font-size: 0.68rem !important; }
+.job-profile-strip > div:first-child > span { display: none; }
+.job-profile-strip p,
+.job-profile-column p { color: var(--text-secondary) !important; font-size: 0.69rem !important; line-height: 1.5; }
+.job-standards { display: none; }
+
+.injury-empty-state p,
+.injury-signal-copy p,
+.injury-demand-list div,
+.injury-finding-panel > p,
+.injury-finding-grid > div > div,
+.drug-empty p,
+.drug-card p,
+.drug-review-points p,
+.drug-identity-only p,
+.drug-capability p,
+.condition-summary p,
+.condition-questions p,
+.condition-side-note,
+.condition-side-empty,
+.condition-saved-list p,
+.standards-row p,
+.deployment-fact p {
+  color: var(--text-secondary) !important;
+  font-size: 0.69rem !important;
+  line-height: 1.5;
+}
+
+.injury-measured-meta,
+.injury-measured-list span,
+.injury-measured-list strong,
+.injury-measured-unavailable,
+.injury-measured-caveat,
+.clinical-nav button small,
+.standards-framework small,
+.standards-topics span,
+.standards-source,
+.standards-footnote {
+  font-size: 0.59rem !important;
+}
+
+.clinical-panel {
+  min-height: 390px;
+}
+
+.clinical-panel-head p,
+.clinical-field > span,
+.clinical-disclaimer,
+.clinical-reference > button,
+.clinical-reference p {
+  color: var(--text-secondary) !important;
+  font-size: 0.65rem !important;
+}
+
+.standards-table {
+  overflow: hidden;
+  border-radius: 14px !important;
+}
+
+.standards-row {
+  border-bottom-color: rgba(187, 208, 224, 0.08) !important;
+  background: transparent !important;
+}
+
+.standards-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.012) !important;
+}
+
+.citation-results-panel {
+  min-height: 360px;
+}
+
+.citation-empty {
+  min-height: 235px;
+}
+
+.citation-empty strong,
+.citation-panel-head h2,
+.citation-article-list strong,
+.citation-official-list strong {
+  color: rgba(239, 245, 249, 0.82) !important;
+}
+
+.citation-empty p,
+.citation-article-list small,
+.citation-official-list small,
+.citation-saved-list small,
+.citation-side-empty {
+  color: var(--text-tertiary) !important;
+}
+
+/* Keyboard and contrast protection. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid rgba(174, 228, 249, 0.76) !important;
+  outline-offset: 2px;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass,
+  .glow-btn,
+  .reviewer-sidebar {
+    background: #18202a !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass,
+  .glow-btn,
+  .reviewer-sidebar {
+    --glass-fill: rgba(24, 30, 39, 0.94);
+    --glass-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-secondary: rgba(235, 241, 246, 0.84);
+    --text-tertiary: rgba(224, 234, 241, 0.68);
+    --content-border: rgba(224, 239, 248, 0.22);
+    --glass-border: rgba(236, 247, 252, 0.36);
+  }
+
+  .liquid-glass,
+  .glow-btn {
+    --glass-fill: rgba(10, 14, 19, 0.9);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .reviewer-stage-content *,
-  .reviewer-sidebar * {
-    animation: none !important;
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .anatomy-real-scan {
+    display: none !important;
+  }
+
+  .liquid-glass::before,
+  .glow-btn::before {
+    background: linear-gradient(118deg, rgba(255, 255, 255, 0.065), transparent 34%, transparent 74%, rgba(170, 182, 230, 0.035));
+  }
+}
+
+@media (max-width: 1180px) {
+  .reviewer-main-stage {
+    padding-right: 1.5rem;
+    padding-left: 1.7rem;
   }
 }

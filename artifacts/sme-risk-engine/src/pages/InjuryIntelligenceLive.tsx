@@ -300,7 +300,7 @@ export default function InjuryIntelligenceLive() {
           <h1>Injury Intelligence</h1>
           <p>Measured BLS surveillance, OSHA severe-injury context, occupation demands, and reviewer context. Each source keeps its own meaning and denominator.</p>
         </div>
-        <div className="injury-source-stack">
+        <div className="injury-source-stack liquid-glass">
           <SourceState
             active={Boolean(status?.onet?.configured)}
             label="O*NET"
@@ -312,7 +312,7 @@ export default function InjuryIntelligenceLive() {
         </div>
       </header>
 
-      <section className="injury-search-panel">
+      <section className="injury-search-panel liquid-glass">
         <div className="injury-field primary">
           <label>Occupation</label>
           <div className="injury-input-wrap">

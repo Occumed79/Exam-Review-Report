@@ -265,7 +265,7 @@ export default function ClinicalCalculatorV3() {
       </header>
 
       <div className="clinical-layout">
-        <aside className="clinical-nav">
+        <aside className="clinical-nav liquid-glass">
           <div className="clinical-nav-label">CALCULATORS</div>
           {CALCULATORS.map((calculator) => {
             const Icon = calculator.icon;

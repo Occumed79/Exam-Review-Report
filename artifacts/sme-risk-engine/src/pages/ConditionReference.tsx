@@ -204,7 +204,7 @@ export default function ConditionReference() {
           <h1>Condition Reference</h1>
           <p>Fast reviewer context, questions worth resolving, saved internal guidance, and live literature lookup. No report language and no clearance determination.</p>
         </div>
-        <div className="condition-search"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search condition or category…" /></div>
+        <div className="condition-search liquid-glass"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search condition or category…" /></div>
       </header>
 
       <div className="condition-layout">

@@ -186,10 +186,10 @@ export default function DrugCheckerV2() {
           <h1>Drug Checker</h1>
           <p>Resolve real medication names through RxNorm, then show occupational review flags only when a curated profile exists.</p>
         </div>
-        <div className="drug-status"><span className={sourceMode === 'live' ? 'active' : ''} /><div><strong>RxNorm</strong><small>{sourceMode === 'live' ? 'live lookup' : 'ready'}</small></div></div>
+        <div className="drug-status liquid-glass"><span className={sourceMode === 'live' ? 'active' : ''} /><div><strong>RxNorm</strong><small>{sourceMode === 'live' ? 'live lookup' : 'ready'}</small></div></div>
       </header>
 
-      <section className="drug-search-panel">
+      <section className="drug-search-panel liquid-glass">
         <label>MEDICATION NAME</label>
         <div className="drug-search-input">
           {searching ? <Loader2 size={16} className="animate-spin" /> : <Search size={16} />}

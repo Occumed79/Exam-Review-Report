@@ -55,7 +55,7 @@ export default function DeploymentReferenceV2() {
       </header>
 
       <div className="deployment-toolbar">
-        <div className="deployment-search"><Search size={14} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Country, region, climate…" /></div>
+        <div className="deployment-search liquid-glass"><Search size={14} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Country, region, climate…" /></div>
         <div className="deployment-source-links">{CURRENT_SOURCES.map((source) => <a key={source.name} href={source.url} target="_blank" rel="noreferrer">{source.name}<ExternalLink size={9} /></a>)}</div>
       </div>
 

@@ -63,7 +63,7 @@ export default function Sidebar() {
   const [location] = useLocation();
 
   return (
-    <aside className="reviewer-sidebar">
+    <aside className="reviewer-sidebar liquid-glass liquid-glass-sidebar">
       <div className="sidebar-brand">
         <div className="sidebar-brand-mark">ER</div>
         <div>
