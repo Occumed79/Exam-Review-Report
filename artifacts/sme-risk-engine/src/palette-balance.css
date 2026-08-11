@@ -1,16 +1,16 @@
 /*
- * Five-color palette balance pass.
- * Loaded after alpine-ui-theme.css.
+ * Final palette distribution pass.
+ * Loaded last after alpine-ui-theme.css.
  *
  * Reference palette:
- *   deep blue  #2F6E87  structural/navigation
- *   cyan       #259CBD  active/interactive
- *   ice blue   #95B4C4  search/secondary surfaces
- *   stone      #4E4741  contextual/side surfaces
- *   warm gray  #868481  neutral/main surfaces
+ *   #2F6E87 deep blue   -> navigation / structural framing
+ *   #259CBD cyan        -> selected / interactive / emphasis
+ *   #95B4C4 ice blue   -> search / lookup / secondary controls
+ *   #4E4741 stone       -> context / evidence / side surfaces
+ *   #868481 warm gray   -> neutral secondary material, NEVER the whole canvas
  *
- * IMPORTANT: the application canvas is intentionally neutral/stone now.
- * Blue is an accent family, not the entire application background.
+ * The key rule here is contrast: the reference colors stay visible as distinct
+ * materials, while derived darker tints do the heavy lifting for large areas.
  */
 
 :root {
@@ -19,72 +19,82 @@
   --palette-ice: #95b4c4;
   --palette-stone: #4e4741;
   --palette-gray: #868481;
-  --palette-stone-deep: #3f3a36;
-  --palette-gray-deep: #62625f;
-  --palette-gray-mid: #707370;
-  --palette-ice-deep: #6f97a8;
+
+  --canvas-charcoal: #292d2e;
+  --canvas-charcoal-2: #333637;
+  --canvas-stone: #3c3936;
+  --surface-neutral: #3b4142;
+  --surface-neutral-2: #454949;
+  --surface-stone: #4e4741;
+  --surface-stone-deep: #3f3935;
+  --input-dark: #243d46;
+
+  --ui-text: #f7fbfc;
+  --ui-text-soft: #dce7e9;
+  --ui-text-muted: #b8c9ce;
+  --ui-border: rgba(149, 180, 196, 0.32);
+  --ui-border-soft: rgba(149, 180, 196, 0.18);
 }
 
 /* --------------------------------------------------------------------------
-   CANVAS — neutral first. Kill the full-screen teal wash.
+   CANVAS — dark neutral, not blue and not flat gray.
    -------------------------------------------------------------------------- */
 html,
 body,
 #root {
-  background: #585b59 !important;
+  background: var(--canvas-charcoal) !important;
 }
 
 .tahoe-environment {
   background:
-    radial-gradient(circle at 84% 8%, rgba(37, 156, 189, 0.24), transparent 30%),
-    radial-gradient(circle at 8% 18%, rgba(149, 180, 196, 0.22), transparent 34%),
-    radial-gradient(circle at 82% 88%, rgba(78, 71, 65, 0.38), transparent 42%),
-    linear-gradient(145deg, #777d7c 0%, #696c69 34%, #5c5b57 68%, #4e4741 108%) !important;
+    radial-gradient(circle at 83% 8%, rgba(37, 156, 189, .14), transparent 29%),
+    radial-gradient(circle at 8% 16%, rgba(149, 180, 196, .10), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(78, 71, 65, .26), transparent 42%),
+    linear-gradient(145deg, #303536 0%, #343737 42%, #3b3936 73%, #302d2b 100%) !important;
 }
 
 .tahoe-environment::before {
-  background: linear-gradient(180deg, rgba(255,255,255,.07), transparent 24%) !important;
+  background: linear-gradient(180deg, rgba(255,255,255,.035), transparent 24%) !important;
 }
 
 .tahoe-environment::after {
-  background: linear-gradient(90deg, rgba(47,110,135,.10), transparent 26%, transparent 76%, rgba(78,71,65,.18)) !important;
+  background: linear-gradient(90deg, rgba(47,110,135,.06), transparent 25%, transparent 76%, rgba(78,71,65,.10)) !important;
 }
 
 .reviewer-main-stage {
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,0)),
-    transparent !important;
+  background: transparent !important;
 }
 
 .reviewer-scroll-edge {
-  background: linear-gradient(180deg, rgba(92,91,87,.86), rgba(92,91,87,.30) 52%, transparent) !important;
+  background: linear-gradient(180deg, rgba(43,47,48,.9), rgba(43,47,48,.34) 52%, transparent) !important;
 }
 
 /* --------------------------------------------------------------------------
-   STRUCTURE — deep blue lives in navigation and framing, not everywhere.
+   SIDEBAR — this is where deep blue gets to dominate.
    -------------------------------------------------------------------------- */
 .reviewer-sidebar {
-  --glass-fill: rgba(47, 110, 135, .92) !important;
+  --glass-fill: rgba(47, 110, 135, .93) !important;
   background:
-    linear-gradient(180deg, rgba(47,110,135,.98), rgba(43,94,113,.98) 55%, rgba(40,79,92,.98)) !important;
-  border-color: rgba(204,228,235,.38) !important;
-  box-shadow: 0 28px 68px rgba(36,38,38,.30), inset 0 1px 0 rgba(255,255,255,.17) !important;
+    radial-gradient(circle at 78% 5%, rgba(37,156,189,.34), transparent 28%),
+    linear-gradient(180deg, #347a92 0%, #2f6e87 44%, #285d70 100%) !important;
+  border-color: rgba(213,235,241,.34) !important;
+  box-shadow: 0 28px 68px rgba(16,23,25,.36), inset 0 1px 0 rgba(255,255,255,.18) !important;
 }
 
 .sidebar-brand-mark {
   background: linear-gradient(145deg, #259cbd, #2f6e87) !important;
-  border-color: rgba(235,250,253,.34) !important;
+  border-color: rgba(238,251,254,.38) !important;
 }
 
 .sidebar-home.active,
 .reviewer-sidebar .nav-item.active {
-  background: linear-gradient(135deg, rgba(37,156,189,.78), rgba(149,180,196,.34)) !important;
-  border-color: rgba(226,246,250,.46) !important;
+  background: linear-gradient(135deg, rgba(37,156,189,.76), rgba(149,180,196,.28)) !important;
+  border-color: rgba(227,247,251,.46) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 7px 18px rgba(16,45,54,.18) !important;
 }
 
 /* --------------------------------------------------------------------------
-   ICE BLUE — search, lookup, filter and command surfaces.
-   These should read as a different material from content cards.
+   SEARCH / LOOKUP — ice blue shell + dark inner field.
    -------------------------------------------------------------------------- */
 .job-search-panel,
 .drug-search-panel,
@@ -93,18 +103,19 @@ body,
 .command-panel,
 .condition-search,
 .standards-search,
-.deployment-search {
+.deployment-search,
+[data-testid="sources-page"] .liquid-toolbar {
   background:
-    linear-gradient(145deg, rgba(149,180,196,.88), rgba(111,151,168,.88)) !important;
-  border-color: rgba(233,246,249,.52) !important;
-  box-shadow: 0 14px 28px rgba(52,58,58,.18), inset 0 1px 0 rgba(255,255,255,.20) !important;
+    linear-gradient(145deg, rgba(169,198,210,.92), rgba(119,158,174,.92)) !important;
+  border-color: rgba(237,249,252,.52) !important;
+  box-shadow: 0 12px 26px rgba(19,28,31,.22), inset 0 1px 0 rgba(255,255,255,.24) !important;
 }
 
 .job-search-panel > label,
 .drug-search-panel > label,
 .injury-field label,
 .command-label {
-  color: rgba(28,57,66,.82) !important;
+  color: rgba(27,55,64,.88) !important;
 }
 
 .job-search-input,
@@ -115,13 +126,25 @@ body,
 .command-input-wrap,
 .clinical-field input,
 .clinical-field select,
-.glass-input {
-  background: rgba(42,63,69,.88) !important;
-  border-color: rgba(235,246,249,.34) !important;
+.glass-input,
+[data-testid="sources-page"] .glass-input {
+  background: var(--input-dark) !important;
+  border-color: rgba(223,241,247,.36) !important;
+  color: #f7fbfc !important;
+}
+
+.job-search-input input::placeholder,
+.drug-search-input input::placeholder,
+.injury-input-wrap input::placeholder,
+.injury-input::placeholder,
+.citation-search-input input::placeholder,
+.command-input-wrap input::placeholder,
+.glass-input::placeholder {
+  color: rgba(218,234,239,.58) !important;
 }
 
 /* --------------------------------------------------------------------------
-   WARM GRAY — main working content. No black slabs.
+   PRIMARY CONTENT — dark warm-gray derived surfaces, not literal #868481 fill.
    -------------------------------------------------------------------------- */
 .job-empty-state,
 .job-profile-strip,
@@ -134,24 +157,26 @@ body,
 .injury-finding-panel,
 .injury-measured-section,
 .deployment-detail,
-.standards-list {
+[data-testid="sources-page"] .glass-card {
   background:
-    linear-gradient(150deg, rgba(134,132,129,.96), rgba(104,107,105,.97)) !important;
-  border-color: rgba(221,225,224,.27) !important;
-  box-shadow: 0 16px 36px rgba(42,41,39,.18), inset 0 1px 0 rgba(255,255,255,.08) !important;
+    linear-gradient(150deg, rgba(73,78,78,.97), rgba(54,58,59,.985)) !important;
+  border-color: rgba(183,201,206,.25) !important;
+  box-shadow: 0 16px 36px rgba(17,20,21,.24), inset 0 1px 0 rgba(255,255,255,.055) !important;
 }
 
-/* alternating standards rows make the gray + ice palette actually visible */
-.standards-row:nth-child(odd) {
-  background: rgba(78,71,65,.28) !important;
-}
-
-.standards-row:nth-child(even) {
-  background: rgba(149,180,196,.16) !important;
+/* give main content a subtle warm-gray identity without washing it out */
+.job-empty-state,
+.drug-selected-panel,
+.clinical-panel,
+.condition-summary,
+.citation-results-panel {
+  background:
+    linear-gradient(150deg, rgba(77,80,79,.98), rgba(58,61,61,.985)),
+    rgba(134,132,129,.08) !important;
 }
 
 /* --------------------------------------------------------------------------
-   STONE — context / explanatory / evidence side surfaces.
+   STONE — explanatory/evidence side rails.
    -------------------------------------------------------------------------- */
 .drug-side-panel,
 .condition-evidence-column > section,
@@ -162,9 +187,9 @@ body,
 .deployment-warning,
 .injury-osha-section {
   background:
-    linear-gradient(150deg, rgba(78,71,65,.98), rgba(63,58,54,.98)) !important;
-  border-color: rgba(190,179,170,.38) !important;
-  box-shadow: 0 14px 32px rgba(38,34,31,.18), inset 0 1px 0 rgba(255,255,255,.06) !important;
+    linear-gradient(150deg, #544b45, #403a36) !important;
+  border-color: rgba(205,191,181,.30) !important;
+  box-shadow: 0 14px 30px rgba(19,17,16,.23), inset 0 1px 0 rgba(255,255,255,.05) !important;
 }
 
 .drug-side-label,
@@ -175,7 +200,190 @@ body,
 .injury-anatomy-focus > span,
 .injury-anatomy-ranking > span,
 .injury-osha-heading span {
-  color: #ddd0c8 !important;
+  color: #e0d2ca !important;
+}
+
+/* --------------------------------------------------------------------------
+   LIST RAILS — darker neutral stone. Active row stays cyan/ice.
+   -------------------------------------------------------------------------- */
+.clinical-nav,
+.condition-category-list {
+  background: linear-gradient(150deg, #55524e, #454441) !important;
+  border-color: rgba(205,208,204,.20) !important;
+}
+
+.clinical-nav button:not(.active),
+.condition-category-list button:not(.active) {
+  color: rgba(244,246,245,.76) !important;
+}
+
+.clinical-nav button.active,
+.condition-category-list button.active {
+  background: linear-gradient(90deg, rgba(37,156,189,.74), rgba(149,180,196,.28)) !important;
+  border-left-color: #d9f3f8 !important;
+  color: #fff !important;
+}
+
+/* --------------------------------------------------------------------------
+   CYAN = interaction only.
+   -------------------------------------------------------------------------- */
+.job-tabs button.active,
+.condition-tabs button.active,
+.tab-btn.active-tab,
+.clinical-actions button.primary,
+.glow-btn,
+.job-profile-actions button {
+  background: linear-gradient(145deg, rgba(37,156,189,.78), rgba(47,110,135,.72)) !important;
+  border-color: rgba(190,231,240,.48) !important;
+  color: #f8fdff !important;
+}
+
+.job-tabs,
+.condition-tabs,
+.hologram-view-toggle {
+  background: rgba(78,71,65,.38) !important;
+  border-color: rgba(202,205,202,.20) !important;
+}
+
+/* --------------------------------------------------------------------------
+   PAGE-SPECIFIC ACCENTS — show the palette without painting whole pages.
+   -------------------------------------------------------------------------- */
+.job-workbench .job-empty-state,
+.job-workbench .job-profile-strip {
+  border-top: 3px solid #95b4c4 !important;
+}
+
+.drug-workbench .drug-selected-panel {
+  border-top: 3px solid #259cbd !important;
+}
+
+.clinical-workbench .clinical-panel {
+  border-top: 3px solid #868481 !important;
+}
+
+.condition-reference .condition-summary,
+.condition-reference .condition-questions {
+  border-top: 3px solid #95b4c4 !important;
+}
+
+.citation-workbench .citation-results-panel {
+  border-top: 3px solid #4e4741 !important;
+}
+
+/* Standards: use restrained alternating dark neutral tones instead of striped fog. */
+.standards-list {
+  border-top: 3px solid #4e4741 !important;
+  background: transparent !important;
+}
+
+.standards-row {
+  border-bottom-color: rgba(149,180,196,.13) !important;
+}
+
+.standards-row:nth-child(odd) {
+  background: rgba(78,71,65,.66) !important;
+}
+
+.standards-row:nth-child(even) {
+  background: rgba(76,85,87,.72) !important;
+}
+
+.standards-row:hover {
+  background: rgba(47,110,135,.42) !important;
+}
+
+/* --------------------------------------------------------------------------
+   INJURY ANATOMY — restore depth so the artwork does not float in gray haze.
+   -------------------------------------------------------------------------- */
+.injury-anatomy-shell {
+  background: linear-gradient(120deg, #334c55, #3f4646 54%, #4a423d 100%) !important;
+  border-color: rgba(149,180,196,.38) !important;
+  border-top: 3px solid #259cbd !important;
+}
+
+.injury-anatomy-stage {
+  background:
+    radial-gradient(circle at 50% 52%, rgba(37,156,189,.18), transparent 34%),
+    radial-gradient(circle at 35% 30%, rgba(149,180,196,.13), transparent 28%),
+    linear-gradient(rgba(149,180,196,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(149,180,196,.045) 1px, transparent 1px),
+    linear-gradient(145deg, #314b54 0%, #3d4545 60%, #473f3a 112%) !important;
+  background-size: auto, auto, 24px 24px, 24px 24px, auto !important;
+}
+
+/* --------------------------------------------------------------------------
+   AOR — real light map surrounded by dark neutral/stone UI.
+   -------------------------------------------------------------------------- */
+.deployment-map-card {
+  border-color: rgba(149,180,196,.52) !important;
+  background: #dcecf0 !important;
+}
+
+.deployment-map-overlay {
+  background: rgba(63,58,54,.92) !important;
+  border-color: rgba(225,215,208,.40) !important;
+}
+
+.deployment-detail {
+  background: linear-gradient(150deg, #555958, #3f4242) !important;
+}
+
+.deployment-fact,
+.deployment-watch {
+  background: rgba(149,180,196,.08) !important;
+  border-color: rgba(149,180,196,.22) !important;
+}
+
+/* --------------------------------------------------------------------------
+   SOURCE LIBRARY — explicitly fix the page that still looked blue/empty.
+   -------------------------------------------------------------------------- */
+[data-testid="sources-page"] .liquid-toolbar {
+  border-radius: 14px !important;
+}
+
+[data-testid="sources-page"] .glass-card {
+  min-height: 0;
+}
+
+[data-testid="sources-page"] > .glass-card {
+  background: linear-gradient(150deg, #4b4f4e, #363a3a) !important;
+  border-top: 3px solid #95b4c4 !important;
+}
+
+[data-testid="sources-page"] .glow-btn {
+  background: linear-gradient(145deg, #259cbd, #2f6e87) !important;
+}
+
+/* --------------------------------------------------------------------------
+   TEXT CONTRAST — strong enough to survive all five materials.
+   -------------------------------------------------------------------------- */
+.job-empty-state p,
+.job-profile-strip p,
+.drug-selected-panel p,
+.clinical-panel p,
+.condition-summary p,
+.condition-questions p,
+.citation-results-panel p,
+.injury-panel p,
+.injury-finding-panel p,
+.injury-measured-section p,
+.standards-row > p,
+.deployment-detail p {
+  color: rgba(244,248,248,.82) !important;
+}
+
+.job-empty-state strong,
+.job-profile-strip strong,
+.drug-selected-panel strong,
+.clinical-panel strong,
+.condition-summary strong,
+.condition-questions strong,
+.citation-results-panel strong,
+.injury-panel strong,
+.injury-finding-panel strong,
+.standards-framework strong,
+.deployment-detail strong {
+  color: #ffffff !important;
 }
 
 .drug-side-panel p,
@@ -189,152 +397,17 @@ body,
 .deployment-warning,
 .injury-osha-section p,
 .injury-osha-section small {
-  color: rgba(249,245,242,.80) !important;
+  color: rgba(248,244,241,.78) !important;
 }
 
-/* --------------------------------------------------------------------------
-   WARM GRAY navigation/list rails — clearly not blue.
-   -------------------------------------------------------------------------- */
-.clinical-nav,
-.condition-category-list {
-  background:
-    linear-gradient(150deg, rgba(134,132,129,.96), rgba(104,103,99,.96)) !important;
-  border-color: rgba(226,226,223,.24) !important;
-}
-
-.clinical-nav button:not(.active),
-.condition-category-list button:not(.active) {
-  color: rgba(248,248,246,.76) !important;
-}
-
-.clinical-nav button.active,
-.condition-category-list button.active {
-  background: linear-gradient(90deg, rgba(37,156,189,.62), rgba(149,180,196,.30)) !important;
-  border-left-color: #d8f2f7 !important;
-  color: #fff !important;
-}
-
-/* --------------------------------------------------------------------------
-   CYAN — interaction and selected state only.
-   -------------------------------------------------------------------------- */
-.job-tabs button.active,
-.condition-tabs button.active,
-.tab-btn.active-tab,
-.clinical-actions button.primary,
-.glow-btn,
-.job-profile-actions button {
-  background: rgba(37,156,189,.32) !important;
-  border-color: rgba(160,224,238,.46) !important;
-  color: #f7fdff !important;
-}
-
-.job-tabs,
-.condition-tabs,
-.hologram-view-toggle {
-  background: rgba(78,71,65,.30) !important;
-  border-color: rgba(214,217,214,.22) !important;
-}
-
-/* --------------------------------------------------------------------------
-   PAGE IDENTITY — distribute the palette intentionally.
-   -------------------------------------------------------------------------- */
-.job-workbench .job-empty-state,
-.job-workbench .job-profile-strip {
-  border-top: 4px solid #95b4c4 !important;
-}
-
-.drug-workbench .drug-selected-panel {
-  border-top: 4px solid #259cbd !important;
-}
-
-.clinical-workbench .clinical-panel {
-  border-top: 4px solid #868481 !important;
-}
-
-.condition-reference .condition-summary {
-  border-top: 4px solid #95b4c4 !important;
-}
-
-.standards-workbench .standards-list {
-  border-top: 4px solid #4e4741 !important;
-}
-
-.citation-workbench .citation-results-panel {
-  border-top: 4px solid #4e4741 !important;
-}
-
-.injury-workbench .injury-anatomy-shell {
-  border-top: 4px solid #259cbd !important;
-}
-
-/* --------------------------------------------------------------------------
-   ANATOMY — keep contrast for artwork while mixing all palette families.
-   -------------------------------------------------------------------------- */
-.injury-anatomy-shell {
-  background:
-    linear-gradient(120deg, rgba(47,110,135,.94), rgba(96,104,103,.96) 54%, rgba(78,71,65,.94)) !important;
-  border-color: rgba(149,180,196,.42) !important;
-}
-
-.injury-anatomy-stage {
-  background:
-    radial-gradient(circle at 50% 52%, rgba(37,156,189,.19), transparent 34%),
-    radial-gradient(circle at 35% 30%, rgba(149,180,196,.17), transparent 28%),
-    linear-gradient(rgba(149,180,196,.055) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(149,180,196,.055) 1px, transparent 1px),
-    linear-gradient(145deg, #2f5867 0%, #5d6666 58%, #4e4741 118%) !important;
-  background-size: auto, auto, 24px 24px, 24px 24px, auto !important;
-}
-
-/* --------------------------------------------------------------------------
-   AOR map stays a real light map; surrounding card uses ice/stone instead.
-   -------------------------------------------------------------------------- */
-.deployment-map-card {
-  border-color: rgba(149,180,196,.62) !important;
-  background: #dcecf0 !important;
-}
-
-.deployment-map-overlay {
-  background: rgba(78,71,65,.90) !important;
-  border-color: rgba(230,222,216,.44) !important;
-}
-
-/* --------------------------------------------------------------------------
-   Keep text readable on gray/stone surfaces.
-   -------------------------------------------------------------------------- */
-.job-empty-state p,
-.job-profile-strip p,
-.drug-selected-panel p,
-.clinical-panel p,
-.condition-summary p,
-.condition-questions p,
-.citation-results-panel p,
-.injury-panel p,
-.injury-finding-panel p,
-.injury-measured-section p,
-.standards-row > p {
-  color: rgba(250,251,250,.80) !important;
-}
-
-.job-empty-state strong,
-.job-profile-strip strong,
-.drug-selected-panel strong,
-.clinical-panel strong,
-.condition-summary strong,
-.condition-questions strong,
-.citation-results-panel strong,
-.injury-panel strong,
-.injury-finding-panel strong,
-.standards-framework strong {
-  color: #ffffff !important;
-}
-
-/* subdued metadata remains lighter gray, not invisible */
+/* muted data is still readable, never 20%-opacity gray-on-gray */
 .job-source-status small,
 .drug-status small,
 .condition-evidence,
 .standards-framework small,
 .citation-article-list small,
-.injury-panel-heading small {
-  color: rgba(235,239,238,.62) !important;
+.injury-panel-heading small,
+[data-testid="sources-page"] p,
+[data-testid="sources-page"] small {
+  color: rgba(220,231,234,.68) !important;
 }
