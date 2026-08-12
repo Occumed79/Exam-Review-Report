@@ -212,40 +212,6 @@ export interface RiskInteraction {
   rationale: string;
 }
 
-export interface SMECase {
-  id: string;
-  caseId: string;
-  examineeName: string;
-  dob: string;
-  age: number;
-  sex: string;
-  employer: string;
-  jobTitle: string;
-  department: string;
-  examType: ExamType;
-  reviewingSME: string;
-  caseManager: string;
-  dateOfExam: string;
-  workLocation: string;
-  deploymentCountry: string;
-  agencyStandard: string;
-  standards: ApplicableStandards;
-  notes: string;
-  status: CaseStatus;
-  createdAt: string;
-  updatedAt: string;
-  medicalConditions: MedicalCondition[];
-  injuries: InjuryRecord[];
-  jobDuties: JobDuties;
-  countryRisk: CountryRiskProfile | null;
-  occupationalData: OccupationalData | null;
-  healthEquity: HealthEquityContext | null;
-  riskScores: RiskCategoryScore[];
-  documentationGaps: DocumentationGap[];
-  riskInteractions: RiskInteraction[];
-  smeAssessment: SMEAssessment;
-}
-
 export interface Guideline {
   id: string;
   sourceName: string;

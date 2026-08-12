@@ -93,6 +93,7 @@ jobs:
             "/"
             "/injury-intelligence"
             "/job-intelligence"
+            "/external-factors"
             "/drugs"
             "/calculator"
             "/guidelines"
@@ -117,14 +118,15 @@ jobs:
           fi
 
           declare -A MARKERS=(
-            ["/"]='data-testid="reviewer-tool-hub"'
+            ["/"]='data-testid="injury-intelligence"'
             ["/injury-intelligence"]='data-testid="injury-intelligence"'
             ["/job-intelligence"]='data-testid="job-intelligence"'
+            ["/external-factors"]='data-testid="deployment-reference"'
             ["/drugs"]='data-testid="drug-checker"'
             ["/calculator"]='data-testid="clinical-calculators"'
             ["/guidelines"]='data-testid="condition-reference"'
             ["/matrix"]='data-testid="standards-matrix"'
-            ["/aor"]='data-testid="deployment-reference"'
+            ["/aor"]='data-testid="aor-intelligence"'
             ["/citations"]='data-testid="citation-finder"'
             ["/sources"]='data-testid="sources-page"'
             ["/guideline-editor"]='data-testid="guidelines-page"'
