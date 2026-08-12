@@ -3,9 +3,6 @@ import { Activity, Database, Search, Sparkles } from 'lucide-react';
 import type { OccupationalInjuryProfile } from '@/lib/occupationalInjuryIntelligence';
 import type { InjuryMetric, OccupationInjuryEvidence } from '@/lib/liveOccupationalApi';
 import './injury-anatomy.css';
-import './injury-anatomy-v2.css';
-import './injury-anatomy-v4.css';
-import './injury-anatomy-v5.css';
 
 type RegionKey =
   | 'head'
