@@ -3,5 +3,6 @@ import App from "./App";
 import "./index.css";
 import "./app-theme.css";
 import "./instrument-stage.css";
+import "./instrument-depth.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
