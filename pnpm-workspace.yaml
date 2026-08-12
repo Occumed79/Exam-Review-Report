@@ -38,7 +38,6 @@ packages:
   - artifacts/*
   - Lib/*
   - Lib/integrations/*
-  - scripts
 
 catalog:
   '@replit/vite-plugin-cartographer': ^0.5.1
@@ -73,7 +72,6 @@ onlyBuiltDependencies:
   - core-js-pure
   - esbuild
   - msw
-  - tesseract.js
   - unrs-resolver
 
 overrides:
@@ -164,4 +162,3 @@ overrides:
 allowBuilds:
   core-js-pure: true
   esbuild: true
-  tesseract.js: true
