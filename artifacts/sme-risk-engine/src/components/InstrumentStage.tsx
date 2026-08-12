@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, PointerEvent } from "react";
 
 export type InstrumentVariant =
   | "drug"
@@ -115,6 +115,23 @@ function CalculatorInstrument({ result, title }: { result?: string; title: strin
   );
 }
 
+function pointerMove(event: PointerEvent<HTMLElement>) {
+  const rect = event.currentTarget.getBoundingClientRect();
+  const x = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+  const y = Math.max(0, Math.min(1, (event.clientY - rect.top) / rect.height));
+  event.currentTarget.style.setProperty("--pointer-x", `${Math.round(x * 100)}%`);
+  event.currentTarget.style.setProperty("--pointer-y", `${Math.round(y * 100)}%`);
+  event.currentTarget.style.setProperty("--tilt-y", `${((x - 0.5) * 5).toFixed(2)}deg`);
+  event.currentTarget.style.setProperty("--tilt-x", `${((0.5 - y) * 4).toFixed(2)}deg`);
+}
+
+function pointerLeave(event: PointerEvent<HTMLElement>) {
+  event.currentTarget.style.setProperty("--pointer-x", "73%");
+  event.currentTarget.style.setProperty("--pointer-y", "50%");
+  event.currentTarget.style.setProperty("--tilt-y", "0deg");
+  event.currentTarget.style.setProperty("--tilt-x", "0deg");
+}
+
 export default function InstrumentStage({
   variant,
   eyebrow,
@@ -129,7 +146,12 @@ export default function InstrumentStage({
 }: InstrumentStageProps) {
   const trimmedNodes = nodes.filter(Boolean).slice(0, 12);
   return (
-    <section className={`instrument-stage instrument-${variant}${compact ? " compact" : ""}`} aria-label={`${title} interactive visualization`}>
+    <section
+      className={`instrument-stage instrument-${variant}${compact ? " compact" : ""}`}
+      aria-label={`${title} interactive visualization`}
+      onPointerMove={pointerMove}
+      onPointerLeave={pointerLeave}
+    >
       <div className="instrument-grid" aria-hidden="true" />
       <div className="instrument-scan" aria-hidden="true" />
       <div className="instrument-noise" aria-hidden="true" />
