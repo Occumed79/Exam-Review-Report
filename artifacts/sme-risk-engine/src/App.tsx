@@ -2,11 +2,11 @@ import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { useStore } from "@/lib/store";
 import AppShell from "@/components/layout/AppShell";
 import ToolErrorBoundary from "@/components/ToolErrorBoundary";
-import Dashboard from "@/pages/Dashboard";
 import Guidelines from "@/pages/Guidelines";
 import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
 import AORMonitor from "@/pages/DeploymentReferenceV2";
+import AORIntelligence from "@/pages/AORIntelligence";
 import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
 import ConditionReference from "@/pages/ConditionReference";
@@ -25,9 +25,12 @@ function AppRouter() {
       <ToolErrorBoundary key={location}>
         <Switch>
           <Route path="/">
-            <Dashboard />
+            <InjuryIntelligence />
           </Route>
           <Route path="/aor">
+            <AORIntelligence />
+          </Route>
+          <Route path="/external-factors">
             <AORMonitor />
           </Route>
           <Route path="/job-intelligence">

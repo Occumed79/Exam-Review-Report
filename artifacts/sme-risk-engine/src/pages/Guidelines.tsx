@@ -143,7 +143,9 @@ export default function Guidelines({ guidelines, onSave, onDelete, onImportMany 
         <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>{filtered.length} of {guidelines.length} entries</div>
       </div>
 
-      <div className="glass-card" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem" }}>
+      <details className="glass-card" style={{ padding: "1rem 1.25rem", marginBottom: "1.25rem" }}>
+        <summary style={{ cursor: "pointer", color: "var(--text-secondary)", fontSize: ".82rem", fontWeight: 700 }}>Advanced · bulk JSON import</summary>
+        <div style={{ marginTop: ".9rem" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "0.7rem", marginBottom: "0.6rem" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}><FileText size={15} style={{ color: "#b4d7d0" }} /><strong style={{ fontSize: "0.8rem", color: "#f4efdc" }}>Bulk import guidance</strong></div>
           <button
@@ -161,7 +163,8 @@ export default function Guidelines({ guidelines, onSave, onDelete, onImportMany 
           <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.35)" }}>{importPreview.total ? `${importPreview.valid}/${importPreview.total} recognizable entries` : "Nothing queued"}</span>
           {importNote && <span style={{ fontSize: "0.7rem", color: "#b4d7d0" }}>{importNote}</span>}
         </div>
-      </div>
+        </div>
+      </details>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "0.7rem" }}>
         {filtered.length === 0 && <div className="glass-card" style={{ padding: "1.5rem", textAlign: "center", color: "rgba(255,255,255,0.35)" }}>No matching guidance entries.</div>}

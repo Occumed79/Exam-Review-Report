@@ -114,6 +114,24 @@ body {
   z-index: 1;
 }
 
+/* Shared workstation typography and state language. Legacy tools inherit these
+   rules while retaining their data and interaction logic. */
+.reviewer-stage-content h1 { font-size: clamp(1.9rem, 2.25vw, 2.25rem) !important; line-height: 1.1; letter-spacing: -0.04em !important; }
+.reviewer-stage-content h2 { font-size: 1.3rem; line-height: 1.25; }
+.reviewer-stage-content h3 { font-size: 1.05rem; line-height: 1.35; }
+.reviewer-stage-content p { font-size: max(14px, .875rem); }
+.reviewer-stage-content input,
+.reviewer-stage-content select,
+.reviewer-stage-content textarea,
+.reviewer-stage-content button { font-size: max(13px, .8125rem); }
+.reviewer-stage-content :focus-visible { outline: 2px solid rgba(158, 226, 248, .72); outline-offset: 2px; }
+.reviewer-stage-content button:disabled,
+.reviewer-stage-content input:disabled { cursor: not-allowed; opacity: .46; }
+
+@media (min-width: 1500px) {
+  .reviewer-main-stage { padding-right: 3rem; padding-left: 3rem; }
+}
+
 .reviewer-scroll-edge {
   position: fixed;
   z-index: 3;

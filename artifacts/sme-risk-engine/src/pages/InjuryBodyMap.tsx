@@ -45,9 +45,6 @@ const REGION_LABELS: Record<RegionKey, string> = {
   wholeBody: 'Whole body / multiple',
 };
 
-const FRONT_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/a/a2/202403_human_anatomy_skeleton_and_organs.svg';
-const BACK_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Human_skeleton_back_no-text_no_color.svg';
-
 const HOTSPOT_POSITIONS: Record<'front' | 'back', Record<RegionKey, { x: number; y: number; w: number; h: number }>> = {
   front: {
     head: { x: 50, y: 10, w: 15, h: 12 },
@@ -179,41 +176,25 @@ function heatStyle(signal: RegionSignal): CSSProperties {
   } as CSSProperties;
 }
 
-function BundledAnatomy({ view }: { view: 'front' | 'back' }) {
+function DigitalHuman({ view }: { view: 'front' | 'back' }) {
   const isFront = view === 'front';
 
   return (
     <svg
-      className="anatomy-inline-fallback"
+      className="anatomy-inline-fallback digital-human"
       viewBox="0 0 260 520"
       role="img"
-      aria-label={`${isFront ? 'Anterior' : 'Posterior'} anatomical skeleton illustration`}
+      aria-label={`${isFront ? 'Anterior' : 'Posterior'} segmented digital human model`}
     >
-      <g className="anatomy-fallback-outline">
-        <ellipse cx="130" cy="42" rx="29" ry="34" />
-        <path d="M112 73c-4 12-12 18-25 24-14 7-28 13-34 29-6 18-4 50 2 79 4 22 0 42-5 61l-12 57 18 4 20-67 4-67 13-55 8 119-12 88 4 149h26l11-132 10-73 10 73 11 132h26l4-149-12-88 8-119 13 55 4 67 20 67 18-4-12-57c-5-19-9-39-5-61 6-29 8-61 2-79-6-16-20-22-34-29-13-6-21-12-25-24z" />
+      <defs><linearGradient id="bodyGlass" x1="0" x2="1"><stop stopColor="#baf4ff" stopOpacity=".12"/><stop offset=".5" stopColor="#53cbe8" stopOpacity=".34"/><stop offset="1" stopColor="#baf4ff" stopOpacity=".1"/></linearGradient></defs>
+      <g className="anatomy-fallback-outline digital-segments">
+        <path d="M108 17l22-11 22 11 7 28-12 27h-34l-12-27z"/><path d="M114 75h32l9 18-25 16-25-16z"/>
+        <path d="M98 94l32 17 32-17 25 22-19 31-8 63-30 22-30-22-8-63-19-31z"/><path d="M104 213l26 20 26-20 13 42-39 28-39-28z"/>
+        <path d="M72 118l18 8-7 82-21 64-20-9 15-68-3-55z"/><path d="M188 118l-18 8 7 82 21 64 20-9-15-68 3-55z"/>
+        <path d="M95 266l34 19-10 72-10 132H83l3-138z"/><path d="M165 266l-34 19 10 72 10 132h26l-3-138z"/>
       </g>
-      <g className="anatomy-fallback-bones">
-        <ellipse cx="130" cy="41" rx="22" ry="27" />
-        <path d="M118 62c8 5 16 5 24 0M130 69v179M98 103l32 12 32-12M102 113c-19 17-19 60 5 77M158 113c19 17 19 60-5 77M106 124c16 9 32 9 48 0M103 137c18 10 36 10 54 0M102 151c18 11 38 11 56 0M104 166c17 10 35 10 52 0M109 181c14 8 28 8 42 0" />
-        <path d="M99 101L70 130 61 203 46 269M161 101l29 29 9 73 15 66M104 204l26 25 26-25M106 207l-8 42 32 16 32-16-8-42" />
-        <path d="M112 260l-12 95 4 132M148 260l12 95-4 132M100 355l-11 131M160 355l11 131" />
-        <circle cx="70" cy="130" r="5" /><circle cx="190" cy="130" r="5" />
-        <circle cx="61" cy="203" r="5" /><circle cx="199" cy="203" r="5" />
-        <circle cx="100" cy="355" r="6" /><circle cx="160" cy="355" r="6" />
-        <path d="M89 486l-19 17h36M171 486l19 17h-36" />
-        {isFront ? (
-          <>
-            <path className="anatomy-fallback-detail" d="M130 110v80M118 78l12 20 12-20M118 191l12 11 12-11" />
-            <path className="anatomy-fallback-organ" d="M112 132c4-10 14-12 18-3 4-9 14-7 18 3 5 14-6 25-18 34-12-9-23-20-18-34z" />
-          </>
-        ) : (
-          <>
-            <path className="anatomy-fallback-detail" d="M104 111l24 20-20 30M156 111l-24 20 20 30M114 183l16 15 16-15" />
-            <path className="anatomy-fallback-detail" d="M121 82l9 16 9-16" />
-          </>
-        )}
-      </g>
+      <g className="anatomy-fallback-bones digital-wire"><path d="M130 10v472M72 118l58 18 58-18M95 266l35 19 35-19M84 351l35 6M176 351l-35 6"/><path d={isFront ? "M103 121l27 18 27-18M105 160l25 17 25-17M109 198l21 14 21-14" : "M101 119l29 30 29-30M104 174l26-25 26 25"}/><circle cx="130" cy="42" r="18"/><circle cx="72" cy="202" r="5"/><circle cx="188" cy="202" r="5"/><circle cx="101" cy="354" r="6"/><circle cx="159" cy="354" r="6"/></g>
+      <g className="digital-markers"><path d="M22 102h45M193 102h45M22 318h54M184 318h54"/><circle cx="130" cy="136" r="48"/><circle cx="130" cy="136" r="56"/></g>
     </svg>
   );
 }
@@ -229,7 +210,6 @@ export default function InjuryBodyMap({
   const signalMap = useMemo(() => new Map<RegionKey, RegionSignal>(signals.map((signal) => [signal.key, signal])), [signals]);
   const [active, setActive] = useState<RegionKey | null>(signals[0]?.key ?? null);
   const [view, setView] = useState<'front' | 'back'>('front');
-  const [assetFailed, setAssetFailed] = useState(false);
   const idle = !profile;
 
   useEffect(() => {
@@ -240,7 +220,6 @@ export default function InjuryBodyMap({
   const activeKey = active ?? signals[0]?.key ?? null;
   const activeSignal = activeKey ? signalMap.get(activeKey) : undefined;
   const hasMeasured = signals.some((signal) => signal.source === 'BLS measured');
-  const sourceUrl = view === 'front' ? FRONT_ANATOMY_URL : BACK_ANATOMY_URL;
 
   return (
     <section className={`injury-anatomy-shell anatomy-real${idle ? ' idle' : ''}`}>
@@ -252,8 +231,8 @@ export default function InjuryBodyMap({
           </div>
           <div className="anatomy-real-controls">
             <div className="hologram-view-toggle liquid-glass">
-              <button className={view === 'front' ? 'active' : ''} onClick={() => { setView('front'); setAssetFailed(false); }}>ANTERIOR</button>
-              <button className={view === 'back' ? 'active' : ''} onClick={() => { setView('back'); setAssetFailed(false); }}>POSTERIOR</button>
+              <button className={view === 'front' ? 'active' : ''} onClick={() => setView('front')}>ANTERIOR</button>
+              <button className={view === 'back' ? 'active' : ''} onClick={() => setView('back')}>POSTERIOR</button>
             </div>
             <div className={`injury-anatomy-mode${hasMeasured ? ' measured' : ''}`}>
               {idle ? <Search size={13} /> : hasMeasured ? <Database size={13} /> : <Sparkles size={13} />}
@@ -270,20 +249,7 @@ export default function InjuryBodyMap({
           <div className="anatomy-real-projector"><i /><i /><i /></div>
 
           <div className="anatomy-real-body" data-view={view}>
-            {!assetFailed ? (
-              <>
-                <img className="anatomy-real-img glow-layer" src={sourceUrl} alt="" aria-hidden="true" referrerPolicy="no-referrer" />
-                <img
-                  className="anatomy-real-img core-layer"
-                  src={sourceUrl}
-                  alt={`${view === 'front' ? 'Anterior' : 'Posterior'} human anatomy hologram`}
-                  referrerPolicy="no-referrer"
-                  onError={() => setAssetFailed(true)}
-                />
-              </>
-            ) : (
-              <BundledAnatomy view={view} />
-            )}
+            <DigitalHuman view={view} />
 
             {!idle && Object.entries(HOTSPOT_POSITIONS[view]).map(([key, position]) => {
               const region = key as RegionKey;
@@ -313,20 +279,14 @@ export default function InjuryBodyMap({
           {idle && <div className="injury-anatomy-idle-callout anatomy-real-callout"><Search size={18} /><strong>Search an occupation to activate injury heat.</strong><span>Published BLS body-part data will illuminate the corresponding anatomical regions when available.</span></div>}
         </div>
 
-        <div className="anatomy-real-credit">
-          {assetFailed
-            ? 'Bundled anatomical linework shown because the reference artwork could not be reached.'
-            : view === 'front'
-            ? 'Anatomy base: DataBase Center for Life Science (DBCLS), CC BY 4.0 · holographic styling applied.'
-            : 'Posterior skeleton base: LadyofHats / Wikimedia Commons, public domain · holographic styling applied.'}
-        </div>
+        <div className="anatomy-real-credit">Interactive segmented digital-human projection · select or hover illuminated regions to inspect evidence</div>
       </div>
 
       <aside className="injury-anatomy-data anatomy-real-data">
         {idle ? (
           <div className="injury-anatomy-idle-data">
             <span>PROJECTION LAYERS</span>
-            <div><b>01</b><strong>Real anatomical artwork</strong><small>Detailed skeleton and organ illustration replaces the generated mannequin geometry.</small></div>
+            <div><b>01</b><strong>Digital human model</strong><small>Segmented translucent geometry provides an interactive diagnostic projection.</small></div>
             <div><b>02</b><strong>BLS injury heat</strong><small>Published body-part counts illuminate corresponding regions where available.</small></div>
             <div><b>03</b><strong>Interactive inspection</strong><small>Hover a highlighted region to expose the measured or derived supporting detail.</small></div>
           </div>
