@@ -13,8 +13,19 @@ import { getProviderStatuses } from "../services/providerStatusService";
 
 const router: IRouter = Router();
 
-router.get("/intelligence/status", async (_req, res) => {
-  const providers = await getProviderStatuses();
+let statusCache: {
+  expires: number;
+  providers: Awaited<ReturnType<typeof getProviderStatuses>>;
+} | null = null;
+
+router.get("/intelligence/status", async (req, res) => {
+  const force = req.query.refresh === "1";
+  const now = Date.now();
+  const providers =
+    !force && statusCache && statusCache.expires > now
+      ? statusCache.providers
+      : await getProviderStatuses();
+  statusCache = { providers, expires: now + 60_000 };
   res.json({
     ok: true,
     onet: getOnetStatus(),
@@ -48,12 +59,10 @@ router.get("/occupations/search", async (req, res) => {
     res.json({ ok: true, source: "live-onet", results });
   } catch (error) {
     console.warn("O*NET occupation search failed", error);
-    res
-      .status(502)
-      .json({
-        ok: false,
-        error: error instanceof Error ? error.message : "O*NET search failed.",
-      });
+    res.status(502).json({
+      ok: false,
+      error: error instanceof Error ? error.message : "O*NET search failed.",
+    });
   }
 });
 

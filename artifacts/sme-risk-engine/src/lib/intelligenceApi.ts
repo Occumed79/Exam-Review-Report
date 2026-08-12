@@ -44,9 +44,10 @@ export type WhoIndicator = {
   dataYear: number;
 };
 
-async function request<T>(path: string): Promise<T> {
+async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
   const response = await fetch(path, {
     headers: { Accept: "application/json" },
+    signal,
   });
   const payload: unknown = await response.json().catch(() => ({}));
   if (!response.ok) {
@@ -69,22 +70,19 @@ function params(values: Record<string, string | number | undefined>) {
   return result;
 }
 
-export function fetchIntelligenceProviders() {
-  return request<IntelligenceProviderStatus>("/api/intelligence/status");
+export function fetchIntelligenceProviders(
+  refresh = false,
+  signal?: AbortSignal,
+) {
+  return request<IntelligenceProviderStatus>(
+    `/api/intelligence/status${refresh ? "?refresh=1" : ""}`,
+    signal,
+  );
 }
-export function searchCongressIntelligence(query: string, limit = 20) {
-  return request<{
-    ok: true;
-    source: string;
-    retrievedAt: string;
-    query: string;
-    items: unknown[];
-  }>(`/api/intelligence/congress?${params({ q: query, limit })}`);
-}
-export function searchRegulatoryIntelligence(
+export function searchCongressIntelligence(
   query: string,
-  agency?: string,
   limit = 20,
+  signal?: AbortSignal,
 ) {
   return request<{
     ok: true;
@@ -92,9 +90,30 @@ export function searchRegulatoryIntelligence(
     retrievedAt: string;
     query: string;
     items: unknown[];
-  }>(`/api/intelligence/regulations?${params({ q: query, agency, limit })}`);
+  }>(`/api/intelligence/congress?${params({ q: query, limit })}`, signal);
 }
-export function searchNewsIntelligence(query: string, country?: string) {
+export function searchRegulatoryIntelligence(
+  query: string,
+  agency?: string,
+  limit = 20,
+  signal?: AbortSignal,
+) {
+  return request<{
+    ok: true;
+    source: string;
+    retrievedAt: string;
+    query: string;
+    items: unknown[];
+  }>(
+    `/api/intelligence/regulations?${params({ q: query, agency, limit })}`,
+    signal,
+  );
+}
+export function searchNewsIntelligence(
+  query: string,
+  country?: string,
+  signal?: AbortSignal,
+) {
   return request<{
     ok: true;
     source: string;
@@ -107,9 +126,13 @@ export function searchNewsIntelligence(query: string, country?: string) {
       error?: string;
     }>;
     items: IntelligenceNewsItem[];
-  }>(`/api/intelligence/news?${params({ q: query, country })}`);
+  }>(`/api/intelligence/news?${params({ q: query, country })}`, signal);
 }
-export function fetchWhoIndicators(country: string, indicators: string[] = []) {
+export function fetchWhoIndicators(
+  country: string,
+  indicators: string[] = [],
+  signal?: AbortSignal,
+) {
   return request<{
     ok: true;
     source: string;
@@ -119,5 +142,6 @@ export function fetchWhoIndicators(country: string, indicators: string[] = []) {
     indicators: WhoIndicator[];
   }>(
     `/api/intelligence/who?${params({ country, indicators: indicators.join(",") })}`,
+    signal,
   );
 }
