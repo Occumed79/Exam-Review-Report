@@ -26,7 +26,7 @@ export default function Settings({ guidelineCount, sourceCount, onExport, onImpo
   }
 
   return (
-    <div data-testid="settings-page" style={{ maxWidth: 1050, margin: "0 auto" }}>
+    <div className="settings-workstation" data-testid="settings-page" style={{ maxWidth: 1240, margin: "0 auto" }}>
       <div style={{ marginBottom: "1.5rem" }}>
         <h1 style={{ margin: 0, fontSize: "1.55rem", color: "#fff", fontWeight: 800 }}>Settings</h1>
         <p style={{ margin: "0.35rem 0 0", color: "rgba(255,255,255,0.45)", fontSize: "0.84rem" }}>
@@ -51,6 +51,7 @@ export default function Settings({ guidelineCount, sourceCount, onExport, onImpo
         </div>
       </div>
 
+      <div className="settings-section-label">Data / Storage · Import / Export · Application Information</div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: "1rem" }}>
         <div className="glass-card" style={{ padding: "1.25rem" }}>
           <div style={{ color: "#fff", fontWeight: 800, marginBottom: "0.45rem" }}>Export / backup</div>
@@ -98,7 +99,7 @@ export default function Settings({ guidelineCount, sourceCount, onExport, onImpo
         </div>
 
         <div className="glass-card" style={{ padding: "1.25rem" }}>
-          <div style={{ color: "#fff", fontWeight: 800, marginBottom: "0.45rem" }}>What is actually stored</div>
+          <div style={{ color: "#fff", fontWeight: 800, marginBottom: "0.45rem" }}>Application information</div>
           <div style={{ display: "grid", gap: "0.45rem", fontSize: "0.77rem" }}>
             {[
               ["Persistence", "Browser localStorage"],
