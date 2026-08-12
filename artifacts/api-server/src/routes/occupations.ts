@@ -1,10 +1,20 @@
 import { Router, type IRouter } from "express";
-import { getOccupationProfile, getOnetStatus, searchOccupations } from "../services/onetService";
+import {
+  getOccupationProfile,
+  getOnetStatus,
+  searchOccupations,
+} from "../services/onetService";
 import { getBlsStatus } from "../services/blsService";
+import { getCongressStatus } from "../services/congressService";
+import { getRegulationsStatus } from "../services/regulationsService";
+import { getNewsStatus } from "../services/newsService";
+import { getWhoStatus } from "../services/whoService";
+import { getProviderStatuses } from "../services/providerStatusService";
 
 const router: IRouter = Router();
 
-router.get("/intelligence/status", (_req, res) => {
+router.get("/intelligence/status", async (_req, res) => {
+  const providers = await getProviderStatuses();
   res.json({
     ok: true,
     onet: getOnetStatus(),
@@ -14,13 +24,22 @@ router.get("/intelligence/status", (_req, res) => {
       source: "OSHA Severe Injury Reports",
       note: "Current public Severe Injury Report data is loaded from OSHA's published dashboard/download. It is industry-sector context under federal OSHA jurisdiction, not occupation-specific incidence.",
     },
+    congress: getCongressStatus(),
+    regulations: getRegulationsStatus(),
+    newsData: getNewsStatus().newsData,
+    apiTube: getNewsStatus().apiTube,
+    who: getWhoStatus(),
+    checkedAt: new Date().toISOString(),
+    providers,
   });
 });
 
 router.get("/occupations/search", async (req, res) => {
   const query = typeof req.query.q === "string" ? req.query.q.trim() : "";
   if (query.length < 2) {
-    res.status(400).json({ ok: false, error: "Enter at least two characters." });
+    res
+      .status(400)
+      .json({ ok: false, error: "Enter at least two characters." });
     return;
   }
 
@@ -29,7 +48,10 @@ router.get("/occupations/search", async (req, res) => {
     res.json({ ok: true, source: "live-onet", results });
   } catch (error) {
     console.warn("O*NET occupation search failed", error);
-    res.status(502).json({ ok: false, error: error instanceof Error ? error.message : "O*NET search failed." });
+    res.status(502).json({
+      ok: false,
+      error: error instanceof Error ? error.message : "O*NET search failed.",
+    });
   }
 });
 
@@ -39,8 +61,11 @@ router.get("/occupations/:code", async (req, res) => {
     res.json({ ok: true, source: "live-onet", profile });
   } catch (error) {
     console.warn("O*NET occupation profile failed", error);
-    const message = error instanceof Error ? error.message : "O*NET profile lookup failed.";
-    res.status(message.startsWith("Invalid") ? 400 : 502).json({ ok: false, error: message });
+    const message =
+      error instanceof Error ? error.message : "O*NET profile lookup failed.";
+    res
+      .status(message.startsWith("Invalid") ? 400 : 502)
+      .json({ ok: false, error: message });
   }
 });
 
