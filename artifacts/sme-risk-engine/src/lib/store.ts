@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import { SMECase, Guideline, Source } from "./types";
-import { NuclearWarheadConfig } from "./nuclearWarheadAPIs";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -77,27 +76,6 @@ export function useStore() {
   const [guidelines, setGuidelines] = useState<Guideline[]>(() => loadValidatedArray(KEYS.guidelines, isGuidelineLike));
   const [sources, setSources] = useState<Source[]>(() => loadValidatedArray(KEYS.sources, isSourceLike));
   const [activeCaseId, setActiveCaseId] = useState<string | null>(null);
-
-  const [nuclearConfig] = useState<NuclearWarheadConfig>(() => ({
-    groqApiKey: import.meta.env.VITE_GROQ_KEY,
-    openrouterApiKey: import.meta.env.VITE_OPENROUTER_KEY,
-    geminiApiKey: import.meta.env.VITE_GEMINI_KEY,
-    tavilyApiKey: import.meta.env.VITE_TAVILY_KEY,
-    exaApiKey: import.meta.env.VITE_EXA_KEY,
-    firecrawlApiKey: import.meta.env.VITE_FIRECRAWL_KEY,
-    browserbaseApiKey: import.meta.env.VITE_BROWSERBASE_KEY,
-    youComApiKey: import.meta.env.VITE_YOU_API_KEY,
-    jinaSearchApiKey: import.meta.env.VITE_JINA_KEY,
-    serperApiKey: import.meta.env.VITE_SERPER_KEY,
-    browseAiApiKey: import.meta.env.VITE_BROWSE_AI_KEY,
-    browserlessApiKey: import.meta.env.VITE_BROWSERLESS_KEY,
-    cloudApiKey: import.meta.env.VITE_CLOUD_KEY,
-    ocrSpaceApiKey: import.meta.env.VITE_OCR_SPACE_KEY,
-    minimaxApiKey: import.meta.env.VITE_MINIMAX_KEY,
-    olostepApiKey: import.meta.env.VITE_OLOSTEP_KEY,
-    apifyApiKey: import.meta.env.VITE_APIFY_KEY,
-    langsearchApiKey: import.meta.env.VITE_LANGSEARCH_KEY,
-  }));
 
   const saveCase = useCallback((c: SMECase) => {
     setCases((prev) => {
@@ -217,7 +195,6 @@ export function useStore() {
     guidelines,
     sources,
     activeCaseId,
-    nuclearConfig,
     setActiveCaseId,
     saveCase,
     deleteCase,
