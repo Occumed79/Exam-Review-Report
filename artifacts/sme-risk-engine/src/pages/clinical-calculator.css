@@ -139,6 +139,7 @@
 .clinical-actions button.primary { border-color: rgba(91,198,186,.23); background: rgba(91,198,186,.07); color: #a8dfd7; }
 .clinical-actions button:disabled { opacity: .32; cursor: not-allowed; }
 .clinical-actions > span { margin-left: .25rem; color: rgba(219,228,228,.27); font-size: .55rem; }
+.clinical-validation{display:flex;align-items:center;gap:.4rem;margin-top:.6rem;padding:.52rem .62rem;border:1px solid rgba(211,126,103,.22);border-radius:5px;background:rgba(173,73,48,.055);color:rgba(239,179,161,.78);font-size:.57rem}.clinical-validation svg{flex:none}
 
 .clinical-result {
   margin-top: .8rem;
