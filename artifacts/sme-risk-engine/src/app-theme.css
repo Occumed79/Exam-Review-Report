@@ -9,9 +9,9 @@
   --surface-line:rgba(185,211,226,.12);
   --surface-line-strong:rgba(177,220,238,.22);
   --text-1:rgba(248,251,252,.96);
-  --text-2:rgba(222,231,236,.72);
-  --text-3:rgba(207,219,226,.52);
-  --text-4:rgba(196,211,220,.36);
+  --text-2:rgba(222,231,236,.76);
+  --text-3:rgba(207,219,226,.58);
+  --text-4:rgba(196,211,220,.4);
   --ice:#9edfee;
   --ice-bright:#d6f7ff;
   --ice-soft:#78b9c9;
@@ -42,14 +42,14 @@ body{color:var(--text-1)!important}
 .liquid-glass>* ,.glow-btn>*{position:relative;z-index:1}
 
 .reviewer-sidebar{position:fixed!important;z-index:20!important;inset:12px auto 12px 12px!important;width:224px!important;min-width:224px!important;height:calc(100vh - 24px)!important;display:flex!important;flex-direction:column!important;border-radius:var(--radius-window)!important;background:linear-gradient(180deg,rgba(18,28,37,.94),rgba(10,17,24,.97))!important;border:1px solid rgba(185,215,230,.14)!important;box-shadow:0 30px 70px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)!important;backdrop-filter:blur(28px) saturate(128%)!important}
-.sidebar-brand{min-height:80px;display:flex;align-items:center;gap:11px;padding:0 16px;border-bottom:1px solid rgba(188,214,228,.09)}
-.sidebar-brand-mark{width:34px;height:34px;display:grid;place-items:center;border:1px solid rgba(168,220,237,.2)!important;border-radius:9px!important;color:var(--ice-bright)!important;background:linear-gradient(145deg,rgba(79,164,188,.2),rgba(31,61,75,.42))!important;box-shadow:inset 0 1px rgba(255,255,255,.09);font:720 11px/1 var(--app-font-mono);letter-spacing:.05em}
-.sidebar-brand-title{color:#f5f9fa!important;font-size:12px!important;font-weight:760!important;letter-spacing:.045em!important}
-.sidebar-brand-subtitle{margin-top:2px;color:var(--text-3)!important;font-size:10px!important}
+.sidebar-brand{min-height:84px;display:flex;align-items:center;gap:11px;padding:0 16px;border-bottom:1px solid rgba(188,214,228,.09)}
+.sidebar-brand-mark{width:36px;height:36px;display:grid;place-items:center;border:1px solid rgba(168,220,237,.2)!important;border-radius:9px!important;color:var(--ice-bright)!important;background:linear-gradient(145deg,rgba(79,164,188,.2),rgba(31,61,75,.42))!important;box-shadow:inset 0 1px rgba(255,255,255,.09);font:720 11px/1 var(--app-font-mono);letter-spacing:.05em}
+.sidebar-brand-title{color:#f5f9fa!important;font-size:13px!important;font-weight:760!important;letter-spacing:.04em!important}
+.sidebar-brand-subtitle{margin-top:3px;color:var(--text-3)!important;font-size:11px!important}
 .sidebar-nav{flex:1;padding:14px 11px 16px;overflow-y:auto}
-.sidebar-group{margin-bottom:14px}.sidebar-group-label{margin-bottom:5px;padding:0 9px;color:rgba(194,211,220,.48)!important;font:720 9px/1.2 var(--app-font-mono)!important;letter-spacing:.12em!important;text-transform:uppercase}
-.reviewer-sidebar .nav-item{width:100%;min-height:37px;display:flex;align-items:center;gap:9px;padding:7px 9px;border:1px solid transparent!important;border-radius:8px!important;color:rgba(220,231,237,.68)!important;background:transparent!important;box-shadow:none!important;font-size:11px!important;font-weight:600!important;text-decoration:none;transition:color .15s ease,background .15s ease,border-color .15s ease}
-.reviewer-sidebar .nav-item svg{width:15px;height:15px;color:rgba(145,207,221,.78)}
+.sidebar-group{margin-bottom:15px}.sidebar-group-label{margin-bottom:6px;padding:0 9px;color:rgba(194,211,220,.54)!important;font:720 10px/1.2 var(--app-font-mono)!important;letter-spacing:.12em!important;text-transform:uppercase}
+.reviewer-sidebar .nav-item{width:100%;min-height:40px;display:flex;align-items:center;gap:9px;padding:8px 9px;border:1px solid transparent!important;border-radius:8px!important;color:rgba(224,234,239,.74)!important;background:transparent!important;box-shadow:none!important;font-size:12px!important;font-weight:600!important;text-decoration:none;transition:color .15s ease,background .15s ease,border-color .15s ease}
+.reviewer-sidebar .nav-item svg{width:16px;height:16px;color:rgba(145,207,221,.82)}
 .reviewer-sidebar .nav-item:hover{color:#fff!important;background:rgba(255,255,255,.035)!important;border-color:rgba(198,225,238,.07)!important}
 .reviewer-sidebar .nav-item.active{color:#f7fdff!important;background:linear-gradient(90deg,rgba(83,172,194,.16),rgba(83,172,194,.035))!important;border-color:rgba(155,220,236,.15)!important;box-shadow:inset 2px 0 0 #7cd6e5!important}
 
@@ -57,7 +57,7 @@ body{color:var(--text-1)!important}
 .reviewer-stage-content h2,.reviewer-stage-content h3{color:var(--text-1)}
 .reviewer-stage-content p{color:var(--text-2)}
 .reviewer-stage-content small{color:var(--text-3)}
-.reviewer-stage-content input,.reviewer-stage-content select,.reviewer-stage-content textarea,.reviewer-stage-content button{font-size:max(13px,.8125rem)}
+.reviewer-stage-content input,.reviewer-stage-content select,.reviewer-stage-content textarea,.reviewer-stage-content button{font-size:max(14px,.875rem)}
 .reviewer-stage-content :focus-visible{outline:2px solid rgba(158,226,248,.68);outline-offset:2px}
 
 .glass-card{color:var(--text-2)!important;border-color:var(--surface-line)!important;background:linear-gradient(155deg,rgba(18,25,34,.99),rgba(11,16,23,.99))!important;box-shadow:0 14px 34px rgba(0,0,0,.2)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
@@ -74,15 +74,15 @@ body{color:var(--text-1)!important}
 .command-panel,.injury-search-panel,.job-search-panel,.drug-search-panel,.citation-search-panel,.liquid-toolbar{border-color:rgba(179,211,225,.15)!important;background:linear-gradient(145deg,rgba(18,28,37,.96),rgba(10,17,24,.98))!important;box-shadow:0 12px 30px rgba(0,0,0,.2)!important}
 .command-input-wrap,.injury-input-wrap,.injury-input,.job-search-input,.drug-search-input,.citation-search-input,.condition-search,.standards-search,.deployment-search{border-color:rgba(177,210,225,.17)!important;background:#08121a!important;color:var(--text-1)!important;box-shadow:inset 0 1px rgba(255,255,255,.025)!important}
 .command-input-wrap input,.injury-input-wrap input,.injury-input,.job-search-input input,.drug-search-input input,.citation-search-input input,.condition-search input,.standards-search input,.deployment-search input{color:var(--text-1)!important;background:transparent!important}
-.command-input-wrap input::placeholder,.injury-input-wrap input::placeholder,.injury-input::placeholder,.job-search-input input::placeholder,.drug-search-input input::placeholder,.citation-search-input input::placeholder,.condition-search input::placeholder,.standards-search input::placeholder,.deployment-search input::placeholder{color:rgba(207,220,230,.42)!important;opacity:1}
+.command-input-wrap input::placeholder,.injury-input-wrap input::placeholder,.injury-input::placeholder,.job-search-input input::placeholder,.drug-search-input input::placeholder,.citation-search-input input::placeholder,.condition-search input::placeholder,.standards-search input::placeholder,.deployment-search input::placeholder{color:rgba(207,220,230,.46)!important;opacity:1}
 
 /* Keep content grounded and readable; page CSS defines geometry. */
 .job-empty-state,.job-profile-strip,.job-profile-column,.drug-selected-panel,.drug-side-panel,.drug-card,.clinical-nav,.clinical-panel,.condition-category-list,.condition-summary,.condition-questions,.condition-evidence-column>section,.standards-row,.citation-results-panel,.citation-side>section,.injury-occupation-strip,.injury-measured-section,.injury-panel,.injury-finding-panel,.injury-osha-section,.injury-anatomy-shell,.deployment-detail{border-color:var(--surface-line)!important;background:linear-gradient(155deg,rgba(18,25,34,.99),rgba(11,16,23,.99))!important;box-shadow:0 14px 34px rgba(0,0,0,.18)!important}
 
 :is(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header){border-bottom-color:rgba(181,205,220,.1)!important}
-:is(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) h1{color:#f7faf9!important;font-size:clamp(30px,2.5vw,36px)!important;line-height:1.05!important}
-:is(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) p{color:var(--text-2)!important;font-size:13px!important;line-height:1.55!important}
-:is(.job-kicker,.drug-kicker,.clinical-kicker,.condition-kicker,.standards-kicker,.citation-kicker,.injury-kicker,.deployment-kicker){color:var(--ice)!important;font:740 10px/1.2 var(--app-font-mono)!important;letter-spacing:.09em!important}
+:is(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) h1{color:#f7faf9!important;font-size:clamp(31px,2.5vw,38px)!important;line-height:1.05!important}
+:is(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) p{color:var(--text-2)!important;font-size:14px!important;line-height:1.58!important}
+:is(.job-kicker,.drug-kicker,.clinical-kicker,.condition-kicker,.standards-kicker,.citation-kicker,.injury-kicker,.deployment-kicker){color:var(--ice)!important;font:740 11px/1.2 var(--app-font-mono)!important;letter-spacing:.1em!important}
 
 /* Do not manufacture giant empty slabs. */
 .job-empty-state{min-height:150px!important}.drug-selected-panel{min-height:285px!important}.drug-empty{min-height:175px!important}.citation-results-panel{min-height:280px!important}.citation-empty{min-height:180px!important}.clinical-panel{min-height:360px!important}
@@ -92,6 +92,13 @@ body{color:var(--text-1)!important}
 
 /* External Factors keeps the geographic map inside the same dark workstation. */
 .deployment-map-card{border-color:rgba(163,197,210,.17)!important;background:#080d12!important}.deployment-map-canvas{background:#080d12!important}.deployment-map-canvas .maplibregl-canvas{filter:brightness(.44) saturate(.82) contrast(1.18)}.deployment-map-canvas .maplibregl-ctrl-group{border-color:rgba(155,188,201,.17)!important;background:rgba(7,13,18,.9)!important}.deployment-map-canvas .maplibregl-ctrl-group button{filter:invert(1) opacity(.72)!important}.deployment-map-canvas .maplibregl-ctrl-attrib{background:rgba(5,10,14,.78)!important;color:rgba(226,235,234,.58)!important}.deployment-map-canvas .maplibregl-ctrl-attrib a{color:#83cbd2!important}.deployment-map-overlay{background:rgba(5,12,17,.84)!important;border-color:rgba(157,191,203,.17)!important}
+
+/* Dense intelligence columns still need to remain legible at 1280–1600px. */
+.aor-inspector{min-width:0!important}
+.aor-inspector .inspector-head span{font-size:11px!important}.aor-inspector .inspector-head h2{font-size:23px!important}.aor-inspector .inspector-card h3{font-size:15px!important}.aor-inspector .inspector-card.overview>strong{font-size:15px!important}.aor-inspector .inspector-card.overview>p,.aor-inspector .inspector-card dd{font-size:12px!important;line-height:1.58!important}.aor-inspector .inspector-card dt{font-size:10px!important}.aor-inspector .source-row-title{font-size:12px!important;line-height:1.48!important}.aor-inspector .source-row-meta{font-size:10px!important}.aor-inspector .health-grid span,.aor-inspector .health-grid small{font-size:9.5px!important}.aor-inspector .health-grid strong{font-size:14px!important}.aor-inspector .health-grid p{font-size:11px!important;line-height:1.45!important}.aor-inspector .source-loading,.aor-inspector .source-empty,.aor-inspector .source-error,.aor-inspector .provider-warning{font-size:11px!important}
+.aor-map-legend button{font-size:10px!important}.aor-command-switcher button{font-size:11px!important}.aor-map-surface footer{font-size:11px!important}
+
+.deployment-title p{font-size:11px!important}.deployment-section h3{font-size:13px!important}.deployment-section>header>span{font-size:9px!important}.deployment-section-body>p{font-size:12px!important}.deployment-chips span{font-size:10px!important}.deployment-indicators small{font-size:10px!important}.deployment-indicators strong{font-size:13px!important}.deployment-indicators span,.deployment-indicators a{font-size:9px!important}.deployment-events>a>strong{font-size:11px!important}.deployment-events>a>span{font-size:9px!important}.deployment-live-state,.deployment-partial,.deployment-empty-live{font-size:11px!important}
 
 /* Source Library / Settings remain ordinary grounded work areas. */
 .library-page,.settings-workstation{max-width:1500px!important}.source-drawer-backdrop{position:fixed;z-index:100;inset:0;display:flex;justify-content:flex-end;background:rgba(2,5,9,.72);backdrop-filter:blur(8px)}.source-drawer{width:min(720px,72vw);height:100%;overflow:auto;border-radius:18px 0 0 18px!important}.settings-section-label{margin:22px 0 10px;color:var(--ice);font-size:12px;font-weight:750;letter-spacing:.04em}
