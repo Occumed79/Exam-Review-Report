@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import {
   Activity,
   AlertTriangle,
@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import {
   COMBATANT_COMMANDS,
+  COMBATANT_COMMAND_BY_COUNTRY,
   type CombatantCommand,
 } from "../data/combatantCommands";
 import {
@@ -28,6 +29,26 @@ import {
   type WhoIndicator,
 } from "../lib/intelligenceApi";
 import "./aor-intelligence.css";
+
+declare global {
+  interface Window {
+    maptilersdk?: any;
+  }
+}
+
+const MAPTILER_VERSION = "4.0.2";
+const MAPTILER_SCRIPT = `https://cdn.maptiler.com/maptiler-sdk-js/v${MAPTILER_VERSION}/maptiler-sdk.umd.min.js`;
+const MAPTILER_CSS = `https://cdn.maptiler.com/maptiler-sdk-js/v${MAPTILER_VERSION}/maptiler-sdk.css`;
+const COUNTRY_SOURCE = "https://api.maptiler.com/tiles/countries/tiles.json";
+
+const COMMAND_COLORS: Record<string, string> = {
+  northcom: "#4f9aaa",
+  southcom: "#4f927f",
+  eucom: "#7485a5",
+  africom: "#8d8068",
+  centcom: "#a97567",
+  indopacom: "#6577a8",
+};
 
 type Loadable<T> = {
   state: "loading" | "ready" | "error";
@@ -56,6 +77,13 @@ type TimelineItem = {
 };
 
 const empty = <T,>(data: T): Loadable<T> => ({ state: "loading", data });
+const allCountriesFilter = ["==", ["get", "level"], 0];
+const countryFilter = (iso2s: string[]) => [
+  "all",
+  allCountriesFilter,
+  ["in", ["get", "iso_a2"], ["literal", iso2s]],
+];
+
 function errorMessage(error: unknown) {
   return error instanceof Error
     ? error.message
@@ -78,8 +106,57 @@ function host(url: string) {
     return "Source";
   }
 }
+function loadMapTilerSdk() {
+  if (window.maptilersdk) return Promise.resolve(window.maptilersdk);
+
+  if (!document.querySelector(`link[href="${MAPTILER_CSS}"]`)) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = MAPTILER_CSS;
+    document.head.appendChild(link);
+  }
+
+  return new Promise<any>((resolve, reject) => {
+    const existing = document.querySelector<HTMLScriptElement>(
+      'script[data-maptiler-sdk="true"]',
+    );
+    const finish = () =>
+      window.maptilersdk
+        ? resolve(window.maptilersdk)
+        : reject(new Error("MapTiler SDK did not initialize."));
+
+    if (existing) {
+      existing.addEventListener("load", finish, { once: true });
+      existing.addEventListener(
+        "error",
+        () => reject(new Error("Unable to load MapTiler SDK.")),
+        { once: true },
+      );
+      if (window.maptilersdk) finish();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = MAPTILER_SCRIPT;
+    script.async = true;
+    script.dataset.maptilerSdk = "true";
+    script.addEventListener("load", finish, { once: true });
+    script.addEventListener(
+      "error",
+      () => reject(new Error("Unable to load MapTiler SDK.")),
+      { once: true },
+    );
+    document.head.appendChild(script);
+  });
+}
 
 export default function AORIntelligence() {
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<any>(null);
+  const [mapStatus, setMapStatus] = useState<"loading" | "ready" | "error">(
+    "loading",
+  );
+  const [mapError, setMapError] = useState("");
   const [selected, setSelected] = useState<CombatantCommand>(
     COMBATANT_COMMANDS[4],
   );
@@ -97,12 +174,181 @@ export default function AORIntelligence() {
     const clean = query.toLowerCase().trim();
     return clean
       ? COMBATANT_COMMANDS.filter((command) =>
-          `${command.name} ${command.abbreviation} ${command.countriesAreas.join(" ")}`
+          `${command.name} ${command.abbreviation} ${(command.aliases ?? []).join(" ")} ${command.countriesAreas.join(" ")}`
             .toLowerCase()
             .includes(clean),
         )
       : [];
   }, [query]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function initializeMap() {
+      try {
+        if (!mapContainerRef.current) return;
+        const configResponse = await fetch("/api/map-config", { cache: "no-store" });
+        const config = await configResponse
+          .json()
+          .catch(() => ({ configured: false, apiKey: "" }));
+        if (!configResponse.ok || !config?.configured || !config?.apiKey) {
+          throw new Error("MapTiler is not configured on the web service.");
+        }
+
+        const sdk = await loadMapTilerSdk();
+        if (cancelled || !mapContainerRef.current) return;
+        sdk.config.apiKey = config.apiKey;
+        const darkStyle =
+          sdk.MapStyle?.DATAVIZ?.DARK ??
+          sdk.MapStyle?.STREETS?.DARK ??
+          sdk.MapStyle.STREETS;
+        const map = new sdk.Map({
+          container: mapContainerRef.current,
+          style: darkStyle,
+          center: [18, 18],
+          zoom: 1.05,
+          minZoom: 0.75,
+          maxZoom: 7,
+          attributionControl: true,
+        });
+        mapRef.current = map;
+        map.addControl(
+          new sdk.NavigationControl({ showCompass: false }),
+          "bottom-right",
+        );
+
+        map.on("load", () => {
+          if (cancelled) return;
+          map.addSource("aor-countries", { type: "vector", url: COUNTRY_SOURCE });
+          const firstSymbol = map
+            .getStyle()
+            ?.layers?.find((layer: any) => layer.type === "symbol")?.id;
+          const before = firstSymbol || undefined;
+
+          COMBATANT_COMMANDS.forEach((command) => {
+            map.addLayer(
+              {
+                id: `aor-fill-${command.id}`,
+                type: "fill",
+                source: "aor-countries",
+                "source-layer": "administrative",
+                filter: countryFilter(command.countryIso2),
+                paint: {
+                  "fill-color": COMMAND_COLORS[command.id],
+                  "fill-opacity": 0.18,
+                },
+              },
+              before,
+            );
+            map.addLayer(
+              {
+                id: `aor-line-${command.id}`,
+                type: "line",
+                source: "aor-countries",
+                "source-layer": "administrative",
+                filter: countryFilter(command.countryIso2),
+                paint: {
+                  "line-color": COMMAND_COLORS[command.id],
+                  "line-width": 0.9,
+                  "line-opacity": 0.6,
+                },
+              },
+              before,
+            );
+          });
+
+          map.addLayer(
+            {
+              id: "aor-country-hit",
+              type: "fill",
+              source: "aor-countries",
+              "source-layer": "administrative",
+              filter: allCountriesFilter,
+              paint: { "fill-color": "#ffffff", "fill-opacity": 0.001 },
+            },
+            before,
+          );
+          map.addLayer(
+            {
+              id: "aor-selected-glow",
+              type: "line",
+              source: "aor-countries",
+              "source-layer": "administrative",
+              filter: countryFilter(selected.countryIso2),
+              paint: {
+                "line-color": "#70e7ff",
+                "line-width": 6,
+                "line-opacity": 0.22,
+                "line-blur": 3,
+              },
+            },
+            before,
+          );
+          map.addLayer(
+            {
+              id: "aor-selected-line",
+              type: "line",
+              source: "aor-countries",
+              "source-layer": "administrative",
+              filter: countryFilter(selected.countryIso2),
+              paint: {
+                "line-color": "#b8f4ff",
+                "line-width": 2,
+                "line-opacity": 0.95,
+              },
+            },
+            before,
+          );
+
+          map.on("mousemove", "aor-country-hit", (event: any) => {
+            const iso2 = event.features?.[0]?.properties?.iso_a2;
+            map.getCanvas().style.cursor = COMBATANT_COMMAND_BY_COUNTRY.has(iso2)
+              ? "pointer"
+              : "";
+          });
+          map.on("mouseleave", "aor-country-hit", () => {
+            map.getCanvas().style.cursor = "";
+          });
+          map.on("click", "aor-country-hit", (event: any) => {
+            const iso2 = event.features?.[0]?.properties?.iso_a2;
+            const command = COMBATANT_COMMAND_BY_COUNTRY.get(iso2);
+            if (command) setSelected(command);
+          });
+          setMapStatus("ready");
+        });
+        map.on("error", (event: any) => {
+          if (!cancelled && event?.error?.message) setMapError(event.error.message);
+        });
+      } catch (error) {
+        if (cancelled) return;
+        setMapStatus("error");
+        setMapError(errorMessage(error));
+      }
+    }
+
+    void initializeMap();
+    return () => {
+      cancelled = true;
+      mapRef.current?.remove?.();
+      mapRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (mapStatus !== "ready" || !mapRef.current) return;
+    const filter = countryFilter(selected.countryIso2);
+    if (mapRef.current.getLayer?.("aor-selected-glow")) {
+      mapRef.current.setFilter("aor-selected-glow", filter);
+    }
+    if (mapRef.current.getLayer?.("aor-selected-line")) {
+      mapRef.current.setFilter("aor-selected-line", filter);
+    }
+    mapRef.current.easeTo?.({
+      center: selected.mapView.center,
+      zoom: selected.mapView.zoom,
+      duration: 650,
+    });
+  }, [selected, mapStatus]);
 
   useEffect(() => {
     let active = true;
@@ -111,6 +357,7 @@ export default function AORIntelligence() {
     setCongress(empty([]));
     setRegulations(empty([]));
     setPartialNews([]);
+
     searchNewsIntelligence(selected.newsQuery)
       .then((result) => {
         if (!active) return;
@@ -129,16 +376,13 @@ export default function AORIntelligence() {
           active &&
           setNews({ state: "error", data: [], error: errorMessage(error) }),
       );
+
     Promise.allSettled(
-      selected.healthCountries.map((country) =>
-        fetchWhoIndicators(country.iso3),
-      ),
+      selected.healthCountries.map((country) => fetchWhoIndicators(country.iso3)),
     ).then((results) => {
       if (!active) return;
       const values = results.flatMap((result) =>
-        result.status === "fulfilled"
-          ? result.value.indicators.slice(0, 6)
-          : [],
+        result.status === "fulfilled" ? result.value.indicators.slice(0, 6) : [],
       );
       const failed = results.filter((result) => result.status === "rejected");
       setHealth(
@@ -153,6 +397,7 @@ export default function AORIntelligence() {
             : { state: "ready", data: [] },
       );
     });
+
     searchCongressIntelligence(selected.policyQuery, 12)
       .then(
         (result) =>
@@ -164,24 +409,19 @@ export default function AORIntelligence() {
           active &&
           setCongress({ state: "error", data: [], error: errorMessage(error) }),
       );
+
     searchRegulatoryIntelligence(selected.policyQuery, undefined, 12)
       .then(
         (result) =>
           active &&
-          setRegulations({
-            state: "ready",
-            data: result.items as PolicyItem[],
-          }),
+          setRegulations({ state: "ready", data: result.items as PolicyItem[] }),
       )
       .catch(
         (error) =>
           active &&
-          setRegulations({
-            state: "error",
-            data: [],
-            error: errorMessage(error),
-          }),
+          setRegulations({ state: "error", data: [], error: errorMessage(error) }),
       );
+
     return () => {
       active = false;
     };
@@ -222,14 +462,19 @@ export default function AORIntelligence() {
         .slice(0, 20),
     [news.data, congress.data, regulations.data],
   );
+
   const loading = [news, health, congress, regulations].some(
     (source) => source.state === "loading",
   );
+  const degraded =
+    partialNews.length > 0 ||
+    [news, health, congress, regulations].some((source) => source.state === "error");
 
   function choose(command: CombatantCommand) {
     setSelected(command);
     setQuery("");
   }
+
   return (
     <div className="aor-command" data-testid="aor-intelligence">
       <header className="workstation-header">
@@ -239,16 +484,23 @@ export default function AORIntelligence() {
           </span>
           <h1>AOR Intelligence</h1>
           <p>
-            Source-led geographic command workspace for health, operational,
-            legislative, and regulatory signals. Live items are links to
-            upstream records, not intelligence assessments.
+            Geographic combatant-command workspace for public health,
+            operational, legislative, and regulatory signals. Live items link to
+            upstream records; they are not intelligence assessments.
           </p>
         </div>
-        <span className={`status-pill ${loading ? "is-loading" : "is-live"}`}>
+        <span
+          className={`status-pill ${loading ? "is-loading" : degraded ? "is-degraded" : "is-live"}`}
+        >
           <i />
-          {loading ? "Refreshing sources" : "Live sources connected"}
+          {loading
+            ? "Refreshing sources"
+            : degraded
+              ? "Sources partially degraded"
+              : "Live sources connected"}
         </span>
       </header>
+
       <section className="aor-command-grid">
         <div className="aor-map-surface">
           <div className="aor-map-toolbar liquid-glass">
@@ -271,44 +523,34 @@ export default function AORIntelligence() {
               </div>
             )}
           </div>
-          <div
-            className="aor-world"
-            aria-label="Interactive geographic combatant command map"
-          >
-            <svg viewBox="0 0 1000 520" role="img">
-              <defs>
-                <pattern
-                  id="grid"
-                  width="32"
-                  height="32"
-                  patternUnits="userSpaceOnUse"
-                >
-                  <path d="M32 0H0V32" />
-                </pattern>
-              </defs>
-              <rect width="1000" height="520" fill="url(#grid)" />
+
+          <div className="aor-world" aria-label="Geographic combatant command map">
+            <div ref={mapContainerRef} className="aor-map-canvas" />
+            {mapStatus !== "ready" && (
+              <div className={`aor-map-state ${mapStatus === "error" ? "error" : ""}`}>
+                {mapStatus === "loading" ? <LoaderCircle /> : <AlertTriangle />}
+                <strong>
+                  {mapStatus === "loading"
+                    ? "Loading geographic command map"
+                    : "Geographic map unavailable"}
+                </strong>
+                {mapError && <span>{mapError}</span>}
+              </div>
+            )}
+            <div className="aor-map-legend">
               {COMBATANT_COMMANDS.map((command) => (
-                <g
+                <button
                   key={command.id}
-                  className={`aor-region ${selected.id === command.id ? "is-selected" : ""}`}
+                  className={selected.id === command.id ? "active" : ""}
                   onClick={() => choose(command)}
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ")
-                      choose(command);
-                  }}
-                  aria-label={`Select ${command.abbreviation}`}
                 >
-                  <path d={command.mapPath} />
-                  <text x={command.mapLabel.x} y={command.mapLabel.y}>
-                    {command.abbreviation}
-                  </text>
-                </g>
+                  <i style={{ background: COMMAND_COLORS[command.id] }} />
+                  {command.abbreviation}
+                </button>
               ))}
-            </svg>
-            <div className="scan-line" />
+            </div>
           </div>
+
           <div className="aor-command-switcher">
             {COMBATANT_COMMANDS.map((command) => (
               <button
@@ -322,7 +564,7 @@ export default function AORIntelligence() {
           </div>
           <footer>
             <span>
-              <Layers3 size={14} /> Unified Command Plan orientation
+              <Layers3 size={14} /> Public country-coverage orientation
             </span>
             <span>Selected: {selected.abbreviation}</span>
             <button onClick={() => setRefresh((value) => value + 1)}>
@@ -330,6 +572,7 @@ export default function AORIntelligence() {
             </button>
           </footer>
         </div>
+
         <aside className="aor-inspector">
           <div className="inspector-head">
             <div>
@@ -361,11 +604,8 @@ export default function AORIntelligence() {
               <ExternalLink size={12} />
             </a>
           </section>
-          <SignalSection
-            icon={<HeartPulse />}
-            title="Public Health"
-            source={health}
-          >
+
+          <SignalSection icon={<HeartPulse />} title="Public Health" source={health}>
             {health.data.length > 0 ? (
               <div className="health-grid">
                 {health.data.slice(0, 9).map((item, index) => (
@@ -384,9 +624,10 @@ export default function AORIntelligence() {
                 ))}
               </div>
             ) : (
-              <Empty text="No WHO indicators were returned for the selected representative countries." />
+              <Empty text="No WHO indicators were returned for the representative countries." />
             )}
           </SignalSection>
+
           <SignalSection
             icon={<ShieldAlert />}
             title="Operational / Security Signals"
@@ -407,9 +648,10 @@ export default function AORIntelligence() {
                 ))}
               </div>
             ) : (
-              <Empty text="No relevant recent events were returned by the live news providers." />
+              <Empty text="No operationally relevant recent events were returned." />
             )}
           </SignalSection>
+
           <SignalSection
             icon={<BookOpen />}
             title="Regulatory / Legislative Signals"
@@ -417,19 +659,14 @@ export default function AORIntelligence() {
               state:
                 congress.state === "error" && regulations.state === "error"
                   ? "error"
-                  : congress.state === "loading" ||
-                      regulations.state === "loading"
+                  : congress.state === "loading" || regulations.state === "loading"
                     ? "loading"
                     : "ready",
               data: [...congress.data, ...regulations.data],
-              error: [congress.error, regulations.error]
-                .filter(Boolean)
-                .join(" · "),
+              error: [congress.error, regulations.error].filter(Boolean).join(" · "),
             }}
             warning={[
-              congress.state === "error"
-                ? `Congress.gov: ${congress.error}`
-                : "",
+              congress.state === "error" ? `Congress.gov: ${congress.error}` : "",
               regulations.state === "error"
                 ? `Regulations.gov: ${regulations.error}`
                 : "",
@@ -450,6 +687,7 @@ export default function AORIntelligence() {
               <Empty text="No relevant legislative or regulatory records were returned." />
             )}
           </SignalSection>
+
           <section className="inspector-card">
             <h3>
               <Building2 /> Recent Source Timeline
@@ -479,11 +717,11 @@ function SignalSection<T>({
   warning,
   children,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   source: Loadable<T>;
   warning?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <section className="inspector-card">
