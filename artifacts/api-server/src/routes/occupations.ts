@@ -48,10 +48,12 @@ router.get("/occupations/search", async (req, res) => {
     res.json({ ok: true, source: "live-onet", results });
   } catch (error) {
     console.warn("O*NET occupation search failed", error);
-    res.status(502).json({
-      ok: false,
-      error: error instanceof Error ? error.message : "O*NET search failed.",
-    });
+    res
+      .status(502)
+      .json({
+        ok: false,
+        error: error instanceof Error ? error.message : "O*NET search failed.",
+      });
   }
 });
 
