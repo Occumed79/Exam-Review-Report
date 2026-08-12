@@ -9,10 +9,12 @@ import { getCongressStatus } from "../services/congressService";
 import { getRegulationsStatus } from "../services/regulationsService";
 import { getNewsStatus } from "../services/newsService";
 import { getWhoStatus } from "../services/whoService";
+import { getProviderStatuses } from "../services/providerStatusService";
 
 const router: IRouter = Router();
 
-router.get("/intelligence/status", (_req, res) => {
+router.get("/intelligence/status", async (_req, res) => {
+  const providers = await getProviderStatuses();
   res.json({
     ok: true,
     onet: getOnetStatus(),
@@ -27,6 +29,8 @@ router.get("/intelligence/status", (_req, res) => {
     newsData: getNewsStatus().newsData,
     apiTube: getNewsStatus().apiTube,
     who: getWhoStatus(),
+    checkedAt: new Date().toISOString(),
+    providers,
   });
 });
 

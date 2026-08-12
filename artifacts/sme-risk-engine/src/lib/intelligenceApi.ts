@@ -5,11 +5,22 @@ export type ProviderHealth = {
 };
 export type IntelligenceProviderStatus = {
   ok: boolean;
+  checkedAt: string;
+  providers: ProviderStatusRecord[];
   congress: ProviderHealth & { accountConfigured: boolean };
   regulations: ProviderHealth & { accountConfigured: boolean };
   newsData: ProviderHealth;
   apiTube: ProviderHealth;
   who: ProviderHealth & { authentication: string };
+};
+export type ProviderStatusRecord = {
+  id: string;
+  name: string;
+  status: "connected" | "public" | "not_configured" | "error" | "degraded";
+  authentication: "required" | "public";
+  checkedAt: string;
+  lastSuccessfulResponse: string | null;
+  error?: string;
 };
 export type IntelligenceNewsItem = {
   id: string;
