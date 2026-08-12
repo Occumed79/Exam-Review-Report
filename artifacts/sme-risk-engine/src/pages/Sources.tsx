@@ -47,7 +47,7 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
   const inp = { width: "100%", padding: "0.55rem 0.75rem", fontSize: "0.8125rem" };
 
   return (
-    <div data-testid="sources-page">
+    <div className="library-page" data-testid="sources-page">
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "1.75rem" }}>
         <div>
           <h1 style={{ fontSize: "1.625rem", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em", marginBottom: "0.25rem" }}>Source Library</h1>
@@ -68,7 +68,8 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
       </div>
 
       {editing && (
-        <div className="glass-card glass-card-active" style={{ padding: "1.5rem", marginBottom: "1.25rem" }}>
+        <div className="source-drawer-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setEditing(null); }}>
+        <div className="source-drawer glass-card glass-card-active" role="dialog" aria-modal="true" aria-label={sources.some(s => s.id === editing.id) ? "Edit source" : "Add source"} style={{ padding: "1.5rem" }}>
           <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#b4d7d0", marginBottom: "1.25rem" }}>
             {sources.some(s => s.id === editing.id) ? "Edit Source" : "New Source"}
           </div>
@@ -94,7 +95,7 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
             <button className="glow-btn glow-btn-secondary" onClick={() => setEditing(null)} data-testid="btn-cancel-source">Cancel</button>
             <button className="glow-btn" onClick={save} data-testid="btn-save-source">Save Source</button>
           </div>
-        </div>
+        </div></div>
       )}
 
       {filtered.length === 0 ? (
