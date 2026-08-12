@@ -1,0 +1,2470 @@
+/*
+ * Canonical application theme.
+ * Consolidated in original cascade order so the production workstation keeps
+ * its established navigation, glass surfaces, palette, and spacing.
+ */
+
+
+/* === Consolidated from pages/workbench.css === */
+
+.reviewer-sidebar {
+  width: 220px;
+  min-width: 220px;
+  height: 100vh;
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #071019 0%, #08111a 52%, #060d14 100%);
+  border-right: 1px solid rgba(140, 170, 183, 0.12);
+  box-shadow: 18px 0 52px rgba(0, 0, 0, 0.18);
+}
+
+.sidebar-brand {
+  height: 76px;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(140, 170, 183, 0.09);
+}
+
+.sidebar-brand-mark {
+  width: 31px;
+  height: 31px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(96, 208, 196, 0.28);
+  border-radius: 7px;
+  color: #bcece4;
+  background: linear-gradient(180deg, rgba(64, 194, 182, 0.1), rgba(64, 194, 182, 0.03));
+  font: 700 0.66rem/1 var(--app-font-mono);
+  letter-spacing: 0.06em;
+}
+
+.sidebar-brand-title {
+  color: #eef2ef;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.055em;
+}
+
+.sidebar-brand-subtitle {
+  margin-top: 0.14rem;
+  color: rgba(214, 225, 226, 0.36);
+  font-size: 0.62rem;
+  font-weight: 500;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.82rem 0.64rem 1rem;
+}
+
+.sidebar-home,
+.reviewer-sidebar .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  min-height: 32px;
+  box-sizing: border-box;
+  padding: 0.42rem 0.52rem;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  color: rgba(225, 232, 230, 0.58);
+  text-decoration: none;
+  font-size: 0.72rem;
+  font-weight: 560;
+  transition: color 120ms ease, background 120ms ease, border-color 120ms ease;
+}
+
+.sidebar-home {
+  margin-bottom: 0.82rem;
+  color: rgba(233, 238, 236, 0.78);
+}
+
+.sidebar-home:hover,
+.reviewer-sidebar .nav-item:hover {
+  color: #f1f5f3;
+  background: rgba(255,255,255,0.03);
+  transform: none;
+}
+
+.sidebar-home.active,
+.reviewer-sidebar .nav-item.active {
+  color: #bcf0e6;
+  background: linear-gradient(90deg, rgba(54, 192, 180, 0.11), rgba(54, 192, 180, 0.025));
+  border-color: rgba(93, 208, 196, 0.12);
+  box-shadow: inset 2px 0 0 #5cc7ba;
+}
+
+.sidebar-group { margin-bottom: 0.9rem; }
+
+.sidebar-group-label {
+  padding: 0 0.52rem;
+  margin-bottom: 0.28rem;
+  color: rgba(188, 205, 208, 0.24);
+  font: 700 0.54rem/1.2 var(--app-font-mono);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.sidebar-footer {
+  padding: 0.8rem 1rem 0.95rem;
+  border-top: 1px solid rgba(140, 170, 183, 0.07);
+  color: rgba(218, 227, 226, 0.27);
+  font-size: 0.6rem;
+  line-height: 1.48;
+}
+
+.sidebar-footer-rule {
+  margin-bottom: 0.28rem;
+  color: rgba(98, 210, 198, 0.54);
+  font: 700 0.52rem/1 var(--app-font-mono);
+  letter-spacing: 0.1em;
+}
+
+.workbench {
+  width: 100%;
+  max-width: 1460px;
+  margin: 0 auto;
+}
+
+.workbench-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 2.2rem;
+  align-items: flex-start;
+  padding: 0.1rem 0 1.3rem;
+  border-bottom: 1px solid rgba(139, 167, 180, 0.11);
+}
+
+.workbench-kicker,
+.section-eyebrow,
+.command-label,
+.source-status-label {
+  color: #6fc9be;
+  font: 700 0.58rem/1.2 var(--app-font-mono);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.workbench-header h1 {
+  max-width: 790px;
+  margin: 0.52rem 0 0;
+  color: #f1f5f2;
+  font-size: clamp(1.8rem, 2.5vw, 2.65rem);
+  line-height: 1.02;
+  font-weight: 760;
+  letter-spacing: -0.048em;
+}
+
+.workbench-header p {
+  max-width: 780px;
+  margin: 0.72rem 0 0;
+  color: rgba(220, 229, 229, 0.46);
+  font-size: 0.81rem;
+  line-height: 1.64;
+}
+
+.source-status {
+  min-width: 205px;
+  padding: 0.15rem 0 0 1.1rem;
+  border-left: 1px solid rgba(139, 167, 180, 0.1);
+}
+
+.source-status-label { color: rgba(200, 214, 217, 0.28); }
+
+.source-status-items {
+  margin-top: 0.55rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.8rem;
+}
+
+.source-status-items span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba(220, 228, 228, 0.5);
+  font-size: 0.65rem;
+  font-weight: 600;
+}
+
+.command-panel {
+  position: relative;
+  margin-top: 1rem;
+  padding: 0.9rem 1rem 1rem;
+  background: linear-gradient(180deg, rgba(15, 30, 40, 0.92), rgba(9, 20, 29, 0.94));
+  border: 1px solid rgba(111, 156, 174, 0.14);
+  border-radius: 10px;
+  box-shadow: 0 14px 45px rgba(0, 0, 0, 0.18), inset 0 1px rgba(255,255,255,0.02);
+}
+
+.command-label { margin-bottom: 0.48rem; color: rgba(116, 208, 196, 0.76); }
+
+.command-input-wrap {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  padding: 0 0.92rem;
+  background: #07121b;
+  border: 1px solid rgba(95, 155, 176, 0.18);
+  border-radius: 8px;
+  color: rgba(133, 214, 205, 0.74);
+}
+
+.command-input-wrap:focus-within {
+  border-color: rgba(95, 208, 196, 0.42);
+  box-shadow: 0 0 0 2px rgba(95, 208, 196, 0.06), 0 0 28px rgba(48, 176, 164, 0.06);
+}
+
+.command-input-wrap input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #eef3f1;
+  font-size: 0.88rem;
+  font-weight: 500;
+}
+
+.command-input-wrap input::placeholder { color: rgba(211, 224, 224, 0.31); }
+
+.command-hint {
+  color: rgba(212, 223, 223, 0.22);
+  font: 500 0.58rem/1 var(--app-font-mono);
+  white-space: nowrap;
+}
+
+.command-results {
+  position: absolute;
+  z-index: 10;
+  top: calc(100% - 0.55rem);
+  left: 1rem;
+  right: 1rem;
+  padding: 0.35rem;
+  background: #08131d;
+  border: 1px solid rgba(96, 157, 176, 0.2);
+  border-radius: 8px;
+  box-shadow: 0 24px 70px rgba(0,0,0,0.45);
+}
+
+.command-results button,
+.tool-row,
+.intelligence-lane {
+  appearance: none;
+  border: 0;
+  font: inherit;
+}
+
+.command-results button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 30px 1fr 18px;
+  gap: 0.65rem;
+  align-items: center;
+  padding: 0.62rem 0.7rem;
+  background: transparent;
+  color: #eef3f1;
+  border-radius: 6px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.command-results button:hover { background: rgba(91, 200, 188, 0.06); }
+.command-result-icon { color: #78d0c5; }
+.command-results strong { display: block; font-size: 0.73rem; }
+.command-results small { display: block; margin-top: 0.12rem; color: rgba(219,227,227,0.38); font-size: 0.63rem; }
+
+.workbench-section { margin-top: 1.45rem; }
+
+.section-heading-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 0.7rem;
+}
+
+.section-heading-row h2 {
+  margin: 0.34rem 0 0;
+  color: #e9efec;
+  font-size: 0.98rem;
+  font-weight: 680;
+  letter-spacing: -0.018em;
+}
+
+.section-note {
+  color: rgba(203, 217, 219, 0.28);
+  font: 500 0.58rem/1 var(--app-font-mono);
+}
+
+.intelligence-grid {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 0.72rem;
+}
+
+.intelligence-lane {
+  min-height: 148px;
+  display: grid;
+  grid-template-columns: 42px 1fr 24px;
+  gap: 0.9rem;
+  align-items: start;
+  padding: 1.05rem;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  background: linear-gradient(145deg, rgba(16, 33, 44, 0.98), rgba(9, 20, 29, 0.98));
+  border: 1px solid rgba(103, 150, 168, 0.16);
+  border-radius: 9px;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.intelligence-lane.primary {
+  background:
+    radial-gradient(circle at 88% 18%, rgba(61, 201, 186, 0.12), transparent 32%),
+    linear-gradient(145deg, rgba(15, 37, 46, 0.98), rgba(8, 22, 30, 0.98));
+  border-color: rgba(91, 200, 187, 0.22);
+}
+
+.intelligence-lane:hover {
+  border-color: rgba(91, 200, 187, 0.38);
+  transform: translateY(-1px);
+}
+
+.lane-icon,
+.tool-row-icon {
+  display: grid;
+  place-items: center;
+  color: #79d2c6;
+  background: rgba(58, 191, 179, 0.07);
+  border: 1px solid rgba(82, 204, 191, 0.13);
+}
+
+.lane-icon {
+  width: 39px;
+  height: 39px;
+  border-radius: 7px;
+}
+
+.lane-number {
+  color: rgba(154, 190, 195, 0.26);
+  font: 700 0.55rem/1 var(--app-font-mono);
+  letter-spacing: 0.08em;
+}
+
+.lane-copy h3 {
+  margin: 0.43rem 0 0;
+  color: #f0f4f2;
+  font-size: 1rem;
+  font-weight: 710;
+}
+
+.lane-copy p {
+  max-width: 570px;
+  margin: 0.42rem 0 0;
+  color: rgba(214, 225, 225, 0.42);
+  font-size: 0.73rem;
+  line-height: 1.55;
+}
+
+.lane-arrow {
+  justify-self: end;
+  margin-top: 0.1rem;
+  color: rgba(125, 205, 196, 0.42);
+}
+
+.workbench-columns {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.15rem;
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(139, 167, 180, 0.09);
+}
+
+.compact-section { margin-top: 0; }
+.section-heading-row.compact { margin-bottom: 0.6rem; }
+
+.tool-list {
+  border-top: 1px solid rgba(126, 157, 170, 0.09);
+}
+
+.tool-row {
+  width: 100%;
+  min-height: 61px;
+  display: grid;
+  grid-template-columns: 30px 1fr 16px;
+  gap: 0.68rem;
+  align-items: center;
+  padding: 0.58rem 0.25rem;
+  background: transparent;
+  border-bottom: 1px solid rgba(126, 157, 170, 0.085);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tool-row:hover { background: linear-gradient(90deg, rgba(59, 188, 176, 0.045), transparent); }
+
+.tool-row-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+}
+
+.tool-row-copy strong {
+  display: block;
+  color: rgba(240, 244, 242, 0.9);
+  font-size: 0.72rem;
+  font-weight: 660;
+}
+
+.tool-row-copy small {
+  display: block;
+  margin-top: 0.2rem;
+  color: rgba(211, 223, 224, 0.32);
+  font-size: 0.62rem;
+  line-height: 1.38;
+}
+
+.tool-row > svg { color: rgba(122, 193, 187, 0.3); }
+
+.workbench-rule {
+  margin-top: 0.95rem;
+  padding: 0.8rem 0.9rem;
+  background: rgba(69, 194, 182, 0.035);
+  border: 1px solid rgba(81, 197, 185, 0.1);
+  border-radius: 7px;
+}
+
+.workbench-rule span {
+  color: rgba(100, 209, 197, 0.65);
+  font: 700 0.52rem/1 var(--app-font-mono);
+  letter-spacing: 0.11em;
+}
+
+.workbench-rule p {
+  margin: 0.35rem 0 0;
+  color: rgba(216, 225, 225, 0.38);
+  font-size: 0.64rem;
+  line-height: 1.45;
+}
+
+/* Global tone correction for the rest of the toolkit */
+.glass-card {
+  border-radius: 10px !important;
+  background: linear-gradient(150deg, rgba(15, 30, 40, 0.9), rgba(8, 20, 29, 0.9)) !important;
+  border-color: rgba(107, 151, 168, 0.14) !important;
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.18) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: border-color 140ms ease, background 140ms ease !important;
+}
+
+.glass-card:hover {
+  transform: none !important;
+  border-color: rgba(91, 198, 186, 0.28) !important;
+  box-shadow: 0 12px 38px rgba(0, 0, 0, 0.2) !important;
+}
+
+.glass-input {
+  border-radius: 7px !important;
+  background: #07131d !important;
+  border-color: rgba(98, 153, 174, 0.18) !important;
+  backdrop-filter: none !important;
+}
+
+.glow-btn,
+.glow-btn-secondary {
+  border-radius: 7px !important;
+}
+
+@media (max-width: 1050px) {
+  .source-status { display: none; }
+  .intelligence-grid,
+  .workbench-columns { grid-template-columns: 1fr; }
+  .command-hint { display: none; }
+}
+
+
+/* === Consolidated from tahoe-liquid-glass.css === */
+
+/*
+ * Canonical macOS Tahoe visual system.
+ *
+ * Liquid Glass is reserved for the functional layer: navigation, search,
+ * segmented controls, transient actions, and compact status inspectors.
+ * Clinical information, tables, anatomy, and results use grounded content
+ * materials so the interface hierarchy remains clear.
+ */
+
+:root {
+  --canvas-black: #07090d;
+  --canvas-graphite: #0a0d12;
+  --canvas-blue-black: #0a0f16;
+  --content-1: #111720;
+  --content-2: #0d131b;
+  --content-3: #151c26;
+  --content-border: rgba(188, 210, 229, 0.09);
+  --content-border-strong: rgba(188, 218, 238, 0.15);
+  --content-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+
+  --text-primary: rgba(248, 250, 252, 0.96);
+  --text-secondary: rgba(218, 228, 237, 0.68);
+  --text-tertiary: rgba(204, 217, 228, 0.48);
+  --text-quaternary: rgba(196, 211, 224, 0.34);
+  --ice: #b9ebfb;
+  --ice-bright: #dcf7ff;
+  --ice-muted: #88c9e2;
+  --violet-optical: #c6c2f3;
+  --danger: #ef858d;
+  --warning: #e2ba73;
+  --success: #8fd6b8;
+
+  --radius-window: 24px;
+  --radius-panel: 13px;
+  --radius-control: 11px;
+  --radius-capsule: 999px;
+
+  --pointer-x: 74%;
+  --pointer-y: 20%;
+  --glass-light-x: 50%;
+  --glass-light-y: 0%;
+  --glass-fill: rgba(24, 31, 41, 0.62);
+  --glass-fill-strong: rgba(29, 38, 49, 0.72);
+  --glass-border: rgba(207, 230, 245, 0.13);
+  --glass-shadow:
+    0 22px 55px rgba(0, 0, 0, 0.3),
+    0 5px 16px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(120, 164, 196, 0.035);
+  --glass-filter: blur(24px) saturate(138%) brightness(1.035) contrast(1.025);
+  --ease-liquid: cubic-bezier(0.2, 0.78, 0.2, 1);
+  --ease-direct: cubic-bezier(0.22, 0.68, 0.28, 1);
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  background: var(--canvas-black) !important;
+}
+
+body {
+  color: var(--text-primary);
+}
+
+.tahoe-environment {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(132deg, rgba(166, 210, 239, 0.026) 0%, transparent 19%),
+    linear-gradient(315deg, rgba(151, 145, 205, 0.022) 0%, transparent 24%),
+    linear-gradient(165deg, var(--canvas-blue-black) 0%, var(--canvas-graphite) 44%, var(--canvas-black) 100%);
+}
+
+.tahoe-environment::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 18%);
+}
+
+.tahoe-environment::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.2), transparent 21%, transparent 82%, rgba(0, 0, 0, 0.12));
+}
+
+.reviewer-app-shell {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.reviewer-main-stage {
+  position: relative;
+  z-index: 2;
+  width: calc(100vw - 254px);
+  height: 100vh;
+  margin-left: 254px;
+  padding: 2rem 2.45rem 3.25rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background: transparent;
+  scrollbar-color: rgba(194, 215, 230, 0.2) transparent;
+}
+
+.reviewer-stage-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Shared workstation typography and state language. Legacy tools inherit these
+   rules while retaining their data and interaction logic. */
+.reviewer-stage-content h1 { font-size: clamp(1.9rem, 2.25vw, 2.25rem) !important; line-height: 1.1; letter-spacing: -0.04em !important; }
+.reviewer-stage-content h2 { font-size: 1.3rem; line-height: 1.25; }
+.reviewer-stage-content h3 { font-size: 1.05rem; line-height: 1.35; }
+.reviewer-stage-content p { font-size: max(14px, .875rem); }
+.reviewer-stage-content input,
+.reviewer-stage-content select,
+.reviewer-stage-content textarea,
+.reviewer-stage-content button { font-size: max(13px, .8125rem); }
+.reviewer-stage-content :focus-visible { outline: 2px solid rgba(158, 226, 248, .72); outline-offset: 2px; }
+.reviewer-stage-content button:disabled,
+.reviewer-stage-content input:disabled { cursor: not-allowed; opacity: .46; }
+
+@media (min-width: 1500px) {
+  .reviewer-main-stage { padding-right: 3rem; padding-left: 3rem; }
+}
+
+.reviewer-scroll-edge {
+  position: fixed;
+  z-index: 3;
+  top: 0;
+  right: 0;
+  left: 254px;
+  height: 58px;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(7, 9, 13, 0.78), rgba(7, 9, 13, 0.26) 48%, transparent);
+  opacity: 0.72;
+}
+
+/* One web approximation of Apple's Regular Liquid Glass variant. */
+.liquid-glass,
+.glow-btn {
+  --glass-light-x: 50%;
+  --glass-light-y: 0%;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid var(--glass-border) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018) 38%, rgba(117, 170, 204, 0.025) 72%),
+    var(--glass-fill) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: var(--glass-filter) !important;
+  -webkit-backdrop-filter: var(--glass-filter) !important;
+}
+
+.liquid-glass::before,
+.glow-btn::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--glass-light-x) var(--glass-light-y), rgba(255, 255, 255, 0.2) 0%, rgba(210, 239, 251, 0.075) 17%, transparent 44%),
+    linear-gradient(118deg, rgba(255, 255, 255, 0.06), transparent 31%, transparent 72%, rgba(170, 182, 230, 0.035));
+  opacity: 0.66;
+  transition: opacity 180ms var(--ease-direct), transform 220ms var(--ease-liquid);
+}
+
+.liquid-glass::after,
+.glow-btn::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  padding: 1px;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(128deg, rgba(255, 255, 255, 0.46), rgba(220, 244, 255, 0.12) 17%, transparent 39%, transparent 68%, rgba(182, 178, 237, 0.13) 83%, transparent 96%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.58;
+}
+
+.liquid-glass > *,
+.glow-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.liquid-glass:hover::before,
+.liquid-glass:focus-within::before,
+.glow-btn:hover::before,
+.glow-btn:focus-visible::before {
+  opacity: 0.94;
+}
+
+.window-inactive .liquid-glass,
+.window-inactive .glow-btn {
+  --glass-fill: rgba(25, 30, 38, 0.78);
+  filter: saturate(0.78);
+}
+
+/* Floating macOS sidebar: one glass surface, with filled overlays inside. */
+.reviewer-sidebar {
+  position: fixed;
+  z-index: 20;
+  inset: 12px auto 12px 12px;
+  width: 226px !important;
+  min-width: 226px !important;
+  height: calc(100vh - 24px);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-window) !important;
+  --glass-fill: rgba(18, 25, 35, 0.66);
+  --glass-filter: blur(30px) saturate(142%) brightness(1.02) contrast(1.035);
+  box-shadow:
+    0 30px 72px rgba(0, 0, 0, 0.38),
+    0 10px 30px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    inset 1px 0 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+.sidebar-brand {
+  position: relative;
+  min-height: 78px;
+  display: flex;
+  align-items: center;
+  gap: 0.72rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid rgba(204, 225, 240, 0.075);
+}
+
+.sidebar-brand::after {
+  content: "";
+  position: absolute;
+  right: 18px;
+  bottom: -1px;
+  left: 18px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(218, 243, 253, 0.18), transparent);
+}
+
+.sidebar-brand-mark {
+  width: 33px;
+  height: 33px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(191, 225, 243, 0.16) !important;
+  border-radius: 10px !important;
+  color: rgba(238, 249, 253, 0.94) !important;
+  background: linear-gradient(145deg, rgba(159, 211, 234, 0.16), rgba(38, 53, 68, 0.38)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.13), 0 7px 18px rgba(0, 0, 0, 0.2) !important;
+  font: 720 0.68rem/1 var(--app-font-mono);
+  letter-spacing: 0.05em;
+}
+
+.sidebar-brand-title {
+  color: rgba(248, 251, 253, 0.95) !important;
+  font-size: 0.72rem;
+  font-weight: 760;
+  letter-spacing: 0.045em;
+}
+
+.sidebar-brand-subtitle {
+  margin-top: 0.16rem;
+  color: rgba(207, 220, 231, 0.48) !important;
+  font-size: 0.63rem;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 0.85rem 0.68rem 1rem;
+  overflow-y: auto;
+}
+
+.sidebar-home,
+.reviewer-sidebar .nav-item {
+  position: relative;
+  width: 100%;
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  gap: 0.62rem;
+  padding: 0.46rem 0.62rem;
+  border: 1px solid transparent !important;
+  border-radius: 9px !important;
+  color: rgba(218, 229, 238, 0.64) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 0.74rem;
+  font-weight: 590;
+  transition: color 160ms ease, background-color 160ms ease, transform 180ms var(--ease-direct), border-color 160ms ease !important;
+}
+
+.sidebar-home {
+  margin-bottom: 0.8rem;
+  color: rgba(235, 242, 247, 0.82) !important;
+}
+
+.sidebar-home:hover,
+.reviewer-sidebar .nav-item:hover {
+  color: #ffffff !important;
+  border-color: rgba(207, 232, 246, 0.07) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  transform: translateX(1px);
+}
+
+.sidebar-home.active,
+.reviewer-sidebar .nav-item.active {
+  color: #ffffff !important;
+  border-color: rgba(190, 227, 244, 0.16) !important;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.115), rgba(161, 212, 237, 0.07) 58%, rgba(174, 169, 224, 0.055)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 8px 20px rgba(0, 0, 0, 0.18) !important;
+  transform: none;
+}
+
+.reviewer-sidebar .nav-item.active::after,
+.sidebar-home.active::after {
+  content: none !important;
+}
+
+.sidebar-group {
+  margin-bottom: 0.92rem;
+}
+
+.sidebar-group-label {
+  margin-bottom: 0.3rem;
+  padding: 0 0.6rem;
+  color: rgba(188, 207, 220, 0.44) !important;
+  font: 700 0.55rem/1.2 var(--app-font-mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Compact functional glass surfaces. */
+.command-panel,
+.injury-search-panel,
+.job-search-panel,
+.drug-search-panel,
+.citation-search-panel,
+.liquid-toolbar {
+  border-radius: 16px !important;
+  --glass-fill: rgba(25, 32, 42, 0.62);
+}
+
+.source-status,
+.injury-source-stack,
+.job-source-status,
+.drug-status {
+  border-radius: 13px !important;
+  --glass-fill: rgba(23, 30, 39, 0.56);
+  --glass-filter: blur(18px) saturate(132%) brightness(1.025);
+}
+
+.job-tabs,
+.hologram-view-toggle {
+  border-radius: var(--radius-capsule) !important;
+  --glass-fill: rgba(27, 35, 45, 0.62);
+  --glass-filter: blur(18px) saturate(136%) brightness(1.03);
+}
+
+.condition-search,
+.standards-search,
+.deployment-search {
+  border-radius: 12px !important;
+  --glass-fill: rgba(24, 31, 41, 0.64);
+  --glass-filter: blur(20px) saturate(136%) brightness(1.025);
+}
+
+.clinical-nav {
+  border-radius: 15px !important;
+  --glass-fill: rgba(20, 27, 36, 0.68);
+  --glass-filter: blur(22px) saturate(132%) brightness(1.02);
+}
+
+/* Search fields are thin overlays within their one glass container. */
+.command-input-wrap,
+.injury-input-wrap,
+.injury-input,
+.job-search-input,
+.drug-search-input,
+.citation-search-input,
+.liquid-toolbar .glass-input {
+  border: 1px solid rgba(202, 224, 240, 0.13) !important;
+  border-radius: 10px !important;
+  color: var(--text-primary) !important;
+  background: rgba(5, 9, 14, 0.3) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease !important;
+}
+
+.condition-search input,
+.standards-search input,
+.deployment-search input,
+.command-input-wrap input,
+.injury-input-wrap input,
+.injury-input,
+.job-search-input input,
+.drug-search-input input,
+.citation-search-input input {
+  color: rgba(249, 252, 254, 0.95) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.condition-search input::placeholder,
+.standards-search input::placeholder,
+.deployment-search input::placeholder,
+.command-input-wrap input::placeholder,
+.injury-input-wrap input::placeholder,
+.injury-input::placeholder,
+.job-search-input input::placeholder,
+.drug-search-input input::placeholder,
+.citation-search-input input::placeholder {
+  color: rgba(207, 220, 231, 0.4) !important;
+}
+
+.command-input-wrap:focus-within,
+.injury-input-wrap:focus-within,
+.job-search-input:focus-within,
+.drug-search-input:focus-within,
+.condition-search:focus-within,
+.standards-search:focus-within,
+.deployment-search:focus-within,
+.citation-search-input:focus-within,
+.liquid-toolbar:focus-within {
+  border-color: rgba(180, 228, 247, 0.32) !important;
+  box-shadow:
+    0 0 0 3px rgba(137, 203, 231, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Segmented controls use filled overlays, avoiding glass-on-glass. */
+.job-tabs button,
+.hologram-view-toggle button,
+.clinical-nav button {
+  transition: color 160ms ease, background-color 180ms var(--ease-liquid), transform 160ms var(--ease-direct), box-shadow 180ms ease !important;
+}
+
+.job-tabs button.active,
+.hologram-view-toggle button.active,
+.clinical-nav button.active {
+  color: #f8fcfe !important;
+  border-color: rgba(194, 228, 245, 0.13) !important;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(143, 203, 229, 0.08)) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), 0 6px 15px rgba(0, 0, 0, 0.16) !important;
+}
+
+.job-tabs button:active,
+.hologram-view-toggle button:active,
+.clinical-nav button:active {
+  transform: scale(0.985);
+}
+
+/* Buttons are glass controls; color tint is reserved for primary/destructive intent. */
+.glow-btn {
+  --glass-fill: rgba(46, 67, 80, 0.64);
+  --glass-filter: blur(18px) saturate(138%) brightness(1.035);
+  border-radius: 10px !important;
+  color: rgba(249, 252, 254, 0.96) !important;
+  transition: transform 160ms var(--ease-direct), box-shadow 190ms ease, border-color 180ms ease !important;
+}
+
+.glow-btn:hover:not(:disabled) {
+  border-color: rgba(208, 237, 250, 0.22) !important;
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.28),
+    0 5px 15px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  transform: translateY(-1px) scale(1.006);
+}
+
+.glow-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.982);
+  transition-duration: 90ms !important;
+}
+
+.glow-btn-secondary {
+  --glass-fill: rgba(28, 35, 45, 0.68);
+  color: rgba(232, 240, 246, 0.86) !important;
+}
+
+.glow-btn-danger {
+  --glass-fill: rgba(105, 43, 49, 0.74);
+  border-color: rgba(245, 143, 151, 0.24) !important;
+  color: #fff6f7 !important;
+}
+
+/* Grounded content layer. No backdrop blur, refraction, sweeps, or float. */
+.intelligence-lane,
+.injury-occupation-strip,
+.injury-anatomy-shell,
+.injury-measured-section,
+.injury-osha-section,
+.injury-panel,
+.injury-finding-panel,
+.job-profile-strip,
+.job-profile-column,
+.drug-selection-panel,
+.drug-selected-panel,
+.drug-capability-panel,
+.clinical-panel,
+.condition-categories,
+.condition-summary,
+.condition-questions,
+.condition-side-panel,
+.standards-table,
+.deployment-country-list,
+.deployment-profile,
+.deployment-detail,
+.citation-results-panel,
+.citation-side-panel,
+.citation-official-panel,
+.citation-saved-panel {
+  border-color: var(--content-border) !important;
+  background: linear-gradient(155deg, rgba(17, 23, 32, 0.99), rgba(11, 16, 23, 0.99)) !important;
+  box-shadow: var(--content-shadow) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+.glass-card,
+.intelligence-lane,
+.injury-panel,
+.injury-finding-panel,
+.job-profile-column,
+.drug-card,
+.drug-capability,
+.condition-summary,
+.condition-questions,
+.standards-row,
+.deployment-fact,
+.citation-official-list a {
+  transform: none !important;
+}
+
+.glass-card:hover,
+.intelligence-lane:hover,
+.injury-panel:hover,
+.injury-finding-panel:hover,
+.job-profile-column:hover,
+.drug-card:hover,
+.drug-capability:hover,
+.condition-summary:hover,
+.condition-questions:hover,
+.standards-row:hover,
+.deployment-fact:hover,
+.citation-official-list a:hover {
+  border-color: var(--content-border-strong) !important;
+  box-shadow: var(--content-shadow) !important;
+  transform: none !important;
+}
+
+/* Workbench hierarchy: one glass command, then grounded intelligence. */
+.workbench,
+.injury-workbench,
+.job-workbench,
+.drug-workbench,
+.clinical-workbench,
+.condition-reference,
+.standards-workbench,
+.deployment-workbench,
+.citation-workbench {
+  color: var(--text-primary);
+}
+
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) h1 {
+  color: var(--text-primary) !important;
+  text-shadow: none !important;
+}
+
+:is(.workbench-kicker, .section-eyebrow, .injury-kicker, .job-kicker, .drug-kicker, .clinical-kicker, .condition-kicker, .standards-kicker, .deployment-kicker, .citation-kicker, .command-label) {
+  color: rgba(174, 225, 245, 0.82) !important;
+  text-shadow: none !important;
+}
+
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) p {
+  color: var(--text-secondary);
+}
+
+:is(.workbench, .injury-workbench, .job-workbench, .drug-workbench, .clinical-workbench, .condition-reference, .standards-workbench, .deployment-workbench, .citation-workbench) small {
+  color: var(--text-tertiary);
+}
+
+.workbench-header,
+.injury-header,
+.job-header,
+.drug-header,
+.clinical-header,
+.condition-header,
+.standards-header,
+.deployment-header,
+.citation-header {
+  border-bottom-color: rgba(181, 205, 223, 0.085) !important;
+}
+
+.source-status {
+  padding: 0.58rem 0.72rem !important;
+}
+
+.command-panel {
+  margin-top: 1.1rem !important;
+  padding: 0.88rem !important;
+}
+
+.intelligence-lane {
+  min-height: 150px;
+  border-radius: 15px !important;
+  text-align: left;
+}
+
+.intelligence-lane.primary {
+  border-color: rgba(137, 210, 239, 0.18) !important;
+  background: linear-gradient(145deg, rgba(20, 34, 46, 0.99), rgba(12, 20, 29, 0.99)) !important;
+}
+
+.lane-icon,
+.tool-row-icon {
+  color: var(--ice-muted) !important;
+  border-color: rgba(139, 207, 234, 0.12) !important;
+  background: rgba(139, 207, 234, 0.055) !important;
+}
+
+.tool-row {
+  background: transparent !important;
+  border-color: rgba(183, 207, 225, 0.075) !important;
+}
+
+.tool-row:hover {
+  background: linear-gradient(90deg, rgba(150, 210, 234, 0.045), transparent) !important;
+}
+
+/* Injury Intelligence stays the visual showpiece, but anatomy is content. */
+.injury-anatomy-shell {
+  overflow: hidden;
+  border-radius: 17px !important;
+  border-color: rgba(129, 200, 225, 0.16) !important;
+  background: #081019 !important;
+  box-shadow: 0 22px 54px rgba(0, 0, 0, 0.3) !important;
+}
+
+.anatomy-real-stage {
+  background:
+    radial-gradient(ellipse at 48% 50%, rgba(74, 197, 218, 0.09), transparent 37%),
+    linear-gradient(rgba(121, 176, 196, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(121, 176, 196, 0.025) 1px, transparent 1px),
+    #071019 !important;
+  background-size: auto, 32px 32px, 32px 32px, auto !important;
+}
+
+.anatomy-real-data {
+  background: linear-gradient(180deg, #0b151e, #080f17) !important;
+}
+
+.anatomy-real-hud {
+  opacity: 0.36;
+}
+
+.anatomy-real-scan {
+  opacity: 0.44;
+}
+
+.anatomy-real-hotspot[data-source="derived"] {
+  border-style: dashed;
+}
+
+.anatomy-real-hotspot[data-source="measured"] {
+  border-style: solid;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.injury-anatomy-ranking button[data-source="derived"] > div > span {
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 6px, transparent 6px 9px);
+}
+
+.injury-anatomy-ranking button[data-source="measured"] {
+  border-left: 2px solid rgba(133, 216, 240, 0.16);
+}
+
+.injury-measured-metric,
+.injury-osha-list > div {
+  grid-template-columns: minmax(0, 1fr) minmax(44px, 0.7fr) auto !important;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.injury-measured-metric > i,
+.injury-osha-list > div > i {
+  display: block;
+  min-width: 42px;
+  height: 3px;
+  overflow: hidden;
+  border-radius: var(--radius-capsule);
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.injury-measured-metric > i > b,
+.injury-osha-list > div > i > b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #78cde7, #e8bd76 68%, #ec7e89);
+}
+
+/* Dense clinical text remains readable at the intended desktop widths. */
+:is(.injury-header, .job-header, .drug-header, .clinical-header, .condition-header, .standards-header, .deployment-header, .citation-header) p {
+  color: var(--text-secondary) !important;
+  font-size: 0.82rem !important;
+  line-height: 1.55;
+}
+
+:is(.injury-input-wrap input, .injury-input, .job-search-input input, .drug-search-input input, .clinical-field input, .clinical-field select, .condition-search input, .standards-search input, .deployment-search input, .citation-search-input input) {
+  font-size: 0.78rem !important;
+}
+
+.injury-search-panel:has(.injury-input-wrap input:placeholder-shown) .injury-match-list,
+.job-search-panel:has(.job-search-input input:placeholder-shown) .job-match-list {
+  display: none;
+}
+
+.job-source-status strong,
+.injury-source-state,
+.drug-status strong { color: rgba(234, 241, 246, 0.82) !important; font-size: 0.68rem; }
+.job-source-status small,
+.injury-source-state small,
+.drug-status small { color: var(--text-tertiary) !important; font-size: 0.59rem; }
+.job-tabs button { font-size: 0.68rem !important; }
+.job-profile-strip > div:first-child > span { display: none; }
+.job-profile-strip p,
+.job-profile-column p { color: var(--text-secondary) !important; font-size: 0.69rem !important; line-height: 1.5; }
+.job-standards { display: none; }
+
+.injury-empty-state p,
+.injury-signal-copy p,
+.injury-demand-list div,
+.injury-finding-panel > p,
+.injury-finding-grid > div > div,
+.drug-empty p,
+.drug-card p,
+.drug-review-points p,
+.drug-identity-only p,
+.drug-capability p,
+.condition-summary p,
+.condition-questions p,
+.condition-side-note,
+.condition-side-empty,
+.condition-saved-list p,
+.standards-row p,
+.deployment-fact p {
+  color: var(--text-secondary) !important;
+  font-size: 0.69rem !important;
+  line-height: 1.5;
+}
+
+.injury-measured-meta,
+.injury-measured-list span,
+.injury-measured-list strong,
+.injury-measured-unavailable,
+.injury-measured-caveat,
+.clinical-nav button small,
+.standards-framework small,
+.standards-topics span,
+.standards-source,
+.standards-footnote {
+  font-size: 0.59rem !important;
+}
+
+.clinical-panel {
+  min-height: 390px;
+}
+
+.clinical-panel-head p,
+.clinical-field > span,
+.clinical-disclaimer,
+.clinical-reference > button,
+.clinical-reference p {
+  color: var(--text-secondary) !important;
+  font-size: 0.65rem !important;
+}
+
+.standards-table {
+  overflow: hidden;
+  border-radius: 14px !important;
+}
+
+.standards-row {
+  border-bottom-color: rgba(187, 208, 224, 0.08) !important;
+  background: transparent !important;
+}
+
+.standards-row:nth-child(even) {
+  background: rgba(255, 255, 255, 0.012) !important;
+}
+
+.citation-results-panel {
+  min-height: 360px;
+}
+
+.citation-empty {
+  min-height: 235px;
+}
+
+.citation-empty strong,
+.citation-panel-head h2,
+.citation-article-list strong,
+.citation-official-list strong {
+  color: rgba(239, 245, 249, 0.82) !important;
+}
+
+.citation-empty p,
+.citation-article-list small,
+.citation-official-list small,
+.citation-saved-list small,
+.citation-side-empty {
+  color: var(--text-tertiary) !important;
+}
+
+/* Keyboard and contrast protection. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid rgba(174, 228, 249, 0.76) !important;
+  outline-offset: 2px;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .liquid-glass,
+  .glow-btn,
+  .reviewer-sidebar {
+    background: #18202a !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass,
+  .glow-btn,
+  .reviewer-sidebar {
+    --glass-fill: rgba(24, 30, 39, 0.94);
+    --glass-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --text-secondary: rgba(235, 241, 246, 0.84);
+    --text-tertiary: rgba(224, 234, 241, 0.68);
+    --content-border: rgba(224, 239, 248, 0.22);
+    --glass-border: rgba(236, 247, 252, 0.36);
+  }
+
+  .liquid-glass,
+  .glow-btn {
+    --glass-fill: rgba(10, 14, 19, 0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .anatomy-real-scan {
+    display: none !important;
+  }
+
+  .liquid-glass::before,
+  .glow-btn::before {
+    background: linear-gradient(118deg, rgba(255, 255, 255, 0.065), transparent 34%, transparent 74%, rgba(170, 182, 230, 0.035));
+  }
+}
+
+@media (max-width: 1180px) {
+  .reviewer-main-stage {
+    padding-right: 1.5rem;
+    padding-left: 1.7rem;
+  }
+}
+
+
+/* === Consolidated from alpine-ui-theme.css === */
+
+/*
+ * Alpine UI correction pass.
+ * Imported last. The goal is one coherent blue/ice/stone system with
+ * readable desktop typography and zero near-black content slabs.
+ */
+
+:root {
+  --alpine-deep: #2f6e87;
+  --alpine-cyan: #259cbd;
+  --alpine-ice: #95b4c4;
+  --alpine-stone: #4e4741;
+  --alpine-gray: #868481;
+
+  --app-bg-deep: #173641;
+  --app-bg: #1d4451;
+  --app-bg-high: #285665;
+  --surface-1: #244b58;
+  --surface-2: #1f414d;
+  --surface-3: #2d5967;
+  --surface-soft: rgba(47, 110, 135, 0.24);
+  --input-bg: #193944;
+
+  --ui-text: #f7fbfc;
+  --ui-text-2: #dce9ed;
+  --ui-text-3: #b8cdd3;
+  --ui-text-4: #91aeb7;
+  --ui-border: rgba(149, 180, 196, 0.32);
+  --ui-border-soft: rgba(149, 180, 196, 0.18);
+  --ui-accent: #39a8c5;
+  --ui-accent-soft: #95b4c4;
+  --ui-warning: #b9aaa2;
+
+  --canvas-black: var(--app-bg-deep);
+  --canvas-graphite: var(--app-bg);
+  --canvas-blue-black: #204956;
+  --content-1: var(--surface-1);
+  --content-2: var(--surface-2);
+  --content-3: var(--surface-3);
+  --content-border: var(--ui-border-soft);
+  --content-border-strong: var(--ui-border);
+  --text-primary: var(--ui-text);
+  --text-secondary: var(--ui-text-2);
+  --text-tertiary: var(--ui-text-3);
+  --text-quaternary: var(--ui-text-4);
+  --ice: var(--alpine-ice);
+  --ice-bright: #dff6fb;
+  --ice-muted: #7fb7c7;
+
+  --background: 195 47% 19%;
+  --foreground: 195 35% 98%;
+  --border: 198 24% 53%;
+  --input: 195 37% 18%;
+  --ring: 191 67% 44%;
+  --card: 195 31% 25%;
+  --card-foreground: 195 35% 98%;
+  --card-border: 198 24% 49%;
+  --popover: 195 32% 23%;
+  --popover-foreground: 195 35% 98%;
+  --popover-border: 198 24% 49%;
+  --primary: 191 67% 46%;
+  --primary-foreground: 195 55% 9%;
+  --secondary: 196 31% 30%;
+  --secondary-foreground: 195 30% 96%;
+  --muted: 196 26% 27%;
+  --muted-foreground: 195 18% 76%;
+  --accent: 199 28% 68%;
+  --accent-foreground: 195 55% 9%;
+  --sidebar: 196 40% 29%;
+  --sidebar-foreground: 195 35% 97%;
+  --sidebar-border: 198 25% 56%;
+
+  --glass-fill: rgba(39, 83, 97, 0.84);
+  --glass-fill-strong: rgba(45, 89, 103, 0.9);
+  --glass-border: rgba(194, 222, 230, 0.28);
+  --glass-shadow:
+    0 20px 48px rgba(12, 36, 44, 0.22),
+    0 5px 16px rgba(12, 36, 44, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+html,
+body,
+#root {
+  background: var(--app-bg-deep) !important;
+}
+
+html {
+  color-scheme: dark;
+  font-size: 17px;
+}
+
+body {
+  color: var(--ui-text) !important;
+  font-size: 1rem;
+  line-height: 1.55;
+  letter-spacing: 0;
+}
+
+.tahoe-environment {
+  background:
+    radial-gradient(circle at 90% 5%, rgba(37, 156, 189, 0.16), transparent 30%),
+    radial-gradient(circle at 7% 92%, rgba(149, 180, 196, 0.11), transparent 34%),
+    linear-gradient(145deg, #285564 0%, #204a58 42%, #183a46 100%) !important;
+}
+
+.tahoe-environment::before {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 22%) !important;
+}
+
+.tahoe-environment::after {
+  background: linear-gradient(90deg, rgba(78, 71, 65, 0.06), transparent 22%, transparent 82%, rgba(78, 71, 65, 0.06)) !important;
+}
+
+.reviewer-main-stage {
+  padding: 2.1rem 2.5rem 3.5rem !important;
+  background: transparent !important;
+}
+
+.reviewer-scroll-edge {
+  background: linear-gradient(180deg, rgba(28, 67, 80, 0.88), rgba(28, 67, 80, 0.28) 50%, transparent) !important;
+}
+
+/* ---------------------------- Glass --------------------------------------- */
+.liquid-glass,
+.glow-btn {
+  --glass-fill: rgba(43, 86, 100, 0.82);
+  border-color: var(--ui-border) !important;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018) 42%, rgba(37, 156, 189, 0.04) 78%),
+    rgba(43, 86, 100, 0.82) !important;
+  box-shadow: var(--glass-shadow) !important;
+  backdrop-filter: blur(22px) saturate(118%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(118%) !important;
+}
+
+.liquid-glass::before,
+.glow-btn::before {
+  background: linear-gradient(130deg, rgba(255,255,255,.11), transparent 34%, transparent 74%, rgba(149,180,196,.05)) !important;
+  opacity: .55 !important;
+}
+
+.glass-card {
+  color: var(--ui-text-2) !important;
+  border-color: var(--ui-border-soft) !important;
+  background: linear-gradient(150deg, #294f5c, #21444f) !important;
+  box-shadow: 0 14px 34px rgba(11, 35, 43, 0.18) !important;
+}
+
+.glass-input {
+  color: var(--ui-text) !important;
+  border-color: var(--ui-border) !important;
+  background: var(--input-bg) !important;
+}
+
+.glass-input::placeholder { color: var(--ui-text-4) !important; }
+.glass-input:focus {
+  border-color: rgba(37, 156, 189, .8) !important;
+  box-shadow: 0 0 0 3px rgba(37, 156, 189, .15) !important;
+}
+
+/* ---------------------------- Sidebar ------------------------------------- */
+.reviewer-sidebar {
+  --glass-fill: rgba(45, 92, 108, .91);
+  background:
+    linear-gradient(180deg, rgba(54, 113, 136, .92), rgba(37, 78, 94, .94)) !important;
+  border-color: rgba(198, 226, 234, .34) !important;
+  box-shadow:
+    0 24px 60px rgba(9, 31, 39, .24),
+    inset 0 1px 0 rgba(255,255,255,.15) !important;
+}
+
+.sidebar-brand {
+  min-height: 88px !important;
+  border-bottom-color: rgba(213, 235, 241, .2) !important;
+}
+
+.sidebar-brand-mark {
+  width: 39px !important;
+  height: 39px !important;
+  border-radius: 10px !important;
+  color: #fff !important;
+  border-color: rgba(224, 244, 249, .38) !important;
+  background: linear-gradient(145deg, #3e91ad, #2f6e87) !important;
+  font-size: .78rem !important;
+}
+
+.sidebar-brand-title {
+  color: #fff !important;
+  font-size: .9rem !important;
+  letter-spacing: .035em !important;
+}
+
+.sidebar-brand-subtitle {
+  color: rgba(232, 245, 248, .72) !important;
+  font-size: .78rem !important;
+}
+
+.sidebar-nav { padding: .95rem .7rem 1.1rem !important; }
+.sidebar-group { margin-bottom: 1.02rem !important; }
+.sidebar-group-label {
+  margin-bottom: .38rem !important;
+  padding-left: .72rem !important;
+  color: rgba(222, 239, 244, .67) !important;
+  font: 750 .7rem/1.2 var(--app-font-sans) !important;
+  letter-spacing: .1em !important;
+}
+
+.sidebar-home,
+.reviewer-sidebar .nav-item {
+  min-height: 44px !important;
+  gap: .72rem !important;
+  padding: .6rem .72rem !important;
+  border-radius: 11px !important;
+  color: rgba(242, 249, 251, .82) !important;
+  font-size: .91rem !important;
+  font-weight: 620 !important;
+}
+
+.sidebar-home svg,
+.reviewer-sidebar .nav-item svg {
+  width: 18px !important;
+  height: 18px !important;
+}
+
+.sidebar-home:hover,
+.reviewer-sidebar .nav-item:hover {
+  color: #fff !important;
+  border-color: rgba(225, 243, 248, .18) !important;
+  background: rgba(255,255,255,.07) !important;
+}
+
+.sidebar-home.active,
+.reviewer-sidebar .nav-item.active {
+  color: #fff !important;
+  border-color: rgba(222, 244, 249, .38) !important;
+  background: linear-gradient(135deg, rgba(37,156,189,.34), rgba(149,180,196,.18)) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 7px 18px rgba(11,39,47,.14) !important;
+}
+
+/* ---------------------------- Readability --------------------------------- */
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) {
+  color: var(--ui-text-2) !important;
+}
+
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) p {
+  color: var(--ui-text-2) !important;
+  font-size: .92rem !important;
+  line-height: 1.6 !important;
+}
+
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) small {
+  color: var(--ui-text-3) !important;
+  font-size: .76rem !important;
+  line-height: 1.4 !important;
+}
+
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) span {
+  font-size: .78rem !important;
+}
+
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) strong {
+  font-size: .86rem !important;
+}
+
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) button,
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) input,
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) select,
+:where(.job-workbench,.drug-workbench,.clinical-workbench,.condition-reference,.standards-workbench,.citation-workbench,.injury-workbench,.deployment-workbench) textarea {
+  font-size: .88rem !important;
+}
+
+:where(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) {
+  border-bottom-color: var(--ui-border-soft) !important;
+}
+
+:where(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) h1 {
+  color: #fff !important;
+  font-size: clamp(2.2rem, 3vw, 2.8rem) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.045em !important;
+}
+
+:where(.job-header,.drug-header,.clinical-header,.condition-header,.standards-header,.citation-header,.injury-header,.deployment-header) p {
+  max-width: 860px !important;
+  margin-top: .65rem !important;
+  color: #d6e5e9 !important;
+  font-size: .96rem !important;
+  line-height: 1.55 !important;
+}
+
+.job-kicker,
+.drug-kicker,
+.clinical-kicker,
+.condition-kicker,
+.standards-kicker,
+.citation-kicker,
+.injury-kicker,
+.deployment-kicker,
+.job-summary-title,
+.job-standards > span,
+.job-paste-panel > div > span,
+.job-profile-column > span,
+.job-summary-job > span,
+.drug-search-panel > label,
+.drug-panel-head span,
+.drug-card-head > div:first-child > span,
+.drug-side-label,
+.clinical-nav-label,
+.clinical-panel-head > div:first-child > span,
+.clinical-result > div:first-child > span,
+.condition-list-label,
+.condition-summary .condition-title-row span,
+.condition-context > span,
+.condition-trigger > span,
+.condition-section-head > span,
+.condition-side-label,
+.condition-side-head > span,
+.citation-panel-head span,
+.citation-side-head > span,
+.citation-examples > span,
+.injury-strip-label,
+.injury-measured-heading span,
+.injury-panel-heading span,
+.injury-mini-heading,
+.injury-finding-head > div > span,
+.injury-finding-grid > div > span,
+.injury-anatomy-stage-head > div:first-child > span,
+.injury-anatomy-focus > span,
+.injury-anatomy-ranking > span,
+.deployment-title > div > span,
+.deployment-watch > span {
+  color: #9bd8e6 !important;
+  font: 750 .72rem/1.25 var(--app-font-sans) !important;
+  letter-spacing: .095em !important;
+  text-transform: uppercase;
+}
+
+/* ---------------------------- Shared surfaces ------------------------------ */
+.job-search-panel,
+.job-empty-state,
+.job-profile-strip,
+.job-profile-column,
+.job-paste-panel,
+.drug-search-panel,
+.drug-selected-panel,
+.drug-side-panel,
+.drug-card,
+.drug-identity-only,
+.clinical-nav,
+.clinical-panel,
+.clinical-result,
+.condition-category-list,
+.condition-summary,
+.condition-questions,
+.condition-evidence-column > section,
+.standards-row,
+.citation-search-panel,
+.citation-results-panel,
+.citation-side > section,
+.injury-search-panel,
+.injury-empty-state,
+.injury-occupation-strip,
+.injury-measured-section,
+.injury-measured-card,
+.injury-panel,
+.injury-finding-panel,
+.injury-osha-section,
+.injury-osha-list,
+.injury-anatomy-shell,
+.injury-anatomy-data,
+.deployment-detail {
+  color: var(--ui-text-2) !important;
+  border-color: var(--ui-border-soft) !important;
+  background: linear-gradient(145deg, #294f5c 0%, #21434f 100%) !important;
+  box-shadow: 0 12px 30px rgba(10, 34, 42, .16) !important;
+}
+
+.job-search-input,
+.drug-search-input,
+.clinical-field input,
+.clinical-field select,
+.condition-search,
+.standards-search,
+.citation-search-input,
+.injury-input-wrap,
+.injury-input,
+.command-input-wrap {
+  color: var(--ui-text) !important;
+  border-color: var(--ui-border) !important;
+  background: var(--input-bg) !important;
+}
+
+.job-search-input input,
+.drug-search-input input,
+.condition-search input,
+.standards-search input,
+.citation-search-input input,
+.injury-input-wrap input,
+.injury-input {
+  color: var(--ui-text) !important;
+  font-size: .94rem !important;
+}
+
+.job-search-input input::placeholder,
+.drug-search-input input::placeholder,
+.condition-search input::placeholder,
+.standards-search input::placeholder,
+.citation-search-input input::placeholder,
+.injury-input-wrap input::placeholder,
+.injury-input::placeholder {
+  color: #8eabb4 !important;
+  opacity: 1 !important;
+}
+
+.job-match-list,
+.drug-results,
+.citation-search-results,
+.injury-match-list,
+.deployment-search-results {
+  color: var(--ui-text-2) !important;
+  border-color: var(--ui-border) !important;
+  background: #214550 !important;
+  box-shadow: 0 20px 50px rgba(9, 31, 38, .3) !important;
+}
+
+/* ---------------------------- Job ------------------------------------------ */
+.job-source-status strong { color: var(--ui-text) !important; font-size: .8rem !important; }
+.job-source-status small { color: var(--ui-text-3) !important; }
+.job-tabs {
+  border-color: var(--ui-border) !important;
+  background: rgba(28, 63, 75, .86) !important;
+  border-radius: 10px !important;
+}
+.job-tabs button { min-height: 38px !important; color: var(--ui-text-3) !important; }
+.job-tabs button.active { color: #fff !important; border-color: rgba(120,211,231,.35) !important; background: rgba(37,156,189,.24) !important; }
+.job-search-panel { padding: .9rem !important; border-radius: 13px !important; }
+.job-search-panel > label { color: #b9d5dc !important; font-size: .75rem !important; }
+.job-search-input { min-height: 50px !important; border-radius: 9px !important; }
+.job-empty-state { min-height: 220px !important; border-radius: 12px !important; }
+.job-empty-state strong { color: #fff !important; font-size: 1rem !important; }
+.job-example-list span { color: var(--ui-text-3) !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; }
+.job-profile-strip h2 { color: #fff !important; font-size: 1.2rem !important; }
+
+/* ---------------------------- Drug ----------------------------------------- */
+.drug-status strong { color: var(--ui-text) !important; font-size: .8rem !important; }
+.drug-search-panel { padding: .9rem !important; border-radius: 13px !important; }
+.drug-search-panel > label { color: #b9d5dc !important; font-size: .75rem !important; }
+.drug-search-input { min-height: 50px !important; border-radius: 9px !important; }
+.drug-layout { grid-template-columns: minmax(0,1fr) 320px !important; gap: .85rem !important; }
+.drug-selected-panel,.drug-side-panel { border-radius: 12px !important; }
+.drug-selected-panel { padding: 1rem !important; }
+.drug-panel-head h2 { color: #fff !important; font-size: 1.35rem !important; }
+.drug-empty strong { color: #eaf5f7 !important; font-size: .9rem !important; }
+.drug-empty p { color: var(--ui-text-3) !important; }
+.drug-capability { color: #8fd4e3 !important; border-bottom-color: var(--ui-border-soft) !important; }
+.drug-capability strong { color: #f1f8fa !important; font-size: .82rem !important; }
+.drug-capability p { color: var(--ui-text-3) !important; }
+
+/* ---------------------------- Clinical ------------------------------------- */
+.clinical-scope {
+  color: #d8e8ec !important;
+  border-color: var(--ui-border) !important;
+  background: rgba(31, 70, 82, .72) !important;
+  font-size: .78rem !important;
+}
+.clinical-layout { grid-template-columns: 235px minmax(0,1fr) !important; gap: .85rem !important; }
+.clinical-nav,.clinical-panel { border-radius: 12px !important; }
+.clinical-nav-label { color: #b8cfd6 !important; font-size: .72rem !important; }
+.clinical-nav button { min-height: 62px !important; color: var(--ui-text-3) !important; }
+.clinical-nav button strong { font-size: .82rem !important; }
+.clinical-nav button small { font-size: .74rem !important; color: #9fb8c0 !important; }
+.clinical-nav button.active { color: #fff !important; border-left-color: #4fb4ce !important; background: rgba(37,156,189,.17) !important; }
+.clinical-panel { padding: 1.05rem !important; }
+.clinical-panel-head h2 { color: #fff !important; font-size: 1.45rem !important; }
+.clinical-panel-head p { color: var(--ui-text-3) !important; }
+.clinical-field > span { color: #c9dce1 !important; font-size: .74rem !important; }
+.clinical-field input,.clinical-field select { min-height: 44px !important; font-size: .9rem !important; }
+.clinical-actions button { min-height: 40px !important; color: #d5e5e9 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.07) !important; }
+.clinical-actions button.primary { color: #fff !important; border-color: rgba(81,180,204,.45) !important; background: rgba(37,156,189,.22) !important; }
+.clinical-disclaimer { color: #d4c8c2 !important; border-color: rgba(185,170,162,.3) !important; background: rgba(78,71,65,.14) !important; font-size: .78rem !important; }
+.clinical-reference > button { color: #c2d5da !important; font-size: .8rem !important; }
+
+/* ---------------------------- Condition ------------------------------------ */
+.condition-search { min-width: 310px !important; min-height: 46px !important; border-radius: 10px !important; }
+.condition-layout { grid-template-columns: 220px minmax(0,1fr) 330px !important; gap: .82rem !important; }
+.condition-category-list,.condition-summary,.condition-questions,.condition-evidence-column > section { border-radius: 12px !important; }
+.condition-list-label { color: #b9cfd6 !important; font-size: .72rem !important; }
+.condition-category-list button { min-height: 62px !important; color: var(--ui-text-3) !important; }
+.condition-category-list strong { font-size: .8rem !important; }
+.condition-category-list small { color: #9eb7bf !important; font-size: .73rem !important; }
+.condition-category-list button.active { color: #fff !important; border-left-color: #4fb4ce !important; background: rgba(37,156,189,.17) !important; }
+.condition-tabs button { padding: .42rem .62rem !important; color: #aec5cc !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.05) !important; }
+.condition-tabs button.active { color: #fff !important; border-color: rgba(80,184,208,.44) !important; background: rgba(37,156,189,.2) !important; }
+.condition-summary { padding: 1rem !important; }
+.condition-title-row h2 { color: #fff !important; font-size: 1.45rem !important; }
+.condition-evidence { color: #9eb8bf !important; font-size: .72rem !important; }
+.condition-limits > span { color: #c0d3d8 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; }
+.condition-context p,.condition-trigger p,.condition-questions p { color: #d6e4e8 !important; }
+.condition-trigger > span { color: #c8b5ab !important; }
+.condition-trigger p { color: #d3c7c0 !important; }
+.condition-standard-list > div,.condition-article-list a { color: #c8d9de !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.055) !important; }
+.condition-side-note,.condition-side-empty { color: #9fb8bf !important; font-size: .75rem !important; }
+
+/* ---------------------------- Standards ------------------------------------ */
+.standards-search { min-width: 285px !important; min-height: 46px !important; border-radius: 10px !important; }
+.standards-table-head {
+  color: #a9c1c8 !important;
+  font: 750 .72rem/1.2 var(--app-font-sans) !important;
+  letter-spacing: .08em !important;
+}
+.standards-list { border-top-color: var(--ui-border-soft) !important; }
+.standards-row {
+  min-height: 112px !important;
+  padding: .9rem !important;
+  border-bottom-color: var(--ui-border-soft) !important;
+  box-shadow: none !important;
+}
+.standards-row:hover { background: linear-gradient(90deg, #305c6a, #264b57) !important; }
+.standards-icon { color: #9bdce9 !important; border-color: var(--ui-border-soft) !important; background: rgba(37,156,189,.12) !important; }
+.standards-framework strong { color: #f5fbfc !important; font-size: .86rem !important; }
+.standards-framework small { color: #acd0d9 !important; font-size: .76rem !important; }
+.standards-row > p { color: #d8e6e9 !important; font-size: .88rem !important; line-height: 1.5 !important; }
+.standards-topics span { color: #bcd1d7 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; font-size: .72rem !important; }
+.standards-source > a { color: #91d5e5 !important; font-size: .76rem !important; }
+.standards-source > span { color: #a9bfc5 !important; font-size: .75rem !important; }
+.standards-footnote { color: #a8bec5 !important; border-left-color: var(--ui-border) !important; font-size: .76rem !important; }
+
+/* ---------------------------- Citation ------------------------------------- */
+.citation-search-panel { padding: .9rem !important; border-radius: 13px !important; }
+.citation-search-input { min-height: 50px !important; border-radius: 9px !important; }
+.citation-search-input button { min-height: 38px !important; color: #e6f7fa !important; border-color: rgba(80,184,208,.38) !important; background: rgba(37,156,189,.2) !important; font-size: .82rem !important; }
+.citation-examples button { padding: .35rem .5rem !important; color: #a9c2c9 !important; border-color: var(--ui-border-soft) !important; font-size: .73rem !important; }
+.citation-layout { grid-template-columns: minmax(0,1fr) 330px !important; gap: .85rem !important; }
+.citation-results-panel,.citation-side > section { border-radius: 12px !important; }
+.citation-results-panel { padding: 1rem !important; }
+.citation-panel-head h2 { color: #fff !important; font-size: 1.35rem !important; }
+.citation-empty strong { color: #eaf4f7 !important; font-size: .9rem !important; }
+.citation-empty p { color: #a9bec5 !important; }
+.citation-official-list a { border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.055) !important; }
+.citation-official-list strong { color: #edf6f8 !important; font-size: .78rem !important; }
+.citation-official-list small { color: #a9c0c7 !important; font-size: .72rem !important; }
+.citation-side-empty { color: #a7bdc4 !important; font-size: .76rem !important; }
+
+/* ---------------------------- Injury --------------------------------------- */
+.injury-source-state { color: #d2e2e6 !important; font-size: .78rem !important; }
+.injury-source-state small { color: #a4bcc3 !important; }
+.injury-search-panel { padding: .95rem !important; border-radius: 13px !important; }
+.injury-field label { color: #bdd3d9 !important; font: 750 .74rem/1.2 var(--app-font-sans) !important; letter-spacing: .08em !important; }
+.injury-field label span { color: #9eb5bc !important; font-size: .72rem !important; }
+.injury-input-wrap,.injury-input { min-height: 50px !important; border-radius: 9px !important; }
+.injury-empty-state { border-radius: 12px !important; }
+.injury-empty-state strong { color: #fff !important; font-size: 1rem !important; }
+.injury-empty-examples span { color: #b2c8ce !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; }
+.injury-occupation-strip h2 { color: #fff !important; font-size: 1.2rem !important; }
+.injury-measured-section,.injury-osha-section,.injury-anatomy-shell { border-radius: 13px !important; }
+.injury-measured-heading h3,.injury-panel-heading h3,.injury-osha-heading h3,.injury-anatomy-stage-head h3 { color: #fff !important; font-size: 1.05rem !important; }
+.injury-measured-card { min-height: 225px !important; }
+.injury-measured-card-head > div > strong { color: #f0f8fa !important; font-size: .82rem !important; }
+.injury-measured-meta,.injury-osha-meta { color: #a8bec5 !important; font-size: .72rem !important; }
+.injury-measured-total strong { color: #9edeea !important; font-size: 1.2rem !important; }
+.injury-measured-list span,.injury-measured-list p,.injury-measured-unavailable { color: #bed0d5 !important; font-size: .76rem !important; }
+.injury-measured-list strong { color: #edf5f7 !important; font-size: .78rem !important; }
+.injury-measured-caveat,.injury-osha-caveat { color: #afc4ca !important; font-size: .75rem !important; }
+.injury-panel-heading small { color: #a5bcc3 !important; }
+.injury-signal-title strong { color: #f4fafb !important; font-size: .86rem !important; }
+.injury-signal-copy p,.injury-demand-list div,.injury-source-note p,.injury-finding-panel > p,.injury-finding-grid > div > div { color: #cbdde1 !important; font-size: .82rem !important; }
+.injury-signal-tags span,.injury-chip-grid span { color: #b9cfd5 !important; border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; font-size: .72rem !important; }
+.injury-osha-heading span,.injury-osha-list > span { color: #c8b8b0 !important; }
+.injury-osha-summary strong { color: #e0d4ce !important; }
+.injury-osha-list small { color: #bfd0d4 !important; }
+.injury-osha-list strong { color: #f2f7f8 !important; }
+.injury-anatomy-stage {
+  border-right-color: var(--ui-border-soft) !important;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(37,156,189,.14), transparent 35%),
+    linear-gradient(rgba(149,180,196,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(149,180,196,.045) 1px, transparent 1px),
+    #1d3d49 !important;
+  background-size: auto, 24px 24px, 24px 24px, auto !important;
+}
+.injury-anatomy-data { background: linear-gradient(180deg, #244b58, #1f414d) !important; }
+.injury-anatomy-mode { color: #bad0d6 !important; border-color: var(--ui-border-soft) !important; background: rgba(25,57,68,.72) !important; font-size: .75rem !important; }
+
+/* ---------------------------- Deployment ----------------------------------- */
+.deployment-workbench { max-width: 1600px !important; }
+.deployment-search { min-height: 50px !important; border-radius: 12px !important; border-color: var(--ui-border) !important; background: rgba(34,75,88,.9) !important; }
+.deployment-search input { color: #fff !important; font-size: .94rem !important; }
+.deployment-source-links a { padding: .5rem .7rem !important; color: #b7e2eb !important; border-color: var(--ui-border-soft) !important; background: rgba(47,110,135,.18) !important; font-size: .76rem !important; }
+.deployment-map-layout { grid-template-columns: minmax(0,1.55fr) minmax(390px,.86fr) !important; gap: .9rem !important; }
+.deployment-map-card { min-height: 680px !important; border-radius: 16px !important; background: #d8edf3 !important; }
+.deployment-map-canvas { background: #d8edf3 !important; }
+.deployment-map-canvas .maplibregl-ctrl-group { border-color: rgba(47,110,135,.25) !important; background: rgba(247,252,253,.92) !important; box-shadow: 0 7px 20px rgba(47,110,135,.15) !important; }
+.deployment-map-canvas .maplibregl-ctrl-group button { filter: none !important; }
+.deployment-map-canvas .maplibregl-ctrl-attrib { background: rgba(247,252,253,.86) !important; color: #4e6871 !important; }
+.deployment-map-canvas .maplibregl-ctrl-attrib a { color: #2f6e87 !important; }
+.deployment-map-overlay { border-color: rgba(149,180,196,.52) !important; background: rgba(31,69,81,.9) !important; }
+.deployment-map-legend { grid-template-columns: 1fr !important; min-width: 180px !important; padding: .7rem .8rem !important; border-radius: 11px !important; }
+.deployment-map-legend strong { color: #fff !important; font-size: .88rem !important; }
+.deployment-map-hint { color: #edf8fa !important; font: 650 .77rem/1 var(--app-font-sans) !important; }
+.deployment-detail { padding: 1.1rem !important; border-radius: 16px !important; }
+.deployment-title h2 { color: #fff !important; font-size: 1.7rem !important; }
+.deployment-fact,.deployment-watch { border-color: var(--ui-border-soft) !important; background: rgba(149,180,196,.06) !important; border-radius: 10px !important; }
+.deployment-fact { padding: .8rem !important; }
+.deployment-fact span { color: #a8dce7 !important; font-size: .72rem !important; }
+.deployment-watch > div > span { color: #c2e4eb !important; border-color: var(--ui-border-soft) !important; background: rgba(37,156,189,.1) !important; font-size: .74rem !important; }
+.deployment-warning { color: #c9d7db !important; border-left-color: var(--ui-border) !important; background: rgba(149,180,196,.055) !important; }
+
+/* Keep printable documents as documents, not as themed UI. */
+.report-preview,
+.report-preview * { font-family: var(--app-font-serif); }
+
+@media (max-width: 1180px) {
+  .condition-layout { grid-template-columns: 200px minmax(0,1fr) !important; }
+  .condition-evidence-column { grid-column: 1 / -1 !important; }
+  .standards-row { grid-template-columns: 205px 1fr !important; }
+  .deployment-map-layout { grid-template-columns: minmax(0,1fr) 365px !important; }
+}
+
+
+/* === Consolidated from palette-balance.css === */
+
+/*
+ * Alpine lake palette pass.
+ * Loaded last after alpine-ui-theme.css.
+ *
+ * Reference palette from the user-provided image:
+ *   #9CCBD5  pale ice
+ *   #84C4CC  soft aqua
+ *   #979EB3  mist lavender-gray
+ *   #36B1BD  bright lake cyan
+ *   #066A7A  deep lake teal
+ *
+ * Brown/stone has been removed from the visible UI palette.
+ */
+
+:root {
+  --palette-deep: #066a7a;
+  --palette-cyan: #36b1bd;
+  --palette-ice: #9ccbd5;
+  --palette-soft: #84c4cc;
+  --palette-mist: #979eb3;
+
+  /* Also replace the earlier Alpine variables at runtime. */
+  --alpine-deep: #066a7a;
+  --alpine-cyan: #36b1bd;
+  --alpine-ice: #9ccbd5;
+  --alpine-stone: #979eb3;
+  --alpine-gray: #84c4cc;
+
+  --canvas-charcoal: #29373d;
+  --canvas-charcoal-2: #32444b;
+  --canvas-stone: #45515e;
+  --surface-neutral: #414d53;
+  --surface-neutral-2: #4b5960;
+  --surface-stone: #596273;
+  --surface-stone-deep: #454c5b;
+  --input-dark: #223f49;
+
+  --ui-text: #f7fbfc;
+  --ui-text-soft: #dce9ed;
+  --ui-text-muted: #c0d1d6;
+  --ui-border: rgba(156, 203, 213, 0.34);
+  --ui-border-soft: rgba(156, 203, 213, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   CANVAS — cool neutral with mist/teal influence. No brown.
+   -------------------------------------------------------------------------- */
+html,
+body,
+#root {
+  background: var(--canvas-charcoal) !important;
+}
+
+.tahoe-environment {
+  background:
+    radial-gradient(circle at 83% 8%, rgba(54,177,189,.15), transparent 29%),
+    radial-gradient(circle at 8% 16%, rgba(156,203,213,.12), transparent 34%),
+    radial-gradient(circle at 88% 92%, rgba(151,158,179,.18), transparent 42%),
+    linear-gradient(145deg, #303c41 0%, #34484f 42%, #414b57 73%, #2c3f45 100%) !important;
+}
+
+.tahoe-environment::before {
+  background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 24%) !important;
+}
+
+.tahoe-environment::after {
+  background: linear-gradient(90deg, rgba(6,106,122,.08), transparent 25%, transparent 76%, rgba(151,158,179,.08)) !important;
+}
+
+.reviewer-main-stage {
+  background: transparent !important;
+}
+
+.reviewer-scroll-edge {
+  background: linear-gradient(180deg, rgba(42,57,63,.9), rgba(42,57,63,.34) 52%, transparent) !important;
+}
+
+/* --------------------------------------------------------------------------
+   SIDEBAR — deep lake teal + cyan.
+   -------------------------------------------------------------------------- */
+.reviewer-sidebar {
+  --glass-fill: rgba(6,106,122,.93) !important;
+  background:
+    radial-gradient(circle at 78% 5%, rgba(54,177,189,.36), transparent 28%),
+    linear-gradient(180deg, #16899a 0%, #066a7a 48%, #075b69 100%) !important;
+  border-color: rgba(210,239,244,.36) !important;
+  box-shadow: 0 28px 68px rgba(12,29,34,.36), inset 0 1px 0 rgba(255,255,255,.18) !important;
+}
+
+.sidebar-brand-mark {
+  background: linear-gradient(145deg, #36b1bd, #066a7a) !important;
+  border-color: rgba(238,251,254,.4) !important;
+}
+
+.sidebar-home.active,
+.reviewer-sidebar .nav-item.active {
+  background: linear-gradient(135deg, rgba(54,177,189,.8), rgba(132,196,204,.34)) !important;
+  border-color: rgba(229,249,252,.48) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.17), 0 7px 18px rgba(8,58,68,.2) !important;
+}
+
+/* --------------------------------------------------------------------------
+   SEARCH / LOOKUP — pale ice and soft aqua shell + dark inner field.
+   -------------------------------------------------------------------------- */
+.job-search-panel,
+.drug-search-panel,
+.injury-search-panel,
+.citation-search-panel,
+.command-panel,
+.condition-search,
+.standards-search,
+.deployment-search,
+[data-testid="sources-page"] .liquid-toolbar {
+  background: linear-gradient(145deg, rgba(156,203,213,.94), rgba(132,196,204,.88)) !important;
+  border-color: rgba(238,250,252,.56) !important;
+  box-shadow: 0 12px 26px rgba(16,35,40,.22), inset 0 1px 0 rgba(255,255,255,.26) !important;
+}
+
+.job-search-panel > label,
+.drug-search-panel > label,
+.injury-field label,
+.command-label {
+  color: rgba(20,63,72,.9) !important;
+}
+
+.job-search-input,
+.drug-search-input,
+.injury-input-wrap,
+.injury-input,
+.citation-search-input,
+.command-input-wrap,
+.clinical-field input,
+.clinical-field select,
+.glass-input,
+[data-testid="sources-page"] .glass-input {
+  background: var(--input-dark) !important;
+  border-color: rgba(222,244,248,.38) !important;
+  color: #f7fbfc !important;
+}
+
+.job-search-input input::placeholder,
+.drug-search-input input::placeholder,
+.injury-input-wrap input::placeholder,
+.injury-input::placeholder,
+.citation-search-input input::placeholder,
+.command-input-wrap input::placeholder,
+.glass-input::placeholder {
+  color: rgba(220,237,241,.6) !important;
+}
+
+/* --------------------------------------------------------------------------
+   PRIMARY CONTENT — cool charcoal/mist surfaces.
+   -------------------------------------------------------------------------- */
+.job-empty-state,
+.job-profile-strip,
+.drug-selected-panel,
+.clinical-panel,
+.condition-summary,
+.condition-questions,
+.citation-results-panel,
+.injury-panel,
+.injury-finding-panel,
+.injury-measured-section,
+.deployment-detail,
+[data-testid="sources-page"] .glass-card {
+  background: linear-gradient(150deg, rgba(74,84,90,.98), rgba(53,63,69,.99)) !important;
+  border-color: rgba(178,211,219,.27) !important;
+  box-shadow: 0 16px 36px rgba(13,26,30,.25), inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+
+.job-empty-state,
+.drug-selected-panel,
+.clinical-panel,
+.condition-summary,
+.citation-results-panel {
+  background:
+    linear-gradient(150deg, rgba(78,88,96,.98), rgba(57,67,74,.99)),
+    rgba(151,158,179,.08) !important;
+}
+
+/* --------------------------------------------------------------------------
+   CONTEXT / EVIDENCE — replace the old brown family with mist lavender-gray.
+   -------------------------------------------------------------------------- */
+.drug-side-panel,
+.condition-evidence-column > section,
+.citation-side > section,
+.injury-side-column .injury-panel,
+.injury-anatomy-data,
+.clinical-disclaimer,
+.deployment-warning,
+.injury-osha-section {
+  background: linear-gradient(150deg, #5f6678, #474e5e) !important;
+  border-color: rgba(196,205,225,.32) !important;
+  box-shadow: 0 14px 30px rgba(17,22,30,.24), inset 0 1px 0 rgba(255,255,255,.055) !important;
+}
+
+.drug-side-label,
+.condition-side-label,
+.condition-side-head > span,
+.citation-side-head > span,
+.injury-mini-heading,
+.injury-anatomy-focus > span,
+.injury-anatomy-ranking > span,
+.injury-osha-heading span {
+  color: #dce1ed !important;
+}
+
+/* --------------------------------------------------------------------------
+   LIST RAILS — soft aqua + mist instead of brown-gray.
+   -------------------------------------------------------------------------- */
+.clinical-nav,
+.condition-category-list {
+  background: linear-gradient(150deg, #526a75, #465564) !important;
+  border-color: rgba(202,222,228,.24) !important;
+}
+
+.clinical-nav button:not(.active),
+.condition-category-list button:not(.active) {
+  color: rgba(244,248,249,.8) !important;
+}
+
+.clinical-nav button.active,
+.condition-category-list button.active {
+  background: linear-gradient(90deg, rgba(54,177,189,.78), rgba(156,203,213,.34)) !important;
+  border-left-color: #e4f7fa !important;
+  color: #fff !important;
+}
+
+/* --------------------------------------------------------------------------
+   CYAN = interaction only.
+   -------------------------------------------------------------------------- */
+.job-tabs button.active,
+.condition-tabs button.active,
+.tab-btn.active-tab,
+.clinical-actions button.primary,
+.glow-btn,
+.job-profile-actions button {
+  background: linear-gradient(145deg, rgba(54,177,189,.82), rgba(6,106,122,.78)) !important;
+  border-color: rgba(191,235,241,.5) !important;
+  color: #f8fdff !important;
+}
+
+.job-tabs,
+.condition-tabs,
+.hologram-view-toggle {
+  background: rgba(151,158,179,.26) !important;
+  border-color: rgba(210,221,226,.22) !important;
+}
+
+/* --------------------------------------------------------------------------
+   PAGE-SPECIFIC ACCENTS.
+   -------------------------------------------------------------------------- */
+.job-workbench .job-empty-state,
+.job-workbench .job-profile-strip {
+  border-top: 3px solid #9ccbd5 !important;
+}
+
+.drug-workbench .drug-selected-panel {
+  border-top: 3px solid #36b1bd !important;
+}
+
+.clinical-workbench .clinical-panel {
+  border-top: 3px solid #979eb3 !important;
+}
+
+.condition-reference .condition-summary,
+.condition-reference .condition-questions {
+  border-top: 3px solid #84c4cc !important;
+}
+
+.citation-workbench .citation-results-panel {
+  border-top: 3px solid #066a7a !important;
+}
+
+/* Standards — aqua/mist alternation instead of brown rows. */
+.standards-list {
+  border-top: 3px solid #066a7a !important;
+  background: transparent !important;
+}
+
+.standards-row {
+  border-bottom-color: rgba(156,203,213,.15) !important;
+}
+
+.standards-row:nth-child(odd) {
+  background: rgba(151,158,179,.28) !important;
+}
+
+.standards-row:nth-child(even) {
+  background: rgba(132,196,204,.14) !important;
+}
+
+.standards-row:hover {
+  background: rgba(54,177,189,.34) !important;
+}
+
+/* --------------------------------------------------------------------------
+   INJURY ANATOMY — lake teal + mist, no brown tail.
+   -------------------------------------------------------------------------- */
+.injury-anatomy-shell {
+  background: linear-gradient(120deg, #315d68, #4e5968 54%, #486f79 100%) !important;
+  border-color: rgba(156,203,213,.42) !important;
+  border-top: 3px solid #36b1bd !important;
+}
+
+.injury-anatomy-stage {
+  background:
+    radial-gradient(circle at 50% 52%, rgba(54,177,189,.2), transparent 34%),
+    radial-gradient(circle at 35% 30%, rgba(156,203,213,.15), transparent 28%),
+    linear-gradient(rgba(156,203,213,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(156,203,213,.05) 1px, transparent 1px),
+    linear-gradient(145deg, #315660 0%, #465866 60%, #4d717a 112%) !important;
+  background-size: auto, auto, 24px 24px, 24px 24px, auto !important;
+}
+
+/* --------------------------------------------------------------------------
+   AOR — real light map; surrounding UI uses the new lake palette.
+   -------------------------------------------------------------------------- */
+.deployment-map-card {
+  border-color: rgba(156,203,213,.56) !important;
+  background: #dcecf0 !important;
+}
+
+.deployment-map-overlay {
+  background: rgba(6,106,122,.92) !important;
+  border-color: rgba(213,242,246,.42) !important;
+}
+
+.deployment-detail {
+  background: linear-gradient(150deg, #566675, #414e5b) !important;
+}
+
+.deployment-fact,
+.deployment-watch {
+  background: rgba(132,196,204,.09) !important;
+  border-color: rgba(156,203,213,.24) !important;
+}
+
+/* --------------------------------------------------------------------------
+   SOURCE LIBRARY.
+   -------------------------------------------------------------------------- */
+[data-testid="sources-page"] .liquid-toolbar {
+  border-radius: 14px !important;
+}
+
+[data-testid="sources-page"] .glass-card {
+  min-height: 0;
+}
+
+[data-testid="sources-page"] > .glass-card {
+  background: linear-gradient(150deg, #4d5c63, #39474e) !important;
+  border-top: 3px solid #9ccbd5 !important;
+}
+
+[data-testid="sources-page"] .glow-btn {
+  background: linear-gradient(145deg, #36b1bd, #066a7a) !important;
+}
+
+/* --------------------------------------------------------------------------
+   TEXT CONTRAST.
+   -------------------------------------------------------------------------- */
+.job-empty-state p,
+.job-profile-strip p,
+.drug-selected-panel p,
+.clinical-panel p,
+.condition-summary p,
+.condition-questions p,
+.citation-results-panel p,
+.injury-panel p,
+.injury-finding-panel p,
+.injury-measured-section p,
+.standards-row > p,
+.deployment-detail p {
+  color: rgba(244,249,250,.84) !important;
+}
+
+.job-empty-state strong,
+.job-profile-strip strong,
+.drug-selected-panel strong,
+.clinical-panel strong,
+.condition-summary strong,
+.condition-questions strong,
+.citation-results-panel strong,
+.injury-panel strong,
+.injury-finding-panel strong,
+.standards-framework strong,
+.deployment-detail strong {
+  color: #ffffff !important;
+}
+
+.drug-side-panel p,
+.condition-evidence-column p,
+.condition-evidence-column small,
+.citation-side p,
+.citation-side small,
+.injury-side-column p,
+.injury-anatomy-data p,
+.clinical-disclaimer,
+.deployment-warning,
+.injury-osha-section p,
+.injury-osha-section small {
+  color: rgba(244,248,252,.82) !important;
+}
+
+.job-source-status small,
+.drug-status small,
+.condition-evidence,
+.standards-framework small,
+.citation-article-list small,
+.injury-panel-heading small,
+[data-testid="sources-page"] p,
+[data-testid="sources-page"] small {
+  color: rgba(220,235,239,.7) !important;
+}
+
+
+/* === Consolidated from workstation-completion.css === */
+
+/* Completion layer: a single, shared workstation language for every production tool. */
+:root{--ws-surface:linear-gradient(152deg,rgba(20,28,38,.96),rgba(10,15,22,.98));--ws-surface-raised:linear-gradient(145deg,rgba(26,36,47,.92),rgba(13,19,27,.96));--ws-line:rgba(181,220,239,.13);--ws-line-hot:rgba(159,225,248,.3);--ws-muted:rgba(218,231,240,.67);--ws-dim:rgba(207,222,233,.48);--ws-accent:#9de8fb;--ws-radius:15px;--ws-control:44px}
+.glass-card,.clinical-panel,.condition-summary,.condition-questions,.condition-evidence-column>section,.standards-row,.citation-results-panel,.citation-side>section,.job-profile-strip,.job-standards,.job-duty-panel,.drug-selected-panel,.drug-side-panel,.deployment-map-card,.deployment-detail{border:1px solid var(--ws-line)!important;border-radius:var(--ws-radius)!important;background:var(--ws-surface)!important;box-shadow:0 18px 48px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.025)!important}
+.glass-input,.liquid-toolbar input,.liquid-toolbar select{min-height:var(--ws-control);border-radius:11px!important;font-size:14px!important}.glow-btn{min-height:40px;padding:.65rem 1rem;font-size:14px}.glow-btn:not(.glow-btn-secondary):not(.glow-btn-danger){color:#061017;background:linear-gradient(180deg,#c5f5ff,#8ddcee)!important;border-color:#d9f9ff!important;box-shadow:0 7px 22px rgba(68,190,221,.15)!important}.liquid-toolbar{border-radius:14px!important;padding:12px!important}
+.job-header h1,.drug-header h1,.clinical-header h1,.condition-header h1,.standards-header h1,.deployment-header h1,.citation-header h1{font-size:34px!important}.job-header p,.drug-header p,.clinical-header p,.condition-header p,.standards-header p,.deployment-header p,.citation-header p{font-size:15px!important;color:var(--ws-muted)!important;line-height:1.55!important}.job-kicker,.drug-kicker,.clinical-kicker,.condition-kicker,.standards-kicker,.deployment-kicker,.citation-kicker{font:750 12px/1.2 var(--app-font-sans)!important;color:var(--ws-accent)!important;letter-spacing:.075em!important}
+/* Job Intelligence: strong profile/result workspace with readable demand visualizations. */
+.job-workbench{max-width:1660px}.job-tabs{margin-top:18px;padding:5px!important;border-radius:13px!important}.job-tabs button{min-height:40px;padding:0 16px!important;font-size:14px!important;border-radius:9px!important}.job-search-panel{margin-top:14px!important;padding:14px!important;border-radius:15px!important}.job-search-input{min-height:50px!important}.job-search-input input{font-size:15px!important}.job-empty-state{min-height:420px!important;border:1px dashed var(--ws-line)!important;border-radius:15px!important}.job-empty-state h2{font-size:22px!important}.job-empty-state p{font-size:14px!important;color:var(--ws-muted)!important}.job-profile-grid{grid-template-columns:minmax(0,1.55fr) minmax(310px,.7fr)!important;gap:14px!important}.job-standards,.job-duty-panel{padding:18px!important}.job-demand-row,.job-profile-grid li{font-size:14px!important;line-height:1.5!important}.job-duty-row{padding:14px!important;border-radius:10px!important}.job-duty-row strong{font-size:15px!important}.job-duty-row p{font-size:14px!important;color:var(--ws-muted)!important}
+/* Medication workspace: cards, flags and verified-context inspector. */
+.drug-workbench{max-width:1600px}.drug-search-panel{margin-top:16px!important;padding:14px!important;border-radius:15px!important}.drug-search-input{min-height:50px!important;border-radius:11px!important}.drug-search-input input{font-size:15px!important}.drug-layout{grid-template-columns:minmax(0,1fr) 350px!important;gap:14px!important;margin-top:14px!important}.drug-selected-panel,.drug-side-panel{padding:18px!important}.drug-panel-head h2{font-size:20px!important}.drug-panel-head>small,.drug-status small{font-size:13px!important}.drug-empty{min-height:390px!important}.drug-empty strong{font-size:16px!important}.drug-empty p{font-size:14px!important;color:var(--ws-muted)!important}.drug-card-list{gap:10px!important}.drug-card{padding:16px!important;border-radius:12px!important;background:var(--ws-surface-raised)!important}.drug-card-head h3{font-size:17px!important}.drug-card-head p,.drug-review-points p,.drug-identity-only p,.drug-capability p{font-size:13px!important;color:var(--ws-muted)!important}.drug-flags span{padding:5px 8px!important;border-radius:999px!important;font-size:12px!important}.drug-capability{padding:14px 0!important}.drug-capability strong{font-size:14px!important}
+/* Calculators: navigable selector, deliberate input area and prominent result. */
+.clinical-workbench{max-width:1500px}.clinical-layout{grid-template-columns:300px minmax(0,1fr)!important;gap:16px!important;margin-top:18px!important}.clinical-nav{padding:10px!important;border-radius:15px!important}.clinical-nav button{min-height:50px!important;padding:10px 12px!important;border-radius:10px!important;font-size:14px!important}.clinical-panel{padding:22px!important}.clinical-panel-head h2{font-size:22px!important}.clinical-panel-head p,.clinical-disclaimer,.clinical-reference p{font-size:14px!important;color:var(--ws-muted)!important}.clinical-fields{gap:14px!important}.clinical-field input,.clinical-field select{min-height:46px!important;font-size:15px!important}.clinical-actions button{min-height:43px!important;font-size:14px!important}.clinical-result{margin-top:18px!important;padding:22px!important;border-radius:14px!important}.clinical-result strong{font-size:32px!important}
+/* Condition Reference: distinct navigation, clinical core, questions, and evidence inspector. */
+.condition-reference{max-width:1660px}.condition-search{min-height:48px!important;width:min(430px,42vw)!important}.condition-search input{font-size:14px!important}.condition-layout{grid-template-columns:260px minmax(0,1fr) 350px!important;gap:14px!important;margin-top:16px!important}.condition-category-list{padding:8px!important;border:1px solid var(--ws-line);border-radius:15px;background:rgba(9,14,21,.62)}.condition-category-list button{padding:12px!important;border-radius:10px!important}.condition-category-list strong{font-size:14px!important}.condition-category-list small{font-size:12px!important}.condition-summary,.condition-questions,.condition-evidence-column>section{padding:18px!important}.condition-title-row h2{font-size:23px!important}.condition-context p,.condition-trigger p,.condition-questions p,.condition-side-note,.condition-side-empty,.condition-article-list strong,.condition-saved-list p{font-size:13px!important;line-height:1.55!important}.condition-limits span{font-size:12px!important;padding:5px 8px!important;border-radius:999px!important}
+/* Standards: desktop table proportions and scannable framework identity. */
+.standards-workbench{max-width:1600px}.standards-search{min-height:48px!important;width:420px!important}.standards-table-head,.standards-row{grid-template-columns:minmax(230px,.85fr) minmax(330px,1.35fr) minmax(270px,1fr) 125px!important;gap:18px!important}.standards-table-head{padding:14px 18px!important;font-size:12px!important}.standards-row{padding:17px 18px!important;margin-bottom:8px!important}.standards-row:hover{border-color:var(--ws-line-hot)!important;transform:translateY(-1px)}.standards-framework strong{font-size:15px!important}.standards-framework small,.standards-row p{font-size:13px!important;color:var(--ws-muted)!important}.standards-topics span{font-size:12px!important;padding:5px 8px!important;border-radius:999px!important}.standards-source a{min-height:36px!important;font-size:13px!important}
+/* External Factors: map-first split pane and floating control treatment. */
+.deployment-workbench{max-width:1720px}.deployment-toolbar{margin-top:16px!important}.deployment-search-wrap{width:min(480px,100%)!important}.deployment-search{min-height:48px!important;border-radius:12px!important}.deployment-search input{font-size:14px!important}.deployment-map-layout{grid-template-columns:minmax(0,1.8fr) minmax(360px,.65fr)!important;gap:14px!important;margin-top:14px!important}.deployment-map-card{min-height:calc(100vh - 235px)!important}.deployment-detail{padding:18px!important}.deployment-title h2{font-size:23px!important}.deployment-title p,.deployment-fact p,.deployment-warning{font-size:13px!important;color:var(--ws-muted)!important}.deployment-fact{padding:11px!important;border-radius:9px!important}.deployment-fact span,.deployment-watch>span{font-size:11px!important}.deployment-watch>div>span{font-size:12px!important;padding:5px 8px!important;border-radius:999px!important}.deployment-map-state strong{font-size:16px!important}.deployment-map-state span{font-size:13px!important}
+/* Evidence search: larger query surface, readable citations and source rail. */
+.citation-workbench{max-width:1620px}.citation-search-panel{margin-top:16px!important;padding:14px!important;border-radius:15px!important}.citation-search-input{min-height:52px!important}.citation-search-input input{font-size:15px!important}.citation-search-input button{min-height:40px!important;padding:0 18px!important;font-size:14px!important}.citation-examples button{font-size:12px!important}.citation-layout{grid-template-columns:minmax(0,1fr) 350px!important;gap:14px!important;margin-top:14px!important}.citation-results-panel,.citation-side>section{padding:18px!important}.citation-panel-head h2{font-size:20px!important}.citation-empty{min-height:390px!important}.citation-empty strong{font-size:16px!important}.citation-empty p,.citation-message{font-size:14px!important;color:var(--ws-muted)!important}.citation-article-list article,.citation-article-list>a{padding:15px!important;border-radius:11px!important}.citation-article-list strong{font-size:15px!important}.citation-article-list p,.citation-article-list small,.citation-official-list small,.citation-saved-list small{font-size:13px!important;color:var(--ws-muted)!important}.citation-official-list a{padding:12px!important;border-radius:9px!important}
+/* Source Library and Settings: modal editing, rich cards, and settings sections. */
+.library-page,.settings-workstation{max-width:1500px!important}.source-drawer-backdrop{position:fixed;z-index:100;inset:0;display:flex;justify-content:flex-end;background:rgba(2,5,9,.7);backdrop-filter:blur(8px);animation:fade-in .18s ease}.source-drawer{width:min(720px,72vw);height:100%;overflow:auto;border-radius:20px 0 0 20px!important;animation:drawer-in .24s cubic-bezier(.2,.8,.2,1)}.library-page>.glass-card{padding:16px!important}.library-page>.glass-card:hover{border-color:var(--ws-line-hot)!important}.settings-workstation>.glass-card,.settings-workstation>div>.glass-card{padding:20px!important}.settings-workstation>div:nth-of-type(3){gap:14px!important}.settings-workstation textarea{font-size:14px!important;line-height:1.5}.settings-workstation .glass-card>div:first-child{font-size:16px!important}.settings-workstation .glass-card>div:nth-child(2){font-size:14px!important;color:var(--ws-muted)!important}@keyframes drawer-in{from{transform:translateX(35px);opacity:.5}}@keyframes fade-in{from{opacity:0}}
+@media(max-width:1200px){.condition-layout{grid-template-columns:230px minmax(0,1fr)}.condition-evidence-column{grid-column:2}.drug-layout,.citation-layout{grid-template-columns:minmax(0,1fr) 310px!important}.deployment-map-layout{grid-template-columns:minmax(0,1fr) 350px!important}}
+.settings-section-label{margin:22px 0 10px;color:var(--ws-accent);font-size:13px;font-weight:750;letter-spacing:.04em}
