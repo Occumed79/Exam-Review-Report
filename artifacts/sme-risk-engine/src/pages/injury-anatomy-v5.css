@@ -159,3 +159,10 @@
 @media (max-width: 1120px) {
   .anatomy-real-body { width: min(430px, 72vw); }
 }
+/* Purpose-built digital human: translucent segmented shell over technical wireframe. */
+.digital-human .digital-segments path { fill: url(#bodyGlass); stroke: rgba(169, 239, 255, .82); stroke-width: 1.35; filter: drop-shadow(0 0 7px rgba(70, 205, 235, .26)); }
+.digital-human .digital-wire { fill: none; stroke: rgba(190, 244, 255, .52); stroke-width: 1; stroke-dasharray: 3 3; }
+.digital-human .digital-markers { fill: none; stroke: rgba(97, 216, 241, .25); stroke-width: .8; stroke-dasharray: 6 6; }
+.digital-human .digital-markers circle:last-child { animation: digital-pulse 3.2s ease-in-out infinite; transform-origin: 130px 136px; }
+@keyframes digital-pulse { 50% { transform: scale(1.09); opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .digital-human .digital-markers circle:last-child { animation: none; } }

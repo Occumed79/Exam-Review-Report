@@ -8,7 +8,7 @@ import {
   Database,
   Globe,
   Grid3x3,
-  LayoutDashboard,
+  Radar,
   Pill,
   Settings,
   ShieldCheck,
@@ -31,6 +31,8 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/injury-intelligence", label: "Injury Intelligence", icon: Activity },
       { href: "/job-intelligence", label: "Job Intelligence", icon: Briefcase },
+      { href: "/external-factors", label: "External Factors", icon: Globe },
+      { href: "/aor", label: "AOR Intelligence", icon: Radar },
     ],
   },
   {
@@ -40,7 +42,6 @@ const NAV_GROUPS: NavGroup[] = [
       { href: "/calculator", label: "Clinical Calculators", icon: Calculator },
       { href: "/guidelines", label: "Condition Reference", icon: BookOpen },
       { href: "/matrix", label: "Standards Matrix", icon: Grid3x3 },
-      { href: "/aor", label: "AOR / Deployment", icon: Globe },
     ],
   },
   {
@@ -68,16 +69,11 @@ export default function Sidebar() {
         <div className="sidebar-brand-mark">ER</div>
         <div>
           <div className="sidebar-brand-title">EXAM REVIEWER</div>
-          <div className="sidebar-brand-subtitle">Decision Workbench</div>
+          <div className="sidebar-brand-subtitle">Medical Intelligence</div>
         </div>
       </div>
 
       <nav className="sidebar-nav">
-        <Link href="/" className={`sidebar-home${location === "/" ? " active" : ""}`}>
-          <LayoutDashboard size={16} />
-          <span>Workbench</span>
-        </Link>
-
         {NAV_GROUPS.map((group) => (
           <div className="sidebar-group" key={group.label}>
             <div className="sidebar-group-label">{group.label}</div>
@@ -85,7 +81,7 @@ export default function Sidebar() {
               <Link
                 key={href}
                 href={href}
-                className={`nav-item${location === href ? " active" : ""}`}
+                className={`nav-item${location === href || (href === "/injury-intelligence" && location === "/") ? " active" : ""}`}
                 data-testid={`nav-${label.toLowerCase().replace(/\s+/g, "-")}`}
               >
                 <Icon size={15} />
