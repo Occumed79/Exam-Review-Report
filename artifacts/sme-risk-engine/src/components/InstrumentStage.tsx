@@ -8,7 +8,10 @@ export type InstrumentVariant =
   | "vault"
   | "job"
   | "injury"
-  | "aor";
+  | "aor"
+  | "environment"
+  | "standards"
+  | "guidance";
 
 type InstrumentStageProps = {
   variant: InstrumentVariant;
@@ -19,27 +22,33 @@ type InstrumentStageProps = {
   result?: string;
   nodes?: string[];
   count?: number;
+  countLabel?: string;
   status?: string;
   compact?: boolean;
 };
 
-const positions = [
-  [50, 7],
-  [76, 18],
-  [91, 43],
-  [83, 73],
-  [57, 88],
-  [28, 83],
-  [8, 60],
+const nodePositions = [
+  [50, 8],
+  [78, 18],
+  [91, 42],
+  [82, 75],
+  [56, 89],
+  [27, 82],
+  [8, 61],
   [12, 29],
-  [34, 14],
-  [69, 55],
-  [44, 69],
+  [34, 15],
+  [71, 55],
+  [43, 70],
   [28, 48],
 ];
 
+const constellation = [
+  [10, 18], [18, 63], [27, 33], [35, 76], [43, 20], [50, 52], [57, 82],
+  [64, 28], [71, 63], [78, 14], [84, 46], [91, 72], [95, 30], [39, 48],
+];
+
 function nodeStyle(index: number): CSSProperties {
-  const [x, y] = positions[index % positions.length];
+  const [x, y] = nodePositions[index % nodePositions.length];
   return {
     "--node-x": `${x}%`,
     "--node-y": `${y}%`,
@@ -52,9 +61,9 @@ function HoloPerson({ injury = false }: { injury?: boolean }) {
     <svg className="instrument-person" viewBox="0 0 180 330" aria-hidden="true">
       <defs>
         <linearGradient id={`person-glow-${injury ? "injury" : "job"}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#c8f7ff" stopOpacity=".95" />
-          <stop offset=".55" stopColor="#61d6ef" stopOpacity=".68" />
-          <stop offset="1" stopColor="#7d91ff" stopOpacity=".42" />
+          <stop offset="0" stopColor="#dcfbff" stopOpacity="1" />
+          <stop offset=".55" stopColor="#65dff1" stopOpacity=".78" />
+          <stop offset="1" stopColor="#7d91ff" stopOpacity=".46" />
         </linearGradient>
       </defs>
       <g fill="none" stroke={`url(#person-glow-${injury ? "injury" : "job"})`} strokeWidth="2">
@@ -75,6 +84,114 @@ function HoloPerson({ injury = false }: { injury?: boolean }) {
         </g>
       ))}
     </svg>
+  );
+}
+
+function DrugInstrument() {
+  return (
+    <div className="drug-reactor" aria-hidden="true">
+      <div className="drug-spectrum" />
+      <div className="drug-orbit orbit-one"><i /><i /></div>
+      <div className="drug-orbit orbit-two"><i /><i /></div>
+      <div className="drug-orbit orbit-three"><i /></div>
+      <div className="drug-capsule"><span>Rx</span><b /></div>
+      <div className="drug-pulse p1" />
+      <div className="drug-pulse p2" />
+      <div className="drug-pulse p3" />
+    </div>
+  );
+}
+
+function ConditionInstrument() {
+  return (
+    <div className="condition-network-shell" aria-hidden="true">
+      <svg className="condition-network" viewBox="0 0 520 210" preserveAspectRatio="none">
+        <g className="condition-links">
+          <path d="M260 105 L105 38" />
+          <path d="M260 105 L78 104" />
+          <path d="M260 105 L118 176" />
+          <path d="M260 105 L402 34" />
+          <path d="M260 105 L445 104" />
+          <path d="M260 105 L397 177" />
+        </g>
+        <g className="condition-points">
+          <circle cx="105" cy="38" r="5" /><circle cx="78" cy="104" r="5" />
+          <circle cx="118" cy="176" r="5" /><circle cx="402" cy="34" r="5" />
+          <circle cx="445" cy="104" r="5" /><circle cx="397" cy="177" r="5" />
+        </g>
+      </svg>
+      <div className="condition-core"><span>Dx</span><i /><b /></div>
+    </div>
+  );
+}
+
+function EvidenceInstrument() {
+  return (
+    <div className="evidence-observatory" aria-hidden="true">
+      <svg className="evidence-links" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <path d="M10 18 L27 33 L43 20 L64 28 L78 14 L95 30 L84 46 L71 63 L91 72 L57 82 L35 76 L18 63 L39 48 L50 52" />
+        <path d="M27 33 L39 48 L64 28 M50 52 L71 63 M35 76 L50 52" />
+      </svg>
+      {constellation.map(([x, y], index) => (
+        <i key={`${x}-${y}`} className="evidence-star" style={{ left: `${x}%`, top: `${y}%`, "--star-delay": `${index * -0.31}s` } as CSSProperties} />
+      ))}
+      <div className="evidence-reticle"><span>Σ</span></div>
+      <div className="evidence-sweep" />
+    </div>
+  );
+}
+
+function VaultInstrument() {
+  return (
+    <div className="vault-machine" aria-hidden="true">
+      <div className="vault-door">
+        <div className="vault-ring outer" />
+        <div className="vault-ring middle" />
+        <div className="vault-ring inner" />
+        <div className="vault-spokes"><i /><i /><i /><i /><i /><i /></div>
+        <div className="vault-lock"><span>V</span></div>
+      </div>
+      <div className="vault-slots"><i /><i /><i /><i /></div>
+    </div>
+  );
+}
+
+function StandardsInstrument() {
+  return (
+    <div className="standards-lens" aria-hidden="true">
+      {[0, 1, 2, 3, 4].map((index) => (
+        <div key={index} className={`standard-disc disc-${index + 1}`}><i /><b /></div>
+      ))}
+      <div className="standard-beam" />
+      <div className="standard-readout">§</div>
+    </div>
+  );
+}
+
+function GuidanceInstrument() {
+  return (
+    <div className="guidance-stack" aria-hidden="true">
+      {[0, 1, 2, 3].map((index) => (
+        <div key={index} className={`guidance-sheet sheet-${index + 1}`}>
+          <i /><i /><i /><span />
+        </div>
+      ))}
+      <div className="guidance-scan" />
+    </div>
+  );
+}
+
+function EnvironmentInstrument() {
+  return (
+    <div className="environment-chamber" aria-hidden="true">
+      <div className="environment-sun" />
+      <div className="environment-planet" />
+      <div className="environment-band band-hot" />
+      <div className="environment-band band-cold" />
+      <div className="environment-atmosphere a1" />
+      <div className="environment-atmosphere a2" />
+      <div className="environment-marker m1" /><div className="environment-marker m2" />
+    </div>
   );
 }
 
@@ -102,7 +219,7 @@ function CalculatorInstrument({ result, title }: { result?: string; title: strin
         <defs>
           <linearGradient id="waveStroke" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" stopColor="#72dce9" stopOpacity=".1" />
-            <stop offset=".45" stopColor="#c8f7ff" stopOpacity="1" />
+            <stop offset=".45" stopColor="#d9fbff" stopOpacity="1" />
             <stop offset="1" stopColor="#83a8ff" stopOpacity=".15" />
           </linearGradient>
         </defs>
@@ -141,10 +258,13 @@ export default function InstrumentStage({
   result,
   nodes = [],
   count,
+  countLabel = "signals",
   status,
   compact = false,
 }: InstrumentStageProps) {
   const trimmedNodes = nodes.filter(Boolean).slice(0, 12);
+  const showNodes = !["calculator", "standards", "guidance"].includes(variant);
+
   return (
     <section
       className={`instrument-stage instrument-${variant}${compact ? " compact" : ""}`}
@@ -162,45 +282,31 @@ export default function InstrumentStage({
         {primary && <p>{primary}</p>}
         <div className="instrument-meta">
           {status && <span><i className="instrument-status-dot" />{status}</span>}
-          {typeof count === "number" && <span>{count} active signal{count === 1 ? "" : "s"}</span>}
+          {typeof count === "number" && <span>{count} {countLabel}</span>}
           {secondary && <span>{secondary}</span>}
         </div>
       </div>
 
       <div className="instrument-visual">
+        {variant === "drug" && <DrugInstrument />}
         {variant === "calculator" && <CalculatorInstrument result={result} title={title} />}
-
+        {variant === "condition" && <ConditionInstrument />}
+        {variant === "evidence" && <EvidenceInstrument />}
+        {variant === "vault" && <VaultInstrument />}
+        {variant === "standards" && <StandardsInstrument />}
+        {variant === "guidance" && <GuidanceInstrument />}
+        {variant === "environment" && <EnvironmentInstrument />}
         {variant === "job" && (
-          <div className="instrument-person-shell">
-            <div className="instrument-person-halo" />
-            <HoloPerson />
-          </div>
+          <div className="instrument-person-shell"><div className="instrument-person-halo" /><HoloPerson /></div>
         )}
-
         {variant === "injury" && (
-          <div className="instrument-person-shell">
-            <div className="instrument-person-halo injury" />
-            <HoloPerson injury />
-          </div>
+          <div className="instrument-person-shell"><div className="instrument-person-halo injury" /><HoloPerson injury /></div>
         )}
-
         {variant === "aor" && <GlobeInstrument />}
 
-        {(variant === "drug" || variant === "condition" || variant === "evidence" || variant === "vault") && (
-          <div className={`instrument-core-shell ${variant}`}>
-            <div className="instrument-core-orbit orbit-a" />
-            <div className="instrument-core-orbit orbit-b" />
-            <div className="instrument-core-orbit orbit-c" />
-            <div className="instrument-core">
-              <span>{variant === "drug" ? "Rx" : variant === "condition" ? "Dx" : variant === "evidence" ? "Σ" : "V"}</span>
-            </div>
-          </div>
-        )}
-
-        {variant !== "calculator" && trimmedNodes.map((node, index) => (
+        {showNodes && trimmedNodes.map((node, index) => (
           <div className={`instrument-node node-${variant}`} key={`${node}-${index}`} style={nodeStyle(index)}>
-            <i />
-            <span>{node}</span>
+            <i /><span>{node}</span>
           </div>
         ))}
       </div>
