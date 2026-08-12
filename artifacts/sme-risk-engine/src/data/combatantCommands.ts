@@ -10,20 +10,21 @@ export type CombatantCommand = {
   id: CombatantCommandId;
   name: string;
   abbreviation: string;
+  aliases?: string[];
   headquarters: string;
   geographicScope: string;
   countriesAreas: string[];
+  countryIso2: string[];
   healthCountries: Array<{ name: string; iso3: string }>;
   newsQuery: string;
   policyQuery: string;
-  mapPath: string;
-  mapLabel: { x: number; y: number };
+  mapView: { center: [number, number]; zoom: number };
   source: { label: string; url: string };
 };
 
-// Geographic descriptions follow the commands' public AOR pages. The short
-// country/area lists are orientation labels, not an attempt to redraw legal AOR
-// boundaries. The Unified Command Plan remains the controlling assignment.
+// Public country coverage is used only to orient the interactive map. Maritime
+// boundaries and the controlling assignment remain defined by the Unified
+// Command Plan and the commands' official public AOR descriptions.
 export const COMBATANT_COMMANDS: CombatantCommand[] = [
   {
     id: "northcom",
@@ -31,26 +32,27 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
     abbreviation: "USNORTHCOM",
     headquarters: "Peterson Space Force Base, Colorado",
     geographicScope:
-      "The continental United States, Alaska, Canada, Mexico, The Bahamas, and surrounding approaches.",
+      "The continental United States, Alaska, Canada, Mexico, Greenland, The Bahamas, and surrounding approaches assigned by the Unified Command Plan.",
     countriesAreas: [
       "United States",
       "Canada",
       "Mexico",
+      "Greenland",
       "The Bahamas",
       "Gulf of Mexico",
       "Straits of Florida",
     ],
+    countryIso2: ["US", "CA", "MX", "GL", "BS", "PR", "VI"],
     healthCountries: [
       { name: "United States", iso3: "USA" },
       { name: "Canada", iso3: "CAN" },
       { name: "Mexico", iso3: "MEX" },
     ],
     newsQuery:
-      '(disaster OR earthquake OR wildfire OR hurricane OR outbreak OR "public health" OR infrastructure OR transportation OR security) AND (United States OR Canada OR Mexico OR Bahamas)',
+      '(disaster OR earthquake OR wildfire OR hurricane OR outbreak OR "public health" OR infrastructure OR transportation OR security) AND ("United States" OR Canada OR Mexico OR Bahamas OR Greenland)',
     policyQuery:
       "homeland defense disaster response deployment occupational health NORTHCOM",
-    mapPath: "M40 72L254 55 337 109 300 205 202 230 119 190 57 152Z",
-    mapLabel: { x: 178, y: 133 },
+    mapView: { center: [-101, 46], zoom: 1.55 },
     source: {
       label: "USNORTHCOM — About the Command",
       url: "https://www.northcom.mil/About-USNORTHCOM/",
@@ -62,13 +64,17 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
     abbreviation: "USSOUTHCOM",
     headquarters: "Doral, Florida",
     geographicScope:
-      "Central America, South America, and the Caribbean, excluding U.S. commonwealths, territories, and possessions.",
+      "Central America, South America, and the Caribbean, excluding U.S. commonwealths, territories, and possessions assigned elsewhere.",
     countriesAreas: [
       "Central America",
       "South America",
-      "Caribbean Sea",
       "Caribbean nations",
       "Adjacent Atlantic and Pacific waters",
+    ],
+    countryIso2: [
+      "AG", "AR", "BB", "BZ", "BO", "BR", "CL", "CO", "CR", "CU", "DM",
+      "DO", "EC", "SV", "GD", "GT", "GY", "HT", "HN", "JM", "NI", "PA",
+      "PY", "PE", "KN", "LC", "VC", "SR", "TT", "UY", "VE",
     ],
     healthCountries: [
       { name: "Brazil", iso3: "BRA" },
@@ -76,11 +82,10 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
       { name: "Panama", iso3: "PAN" },
     ],
     newsQuery:
-      '(disaster OR earthquake OR flood OR hurricane OR outbreak OR "public health" OR disruption OR infrastructure OR conflict) AND ("South America" OR "Central America" OR Caribbean)',
+      '(disaster OR earthquake OR flood OR hurricane OR outbreak OR "public health" OR disruption OR infrastructure OR conflict) AND ("South America" OR "Central America" OR Caribbean OR Brazil OR Colombia)',
     policyQuery:
       "SOUTHCOM Latin America Caribbean disaster response deployment health security",
-    mapPath: "M211 234L302 211 356 271 334 438 279 500 238 405 247 320Z",
-    mapLabel: { x: 286, y: 330 },
+    mapView: { center: [-67, -9], zoom: 1.7 },
     source: {
       label: "USSOUTHCOM — Area of Responsibility",
       url: "https://www.southcom.mil/About/Area-of-Responsibility/",
@@ -92,14 +97,21 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
     abbreviation: "USEUCOM",
     headquarters: "Patch Barracks, Stuttgart, Germany",
     geographicScope:
-      "Europe, portions of Asia and the Middle East, the Arctic and Atlantic oceans, and associated approaches assigned by the Unified Command Plan.",
+      "Europe and assigned portions of Eurasia, the Arctic, Atlantic, and adjoining approaches under the Unified Command Plan.",
     countriesAreas: [
       "Europe",
       "Türkiye",
       "Russia",
-      "Greenland",
+      "Caucasus",
       "Arctic Ocean",
       "North Atlantic",
+    ],
+    countryIso2: [
+      "AL", "AD", "AM", "AT", "AZ", "BY", "BE", "BA", "BG", "HR", "CY",
+      "CZ", "DK", "EE", "FI", "FR", "GE", "DE", "GR", "HU", "IS", "IE",
+      "IT", "XK", "LV", "LI", "LT", "LU", "MT", "MD", "MC", "ME", "NL",
+      "MK", "NO", "PL", "PT", "RO", "RU", "SM", "RS", "SK", "SI", "ES",
+      "SE", "CH", "TR", "UA", "GB", "VA",
     ],
     healthCountries: [
       { name: "Germany", iso3: "DEU" },
@@ -107,10 +119,9 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
       { name: "Türkiye", iso3: "TUR" },
     ],
     newsQuery:
-      '(disaster OR flood OR wildfire OR outbreak OR "public health" OR infrastructure OR transportation OR conflict OR security) AND (Europe OR European OR Ukraine)',
+      '(disaster OR flood OR wildfire OR outbreak OR "public health" OR infrastructure OR transportation OR conflict OR security) AND (Europe OR European OR Ukraine OR Russia OR Türkiye)',
     policyQuery: "EUCOM Europe deployment security occupational health defense",
-    mapPath: "M443 62L615 51 665 117 628 186 548 191 480 151 417 122Z",
-    mapLabel: { x: 535, y: 119 },
+    mapView: { center: [21, 52], zoom: 2.15 },
     source: {
       label: "USEUCOM — Area of Focus",
       url: "https://www.eucom.mil/about-the-command/area-of-focus",
@@ -124,9 +135,17 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
     geographicScope:
       "The African continent, its island nations, and surrounding waters, except Egypt.",
     countriesAreas: [
-      "African continent except Egypt",
+      "53 African states",
       "African island nations",
       "Adjacent Atlantic and Indian Ocean waters",
+      "Egypt assigned to USCENTCOM",
+    ],
+    countryIso2: [
+      "DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM",
+      "CG", "CD", "CI", "DJ", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH",
+      "GN", "GW", "KE", "LS", "LR", "LY", "MG", "MW", "ML", "MR", "MU",
+      "MA", "MZ", "NA", "NE", "NG", "RW", "ST", "SN", "SC", "SL", "SO",
+      "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "ZM", "ZW",
     ],
     healthCountries: [
       { name: "Kenya", iso3: "KEN" },
@@ -134,10 +153,9 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
       { name: "South Africa", iso3: "ZAF" },
     ],
     newsQuery:
-      '(outbreak OR epidemic OR flood OR drought OR cyclone OR disaster OR "public health" OR infrastructure OR conflict OR security) AND (Africa OR African)',
+      '(outbreak OR epidemic OR flood OR drought OR cyclone OR disaster OR "public health" OR infrastructure OR conflict OR security) AND (Africa OR African OR Sahel)',
     policyQuery: "AFRICOM Africa deployment health security defense",
-    mapPath: "M437 190L585 182 651 250 598 422 515 469 445 373 408 255Z",
-    mapLabel: { x: 525, y: 294 },
+    mapView: { center: [19, 3], zoom: 1.8 },
     source: {
       label: "USAFRICOM — About the Command",
       url: "https://www.africom.mil/about-the-command",
@@ -149,7 +167,7 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
     abbreviation: "USCENTCOM",
     headquarters: "MacDill Air Force Base, Tampa, Florida",
     geographicScope:
-      "The central region connecting Europe, Africa, and Asia, including Egypt, the Levant, Arabian Peninsula, Iraq, Iran, Afghanistan, Pakistan, and Central Asia.",
+      "Twenty-one nations spanning the Middle East and Central and South Asia, from Egypt through the Arabian Peninsula to Pakistan and Central Asia.",
     countriesAreas: [
       "Egypt",
       "Levant",
@@ -158,17 +176,20 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
       "Afghanistan and Pakistan",
       "Central Asia",
     ],
+    countryIso2: [
+      "AF", "BH", "EG", "IR", "IQ", "IL", "JO", "KZ", "KW", "KG", "LB",
+      "OM", "PK", "QA", "SA", "SY", "TJ", "TM", "AE", "UZ", "YE",
+    ],
     healthCountries: [
       { name: "Egypt", iso3: "EGY" },
       { name: "Jordan", iso3: "JOR" },
       { name: "Pakistan", iso3: "PAK" },
     ],
     newsQuery:
-      '(outbreak OR flood OR earthquake OR disaster OR "public health" OR infrastructure OR transportation OR conflict OR security) AND ("Middle East" OR "Central Asia" OR Pakistan OR Afghanistan)',
+      '(outbreak OR flood OR earthquake OR disaster OR "public health" OR healthcare OR infrastructure OR transportation OR conflict OR attack OR security) AND ("Middle East" OR "Central Asia" OR Pakistan OR Afghanistan OR Iran OR Iraq OR Israel OR Jordan OR Gulf)',
     policyQuery:
       "CENTCOM Middle East Central Asia deployment health security defense",
-    mapPath: "M588 165L733 152 785 232 722 326 633 287 577 224Z",
-    mapLabel: { x: 680, y: 224 },
+    mapView: { center: [53, 30], zoom: 2.25 },
     source: {
       label: "USCENTCOM — Area of Responsibility",
       url: "https://www.centcom.mil/AREA-OF-RESPONSIBILITY/",
@@ -176,19 +197,25 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
   },
   {
     id: "indopacom",
-    name: "United States Indo-Pacific Command",
-    abbreviation: "USINDOPACOM",
+    name: "United States Pacific Command",
+    abbreviation: "USPACOM",
+    aliases: ["USINDOPACOM", "INDOPACOM"],
     headquarters: "Camp H. M. Smith, Hawaii",
     geographicScope:
-      "The Indo-Pacific from the U.S. West Coast to India, and from the Arctic to Antarctica, as assigned by the Unified Command Plan.",
+      "The Indo-Pacific from the waters off the U.S. West Coast to India's western border, and from the Arctic to Antarctica, as assigned by the Unified Command Plan.",
     countriesAreas: [
-      "India",
-      "South Asia",
+      "India and South Asia",
       "Southeast Asia",
       "East Asia",
       "Australia and New Zealand",
       "Pacific island nations",
       "Indian and Pacific oceans",
+    ],
+    countryIso2: [
+      "AU", "BD", "BT", "BN", "KH", "CN", "TW", "FJ", "IN", "ID", "JP",
+      "KI", "LA", "MY", "MV", "MH", "FM", "MN", "MM", "NR", "NP", "NZ",
+      "KP", "PW", "PG", "PH", "WS", "SG", "SB", "KR", "LK", "TH", "TL",
+      "TO", "TV", "VU", "VN",
     ],
     healthCountries: [
       { name: "India", iso3: "IND" },
@@ -196,17 +223,22 @@ export const COMBATANT_COMMANDS: CombatantCommand[] = [
       { name: "Philippines", iso3: "PHL" },
     ],
     newsQuery:
-      '(typhoon OR cyclone OR earthquake OR tsunami OR outbreak OR "public health" OR infrastructure OR transportation OR conflict OR security) AND ("Indo-Pacific" OR Asia OR Pacific)',
-    policyQuery: "INDOPACOM Indo-Pacific deployment health security defense",
-    mapPath: "M704 59L963 72 977 335 894 449 764 388 703 306 776 229 715 159Z",
-    mapLabel: { x: 854, y: 172 },
+      '(typhoon OR cyclone OR earthquake OR tsunami OR outbreak OR "public health" OR infrastructure OR transportation OR conflict OR attack OR security) AND ("Indo-Pacific" OR Pacific OR India OR Japan OR Philippines OR China OR Korea)',
+    policyQuery: "Pacific Command Indo-Pacific deployment health security defense",
+    mapView: { center: [142, 13], zoom: 1.45 },
     source: {
-      label: "USINDOPACOM — About",
-      url: "https://www.pacom.mil/About-USINDOPACOM/",
+      label: "USPACOM — About",
+      url: "https://www.pacom.mil/About-USP​ACOM/".replace("​", ""),
     },
   },
 ];
 
 export const COMBATANT_COMMAND_BY_ID = new Map(
   COMBATANT_COMMANDS.map((command) => [command.id, command]),
+);
+
+export const COMBATANT_COMMAND_BY_COUNTRY = new Map(
+  COMBATANT_COMMANDS.flatMap((command) =>
+    command.countryIso2.map((iso2) => [iso2, command] as const),
+  ),
 );
