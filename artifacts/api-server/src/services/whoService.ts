@@ -3,14 +3,53 @@ import { fetchJson, isoNow, record, text } from "../lib/upstream";
 const GHO = "https://ghoapi.azureedge.net/api";
 const XMART = "https://xmart-api-public.who.int/";
 
+type IndicatorDefinition = {
+  name: string;
+  unit: string;
+  min: number;
+  max: number;
+};
+
+// Keep this catalog intentionally small and medically useful. The codes below
+// are WHO GHO indicator codes, not labels inferred from similarly named series.
 const INDICATOR_CATALOG = {
-  WHOSIS_000001: { name: "Life expectancy at birth", unit: "years" },
-  WHOSIS_000015: { name: "Healthy life expectancy at birth", unit: "years" },
-  WHS4_100: { name: "Hospital beds", unit: "per 10,000 population" },
-  WHS6_102: { name: "Medical doctors", unit: "per 10,000 population" },
-  RS_194: { name: "Universal health coverage service coverage index", unit: "index" },
-  AIR_11: { name: "Population using clean fuels and technologies for cooking", unit: "%" },
-} as const;
+  WHOSIS_000001: {
+    name: "Life expectancy at birth",
+    unit: "years",
+    min: 0,
+    max: 120,
+  },
+  WHOSIS_000002: {
+    name: "Healthy life expectancy at birth",
+    unit: "years",
+    min: 0,
+    max: 120,
+  },
+  WHS4_100: {
+    name: "Hospital beds",
+    unit: "per 10,000 population",
+    min: 0,
+    max: 1000,
+  },
+  WHS6_102: {
+    name: "Medical doctors",
+    unit: "per 10,000 population",
+    min: 0,
+    max: 1000,
+  },
+  UHC_INDEX_REPORTED: {
+    name: "Universal health coverage service coverage index",
+    unit: "index (0–100)",
+    min: 0,
+    max: 100,
+  },
+  PHE_HHAIR_PROP_POP_CLEAN_FUELS: {
+    name: "Population using clean fuels and technologies for cooking",
+    unit: "%",
+    min: 0,
+    max: 100,
+  },
+} as const satisfies Record<string, IndicatorDefinition>;
 
 export const WHO_INDICATORS = Object.keys(INDICATOR_CATALOG) as Array<
   keyof typeof INDICATOR_CATALOG
@@ -37,18 +76,44 @@ type NormalizedIndicator = {
   dataYear: number;
 };
 
+function isAggregateDimension(value: unknown) {
+  const dim = text(value).trim().toUpperCase();
+  if (!dim) return true;
+  return (
+    dim === "ALL" ||
+    dim === "TOTAL" ||
+    dim === "BTSX" ||
+    dim === "SEX_BTSX" ||
+    dim.endsWith("_TOTL") ||
+    dim.endsWith("_TOTAL") ||
+    dim.endsWith("_BTSX")
+  );
+}
+
 function chooseLatestRow(rows: unknown[]) {
   const normalized = rows
     .map(record)
-    .filter((row) => typeof row.NumericValue === "number" && Number(row.TimeDim))
+    .filter((row) => Number.isFinite(Number(row.NumericValue)) && Number(row.TimeDim))
     .sort((a, b) => Number(b.TimeDim) - Number(a.TimeDim));
 
+  if (!normalized.length) return null;
+
+  const latestYear = Number(normalized[0].TimeDim);
+  const latest = normalized.filter((row) => Number(row.TimeDim) === latestYear);
+
   return (
-    normalized.find((row) => {
-      const dim = text(row.Dim1).toUpperCase();
-      return !dim || dim === "BTSX" || dim === "SEX_BTSX";
-    }) ?? normalized[0]
+    latest.find(
+      (row) =>
+        isAggregateDimension(row.Dim1) &&
+        isAggregateDimension(row.Dim2) &&
+        isAggregateDimension(row.Dim3),
+    ) ?? latest[0]
   );
+}
+
+function displayValue(row: Record<string, unknown>, numericValue: number) {
+  const formatted = text(row.Value).trim();
+  return formatted || String(numericValue);
 }
 
 async function fetchIndicator(
@@ -58,7 +123,7 @@ async function fetchIndicator(
   const url = new URL(`${GHO}/${indicatorCode}`);
   url.searchParams.set("$filter", `SpatialDim eq '${countryCode}'`);
   url.searchParams.set("$orderby", "TimeDim desc");
-  url.searchParams.set("$top", "24");
+  url.searchParams.set("$top", "40");
   url.searchParams.set("$format", "json");
 
   const payload = record(await fetchJson(`WHO GHO ${indicatorCode}`, url));
@@ -68,15 +133,23 @@ async function fetchIndicator(
 
   const numericValue = Number(row.NumericValue);
   const dataYear = Number(row.TimeDim);
-  if (!Number.isFinite(numericValue) || !Number.isFinite(dataYear)) return null;
-
   const catalog = INDICATOR_CATALOG[indicatorCode];
+
+  if (
+    !Number.isFinite(numericValue) ||
+    !Number.isFinite(dataYear) ||
+    numericValue < catalog.min ||
+    numericValue > catalog.max
+  ) {
+    return null;
+  }
+
   return {
     indicatorCode,
-    indicatorName: text(row.IndicatorName) || catalog.name,
+    indicatorName: catalog.name,
     value: numericValue,
-    displayValue: text(row.Value) || String(numericValue),
-    unit: text(row.Unit) || catalog.unit,
+    displayValue: displayValue(row, numericValue),
+    unit: catalog.unit,
     country: text(row.SpatialDim) || countryCode,
     dataYear,
   };
