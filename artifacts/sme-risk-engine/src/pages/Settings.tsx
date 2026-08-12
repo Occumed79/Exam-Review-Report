@@ -498,6 +498,16 @@ function ProviderStatusCard({ provider }: { provider: ProviderStatusRecord }) {
           <dd>{displayTime(provider.checkedAt)}</dd>
         </div>
         <div>
+          <dt>Configuration</dt>
+          <dd>
+            {provider.authentication === "public"
+              ? "Public / no credential"
+              : provider.configured
+                ? "Server credential configured"
+                : "Server credential missing"}
+          </dd>
+        </div>
+        <div>
           <dt>Last successful response</dt>
           <dd>{displayTime(provider.lastSuccessfulResponse)}</dd>
         </div>

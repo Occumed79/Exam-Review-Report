@@ -17,6 +17,7 @@ export type ProviderStatusRecord = {
   id: string;
   name: string;
   status: "connected" | "public" | "not_configured" | "error" | "degraded";
+  configured: boolean;
   authentication: "required" | "public";
   checkedAt: string;
   lastSuccessfulResponse: string | null;

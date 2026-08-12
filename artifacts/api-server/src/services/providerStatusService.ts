@@ -10,6 +10,7 @@ export type ProviderStatus = {
   id: string;
   name: string;
   status: ProviderState;
+  configured: boolean;
   authentication: "required" | "public";
   checkedAt: string;
   lastSuccessfulResponse: string | null;
@@ -38,6 +39,7 @@ async function check(
       id,
       name,
       status: "not_configured",
+      configured: false,
       authentication,
       checkedAt,
       lastSuccessfulResponse: lastSuccess.get(id) ?? null,
@@ -47,6 +49,7 @@ async function check(
       id,
       name,
       status: "degraded",
+      configured,
       authentication,
       checkedAt,
       lastSuccessfulResponse: lastSuccess.get(id) ?? null,
@@ -59,6 +62,7 @@ async function check(
         id,
         name,
         status: response.status === 429 ? "degraded" : "error",
+        configured,
         authentication,
         checkedAt,
         lastSuccessfulResponse: lastSuccess.get(id) ?? null,
@@ -72,6 +76,7 @@ async function check(
       id,
       name,
       status: authentication === "public" ? "public" : "connected",
+      configured,
       authentication,
       checkedAt,
       lastSuccessfulResponse: checkedAt,
@@ -81,6 +86,7 @@ async function check(
       id,
       name,
       status: "error",
+      configured,
       authentication,
       checkedAt,
       lastSuccessfulResponse: lastSuccess.get(id) ?? null,
