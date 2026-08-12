@@ -17,6 +17,11 @@ export type IntelligenceStatus = {
   };
   bls: { configured: boolean; authMode: string; source: string; note: string; measuredTables?: boolean };
   osha: { publicSevereInjuryData: boolean; source: string; note: string };
+  congress?: { configured: boolean; source: string; health: string; accountConfigured?: boolean };
+  regulations?: { configured: boolean; source: string; health: string; accountConfigured?: boolean };
+  newsData?: { configured: boolean; source: string; health: string };
+  apiTube?: { configured: boolean; source: string; health: string };
+  who?: { configured: boolean; source: string; health: string; authentication?: string };
 };
 
 export type InjuryMetric = { label: string; value: number };
