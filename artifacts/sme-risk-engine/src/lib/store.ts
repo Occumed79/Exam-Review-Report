@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Guideline, Source } from "./types";
 
 type UnknownRecord = Record<string, unknown>;
@@ -27,6 +27,15 @@ function sanitizeImportData(data: unknown): { guidelines: Guideline[]; sources: 
 }
 
 const KEYS = { guidelines: "sme_guidelines", sources: "sme_sources" };
+const STORE_EVENT = "exam-reviewer-store-change";
+const notify = () => queueMicrotask(() => window.dispatchEvent(new Event(STORE_EVENT)));
+function canonicalUrl(value: string) {
+  try {
+    const url = new URL(value); url.hash = "";
+    ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"].forEach((key) => url.searchParams.delete(key));
+    return url.toString().replace(/\/$/, "").toLowerCase();
+  } catch { return value.trim().toLowerCase().replace(/\/$/, ""); }
+}
 
 function loadValidatedArray<T>(key: string, guard: (value: unknown) => value is T): T[] {
   try {
@@ -50,6 +59,11 @@ function save<T>(key: string, value: T): void {
 export function useStore() {
   const [guidelines, setGuidelines] = useState<Guideline[]>(() => loadValidatedArray(KEYS.guidelines, isGuidelineLike));
   const [sources, setSources] = useState<Source[]>(() => loadValidatedArray(KEYS.sources, isSourceLike));
+  useEffect(() => {
+    const sync = () => { setGuidelines(loadValidatedArray(KEYS.guidelines, isGuidelineLike)); setSources(loadValidatedArray(KEYS.sources, isSourceLike)); };
+    window.addEventListener(STORE_EVENT, sync); window.addEventListener("storage", sync);
+    return () => { window.removeEventListener(STORE_EVENT, sync); window.removeEventListener("storage", sync); };
+  }, []);
 
   const saveGuideline = useCallback((guideline: Guideline) => {
     setGuidelines((previous) => {
@@ -57,6 +71,7 @@ export function useStore() {
         ? previous.map((item) => (item.id === guideline.id ? guideline : item))
         : [...previous, guideline];
       save(KEYS.guidelines, updated);
+      notify();
       return updated;
     });
   }, []);
@@ -65,16 +80,18 @@ export function useStore() {
     setGuidelines((previous) => {
       const updated = previous.filter((item) => item.id !== id);
       save(KEYS.guidelines, updated);
+      notify();
       return updated;
     });
   }, []);
 
   const saveSource = useCallback((source: Source) => {
     setSources((previous) => {
-      const updated = previous.some((item) => item.id === source.id)
-        ? previous.map((item) => (item.id === source.id ? source : item))
-        : [...previous, source];
+      const duplicate = previous.find((item) => item.id === source.id || (source.url && item.url && canonicalUrl(item.url) === canonicalUrl(source.url)) || (!source.url && item.title.trim().toLowerCase() === source.title.trim().toLowerCase() && item.organization.trim().toLowerCase() === source.organization.trim().toLowerCase()));
+      const normalized = { ...source, id: duplicate?.id ?? source.id };
+      const updated = duplicate ? previous.map((item) => item.id === duplicate.id ? normalized : item) : [...previous, normalized];
       save(KEYS.sources, updated);
+      notify();
       return updated;
     });
   }, []);
@@ -83,6 +100,7 @@ export function useStore() {
     setSources((previous) => {
       const updated = previous.filter((item) => item.id !== id);
       save(KEYS.sources, updated);
+      notify();
       return updated;
     });
   }, []);
@@ -92,6 +110,7 @@ export function useStore() {
     localStorage.removeItem(KEYS.sources);
     setGuidelines([]);
     setSources([]);
+    notify();
   }, []);
 
   const exportAll = useCallback(() => {
@@ -113,6 +132,7 @@ export function useStore() {
       save(KEYS.sources, data.sources);
       setGuidelines(data.guidelines);
       setSources(data.sources);
+      notify();
       return true;
     } catch {
       return false;

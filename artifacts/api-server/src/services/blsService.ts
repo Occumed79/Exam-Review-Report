@@ -29,11 +29,17 @@ export async function fetchBlsTimeseries(seriesIds: string[], startYear: number,
   const key = apiKey();
   if (key) body.registrationKey = key;
 
-  const response = await fetch(BLS_API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify(body),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10_000);
+  let response: Response;
+  try {
+    response = await fetch(BLS_API_URL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body), signal: controller.signal });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") throw new Error("BLS request timed out.");
+    throw new Error("BLS is temporarily unavailable.");
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (!response.ok) throw new Error(`BLS request failed (${response.status}).`);
   return response.json() as Promise<unknown>;

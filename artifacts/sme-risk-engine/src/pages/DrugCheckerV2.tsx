@@ -144,11 +144,13 @@ export default function DrugCheckerV2() {
       setSourceMode(null);
       return;
     }
+    const controller = new AbortController();
     const timer = window.setTimeout(async () => {
       setSearching(true);
       setNotice('');
       try {
-        const live = await searchRxNorm(clean, 8);
+        const live = await searchRxNorm(clean, 8, controller.signal);
+        if (controller.signal.aborted) return;
         if (live.length) {
           setResults(live);
           setSourceMode('live');
@@ -158,14 +160,15 @@ export default function DrugCheckerV2() {
           setNotice('RxNorm returned no match. Showing reviewed local aliases when available.');
         }
       } catch {
+        if (controller.signal.aborted) return;
         setResults(localFallback(clean));
         setSourceMode('fallback');
         setNotice('Live RxNorm lookup is unavailable. Reviewed local aliases are still searchable.');
       } finally {
-        setSearching(false);
+        if (!controller.signal.aborted) setSearching(false);
       }
     }, 260);
-    return () => window.clearTimeout(timer);
+    return () => { window.clearTimeout(timer); controller.abort(); };
   }, [query]);
 
   const reviewedCount = useMemo(() => selected.filter((drug) => profileFor(drug.name)).length, [selected]);

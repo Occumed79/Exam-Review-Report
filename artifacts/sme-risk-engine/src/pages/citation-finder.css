@@ -32,6 +32,7 @@
 .citation-article-list strong { color: rgba(237,242,240,.72); font-size: .59rem; line-height: 1.42; font-weight: 650; }
 .citation-article-list small { margin-top: .18rem; color: rgba(215,226,226,.24); font-size: .49rem; }
 .citation-article-list svg { color: rgba(105,201,190,.35); }
+.citation-article-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;border-bottom:1px solid rgba(105,150,168,.065)}.citation-article-list .citation-article-row>a{display:grid;grid-template-columns:25px 1fr 15px;gap:.5rem;align-items:start;padding:.57rem .42rem;border:0;min-width:0}.citation-article-row>button{margin-right:.4rem;padding:.28rem .42rem;border:1px solid rgba(91,198,186,.18);border-radius:4px;background:rgba(91,198,186,.04);color:#a8dfd7;font-size:.5rem;cursor:pointer;white-space:nowrap}
 
 .citation-side { display: flex; flex-direction: column; gap: .62rem; }
 .citation-side > section { padding: .68rem .7rem; }
@@ -51,3 +52,4 @@
 .citation-side-empty { margin: .46rem 0 0; color: rgba(215,226,226,.23); font-size: .5rem; }
 
 @media (max-width: 1040px) { .citation-layout { grid-template-columns: 1fr; } .citation-side { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); } }
+.citation-article-list .citation-article-row>a>span{color:rgba(105,201,190,.34);font:700 .5rem/1.5 var(--app-font-mono)}

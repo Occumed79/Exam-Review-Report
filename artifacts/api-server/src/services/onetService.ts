@@ -28,10 +28,9 @@ export function getOnetStatus() {
     configured: Boolean(configured),
     source: "O*NET Web Services API v2",
     authMode: "X-API-Key",
-    keyVariable: configured?.name ?? "ONET_API_KEY",
     note: configured
-      ? `O*NET v2 credential is visible to the server through ${configured.name}.`
-      : "No O*NET v2 API key is visible to this running server process.",
+      ? "An O*NET v2 credential is configured on the server. Active health is reported separately."
+      : "No O*NET v2 credential is configured on the server.",
   };
 }
 
@@ -41,13 +40,17 @@ async function request(path: string, attempt = 0): Promise<Response> {
     throw new Error("O*NET API key is not visible to this Render service. Add ONET_API_KEY to this service's Environment and redeploy.");
   }
 
-  const response = await fetch(`${ONET_BASE_URL}${path}`, {
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      "X-API-Key": key,
-    },
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 10_000);
+  let response: Response;
+  try {
+    response = await fetch(`${ONET_BASE_URL}${path}`, { method: "GET", headers: { Accept: "application/json", "X-API-Key": key }, signal: controller.signal });
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") throw new Error("O*NET request timed out.");
+    throw new Error("O*NET is temporarily unavailable.");
+  } finally {
+    clearTimeout(timer);
+  }
 
   if (response.status === 429 && attempt < 2) {
     await new Promise((resolve) => setTimeout(resolve, 250 * (attempt + 1)));

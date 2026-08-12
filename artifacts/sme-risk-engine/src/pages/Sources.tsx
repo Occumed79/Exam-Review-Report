@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Plus, Trash2, Search, ExternalLink, Database, ChevronDown, ChevronUp } from "lucide-react";
-import { Source, SourceReliability } from "@/lib/types";
+import { Source, SourceCategory, SourceReliability } from "@/lib/types";
 import { generateId } from "@/lib/store";
 
 interface Props { sources: Source[]; onSave: (s: Source) => void; onDelete: (id: string) => void; }
@@ -17,24 +17,30 @@ function blank(): Source {
     id: generateId(), title: "", organization: "", url: "", publicationDate: "",
     lastReviewed: "", reviewedBy: "", summary: "", relevantConditions: "",
     relevantJobs: "", relevantCountries: "", sourceReliability: "Moderate",
-    notes: "", createdAt: new Date().toISOString()
+    notes: "", createdAt: new Date().toISOString(), sourceCategory: "Official Source"
   };
 }
 
 export default function Sources({ sources, onSave, onDelete }: Props) {
   const [search, setSearch] = useState("");
+  const [category, setCategory] = useState<SourceCategory | "All">("All");
   const [editing, setEditing] = useState<Source | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState("");
 
   const filtered = sources.filter(s => {
     const q = search.toLowerCase();
-    return s.title.toLowerCase().includes(q) || s.organization.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q);
+    const matchesText = s.title.toLowerCase().includes(q) || s.organization.toLowerCase().includes(q) || s.summary.toLowerCase().includes(q);
+    return matchesText && (category === "All" || (s.sourceCategory ?? "Official Source") === category);
   });
 
   function save() {
     if (!editing) return;
+    if (!editing.title.trim() || !editing.organization.trim()) { setSaveError("Title and organization are required."); return; }
+    if (editing.url) { try { const parsed = new URL(editing.url); if (!/^https?:$/.test(parsed.protocol)) throw new Error(); } catch { setSaveError("Enter a valid http(s) source URL."); return; } }
     onSave(editing);
+    setSaveError("");
     setEditing(null);
   }
 
@@ -64,6 +70,7 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
           <Search size={14} style={{ position: "absolute", left: "0.75rem", top: "50%", transform: "translateY(-50%)", color: "rgba(255,255,255,0.3)" }} />
           <input className="glass-input" style={{ ...inp, paddingLeft: "2.25rem" }} placeholder="Search sources..." value={search} onChange={e => setSearch(e.target.value)} data-testid="input-search-sources" />
         </div>
+        <select aria-label="Filter sources by type" className="glass-input" value={category} onChange={e => setCategory(e.target.value as SourceCategory | "All")} style={{ padding: "0.55rem 0.65rem", fontSize: "0.75rem" }}><option>All</option>{["Official Source","Regulatory Source","Public Health Data","Scientific Literature","News Report"].map(value => <option key={value}>{value}</option>)}</select>
         <div style={{ fontSize: "0.8125rem", color: "rgba(255,255,255,0.4)" }}>{filtered.length} of {sources.length} sources</div>
       </div>
 
@@ -81,8 +88,9 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
             <div><label style={lbl}>URL</label><input className="glass-input" style={inp} value={editing.url} onChange={e => upd("url", e.target.value)} placeholder="https://..." data-testid="input-source-url" /></div>
             <div><label style={lbl}>Publication Date</label><input type="date" className="glass-input" style={inp} value={editing.publicationDate} onChange={e => upd("publicationDate", e.target.value)} /></div>
             <div><label style={lbl}>Last Reviewed</label><input type="date" className="glass-input" style={inp} value={editing.lastReviewed} onChange={e => upd("lastReviewed", e.target.value)} /></div>
-            <div><label style={lbl}>Reliability</label><select className="glass-input" style={inp} value={editing.sourceReliability} onChange={e => upd("sourceReliability", e.target.value as SourceReliability)} data-testid="select-reliability"><option>High</option><option>Moderate</option><option>Low</option><option>Unverified</option></select></div>
+            <div><label style={lbl}>Source Type</label><select className="glass-input" style={inp} value={editing.sourceCategory ?? "Official Source"} onChange={e => upd("sourceCategory", e.target.value as SourceCategory)}>{["Official Source","Regulatory Source","Public Health Data","Scientific Literature","News Report"].map(value => <option key={value}>{value}</option>)}</select></div>
           </div>
+          <div style={{ marginBottom: "0.75rem" }}><label style={lbl}>Reliability</label><select className="glass-input" style={inp} value={editing.sourceReliability} onChange={e => upd("sourceReliability", e.target.value as SourceReliability)} data-testid="select-reliability"><option>High</option><option>Moderate</option><option>Low</option><option>Unverified</option></select></div>
           <div style={{ marginBottom: "0.75rem" }}><label style={lbl}>Summary</label><textarea className="glass-input" style={{ ...inp, minHeight: "80px", resize: "vertical" }} value={editing.summary} onChange={e => upd("summary", e.target.value)} data-testid="textarea-source-summary" /></div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "0.75rem", marginBottom: "0.75rem" }}>
             <div><label style={lbl}>Relevant Conditions</label><input className="glass-input" style={inp} value={editing.relevantConditions} onChange={e => upd("relevantConditions", e.target.value)} placeholder="Cardiovascular, neurologic..." /></div>
@@ -92,6 +100,7 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
           <div style={{ marginBottom: "1rem" }}><label style={lbl}>Reviewed By</label><input className="glass-input" style={inp} value={editing.reviewedBy} onChange={e => upd("reviewedBy", e.target.value)} /></div>
           <div style={{ marginBottom: "1rem" }}><label style={lbl}>Notes</label><textarea className="glass-input" style={{ ...inp, minHeight: "60px", resize: "vertical" }} value={editing.notes} onChange={e => upd("notes", e.target.value)} /></div>
           <div style={{ display: "flex", gap: "0.625rem", justifyContent: "flex-end" }}>
+            {saveError && <span role="alert" style={{ marginRight: "auto", color: "#fca5a5", fontSize: "0.75rem" }}>{saveError}</span>}
             <button className="glow-btn glow-btn-secondary" onClick={() => setEditing(null)} data-testid="btn-cancel-source">Cancel</button>
             <button className="glow-btn" onClick={save} data-testid="btn-save-source">Save Source</button>
           </div>
@@ -115,6 +124,7 @@ export default function Sources({ sources, onSave, onDelete }: Props) {
                   <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", marginBottom: "0.25rem" }}>
                     <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: "#fff" }}>{s.title || "Unnamed Source"}</span>
                     <span style={{ fontSize: "0.6875rem", padding: "0.15rem 0.5rem", borderRadius: "4px", background: `${rel.color}15`, color: rel.color, fontWeight: 600 }}>{s.sourceReliability}</span>
+                    <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,.4)" }}>{s.sourceCategory ?? "Official Source"}</span>
                   </div>
                   <div style={{ display: "flex", gap: "0.5rem" }}>
                     <span style={{ fontSize: "0.75rem", color: "#b4d7d0" }}>{s.organization}</span>

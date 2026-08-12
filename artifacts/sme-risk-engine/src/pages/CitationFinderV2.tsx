@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Database, ExternalLink, Loader2, Search } from 'lucide-react';
-import { useStore } from '@/lib/store';
+import { generateId, useStore } from '@/lib/store';
 import { fetchPubMedArticles } from '@/lib/directSourceIntelligence';
 import './citation-finder.css';
 
@@ -25,12 +25,13 @@ const EXAMPLE_QUERIES = [
 ];
 
 export default function CitationFinderV2() {
-  const { sources } = useStore();
+  const { sources, saveSource } = useStore();
   const [query, setQuery] = useState('');
   const [submittedQuery, setSubmittedQuery] = useState('');
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [savedPmid, setSavedPmid] = useState('');
 
   const savedMatches = useMemo(() => {
     const clean = submittedQuery.trim().toLowerCase();
@@ -43,20 +44,20 @@ export default function CitationFinderV2() {
       setArticles([]);
       return;
     }
-    let cancelled = false;
+    const controller = new AbortController();
     setLoading(true);
     setMessage('');
-    fetchPubMedArticles(submittedQuery, 10)
+    fetchPubMedArticles(submittedQuery, 10, controller.signal)
       .then((items) => {
-        if (cancelled) return;
+        if (controller.signal.aborted) return;
         setArticles(items);
         if (!items.length) setMessage('No PubMed results returned. Try broader clinical or occupational terms.');
       })
       .catch(() => {
-        if (!cancelled) setMessage('PubMed lookup is unavailable right now. Official-source shortcuts and saved sources are still available.');
+        if (!controller.signal.aborted) setMessage('PubMed lookup is unavailable right now. Official-source shortcuts and saved sources are still available.');
       })
-      .finally(() => { if (!cancelled) setLoading(false); });
-    return () => { cancelled = true; };
+      .finally(() => { if (!controller.signal.aborted) setLoading(false); });
+    return () => controller.abort();
   }, [submittedQuery]);
 
   function search(value = query) {
@@ -64,6 +65,11 @@ export default function CitationFinderV2() {
     if (!clean) return;
     setQuery(clean);
     setSubmittedQuery(clean);
+  }
+
+  function saveArticle(article: Article) {
+    saveSource({ id: generateId(), title: article.title, organization: article.journal || 'PubMed', url: article.url, publicationDate: article.year ? `${article.year}-01-01` : '', lastReviewed: new Date().toISOString().slice(0, 10), reviewedBy: '', summary: `Scientific literature record. PMID ${article.pmid}.`, relevantConditions: '', relevantJobs: '', relevantCountries: '', sourceReliability: 'High', sourceCategory: 'Scientific Literature', notes: `Saved from Citation Finder · PMID ${article.pmid}`, createdAt: new Date().toISOString() });
+    setSavedPmid(article.pmid);
   }
 
   return (
@@ -87,7 +93,7 @@ export default function CitationFinderV2() {
           {!submittedQuery && <div className="citation-empty"><BookOpen size={21} /><strong>Enter the question you are researching.</strong><p>The query goes directly to PubMed search. No case record is created.</p></div>}
           {message && <div className="citation-message">{message}</div>}
           <div className="citation-article-list">
-            {articles.map((article, index) => <a key={article.pmid} href={article.url} target="_blank" rel="noreferrer"><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{article.title}</strong><small>{article.journal}{article.year ? ` · ${article.year}` : ''} · PMID {article.pmid}</small></div><ExternalLink size={12} /></a>)}
+            {articles.map((article, index) => <div className="citation-article-row" key={article.pmid}><a href={article.url} target="_blank" rel="noreferrer"><span>{String(index + 1).padStart(2, '0')}</span><div><strong>{article.title}</strong><small>{article.journal}{article.year ? ` · ${article.year}` : ''} · PMID {article.pmid}</small></div><ExternalLink size={12} /></a><button onClick={() => saveArticle(article)}>{savedPmid === article.pmid ? 'Saved' : 'Save Source'}</button></div>)}
           </div>
         </main>
 

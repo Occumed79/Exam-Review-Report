@@ -20,6 +20,7 @@ export type DocumentationConfidence = "documented" | "partial" | "unclear" | "mi
 export type RiskScore = 0 | 1 | 2 | 3 | "U";
 export type SourceConfidence = "official" | "internal" | "sme-summary" | "secondary" | "unclear";
 export type SourceReliability = "High" | "Moderate" | "Low" | "Unverified";
+export type SourceCategory = "Official Source" | "Regulatory Source" | "Public Health Data" | "Scientific Literature" | "News Report";
 
 export interface MedicalCondition {
   id: string;
@@ -246,6 +247,7 @@ export interface Source {
   relevantJobs: string;
   relevantCountries: string;
   sourceReliability: SourceReliability;
+  sourceCategory?: SourceCategory;
   notes: string;
   createdAt: string;
 }
