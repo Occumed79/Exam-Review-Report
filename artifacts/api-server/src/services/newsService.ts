@@ -13,12 +13,63 @@ export type NewsItem = {
   countries: string[];
 };
 
+const OPERATIONAL_TERMS = [
+  "outbreak",
+  "epidemic",
+  "disease",
+  "public health",
+  "hospital",
+  "healthcare",
+  "medical",
+  "earthquake",
+  "flood",
+  "wildfire",
+  "hurricane",
+  "typhoon",
+  "cyclone",
+  "tsunami",
+  "drought",
+  "heat wave",
+  "extreme heat",
+  "extreme cold",
+  "disaster",
+  "evacuation",
+  "infrastructure",
+  "transportation",
+  "airport",
+  "port",
+  "border",
+  "conflict",
+  "attack",
+  "strike",
+  "security",
+  "civil unrest",
+  "protest",
+  "emergency",
+] as const;
+
+const NOISE_TERMS = [
+  "bitcoin",
+  "cryptocurrency",
+  "crypto market",
+  "stock market",
+  "share price",
+  "celebrity",
+  "fashion",
+  "football",
+  "basketball",
+  "movie review",
+  "box office",
+  "gaming",
+] as const;
+
 function keys() {
   return {
     newsdata: process.env.NEWS_DATA_IO_KEY?.trim(),
     apitube: process.env.APITUBE_NEWS_API_KEY?.trim(),
   };
 }
+
 export function getNewsStatus() {
   const key = keys();
   return {
@@ -34,15 +85,18 @@ export function getNewsStatus() {
     },
   };
 }
+
 function strings(value: unknown): string[] {
   return Array.isArray(value) ? value.map(text).filter(Boolean) : [];
 }
+
 function idFor(item: Omit<NewsItem, "id">) {
   return createHash("sha256")
     .update(`${item.url.toLowerCase()}\n${item.title.toLowerCase()}`)
     .digest("hex")
     .slice(0, 24);
 }
+
 function newsDataItem(raw: unknown): NewsItem | null {
   const value = record(raw);
   const source = text(value.source_name) || text(value.source_id);
@@ -58,6 +112,7 @@ function newsDataItem(raw: unknown): NewsItem | null {
   };
   return base.title && base.url ? { id: idFor(base), ...base } : null;
 }
+
 function apiTubeItem(raw: unknown): NewsItem | null {
   const value = record(raw);
   const source = record(value.source);
@@ -74,31 +129,84 @@ function apiTubeItem(raw: unknown): NewsItem | null {
   return base.title && base.url ? { id: idFor(base), ...base } : null;
 }
 
-async function fromNewsData(
-  query: string,
-  country: string,
-): Promise<NewsItem[]> {
+function compactQuery(query: string) {
+  return query
+    .replace(/[()]/g, " ")
+    .replace(/\bAND\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 500);
+}
+
+function queryGroups(query: string) {
+  const groups = [...query.matchAll(/\(([^)]+)\)/g)].map((match) => match[1]);
+  if (groups.length < 2) return [];
+  return groups.map((group) =>
+    group
+      .split(/\s+OR\s+/i)
+      .map((part) => part.replace(/["']/g, "").trim().toLowerCase())
+      .filter(Boolean),
+  );
+}
+
+function geographyTerms(query: string) {
+  const groups = queryGroups(query);
+  if (!groups.length) return [];
+  const eventScore = (group: string[]) =>
+    group.filter((term) => OPERATIONAL_TERMS.some((known) => term.includes(known))).length;
+  return [...groups].sort((a, b) => eventScore(a) - eventScore(b))[0] ?? [];
+}
+
+function isOperationallyRelevant(item: NewsItem, query: string, country: string) {
+  const haystack = `${item.title} ${item.description}`.toLowerCase();
+  if (NOISE_TERMS.some((term) => haystack.includes(term))) return false;
+  if (!OPERATIONAL_TERMS.some((term) => haystack.includes(term))) return false;
+
+  const geo = geographyTerms(query);
+  if (!geo.length) return true;
+  if (geo.some((term) => haystack.includes(term))) return true;
+  if (country && item.countries.some((value) => value.toLowerCase() === country.toLowerCase())) {
+    return true;
+  }
+  return false;
+}
+
+async function fromNewsData(query: string, country: string): Promise<NewsItem[]> {
   const key = keys().newsdata;
   if (!key) throw new Error("NewsData.io is not configured.");
-  const url = new URL("https://newsdata.io/api/1/latest");
-  url.searchParams.set("apikey", key);
-  url.searchParams.set("q", query);
-  if (country) url.searchParams.set("country", country);
-  const payload = record(await fetchJson("NewsData.io", url));
-  return (Array.isArray(payload.results) ? payload.results : [])
-    .map(newsDataItem)
-    .filter((item): item is NewsItem => Boolean(item));
+
+  const run = async (q: string, titleOnly = false) => {
+    const url = new URL("https://newsdata.io/api/1/latest");
+    url.searchParams.set("apikey", key);
+    url.searchParams.set(titleOnly ? "qInTitle" : "q", q);
+    if (country) url.searchParams.set("country", country.toLowerCase());
+    const payload = record(await fetchJson("NewsData.io", url));
+    return (Array.isArray(payload.results) ? payload.results : [])
+      .map(newsDataItem)
+      .filter((item): item is NewsItem => Boolean(item));
+  };
+
+  try {
+    return await run(query.slice(0, 500));
+  } catch (error) {
+    // NewsData returns 422 for some advanced-query combinations. Retry with a
+    // compact title query instead of discarding the provider entirely.
+    const fallback = compactQuery(query);
+    if (!fallback || fallback === query) throw error;
+    return run(fallback, true);
+  }
 }
-async function fromApiTube(
-  query: string,
-  country: string,
-): Promise<NewsItem[]> {
+
+async function fromApiTube(query: string, country: string): Promise<NewsItem[]> {
   const key = keys().apitube;
   if (!key) throw new Error("APITube is not configured.");
   const url = new URL("https://api.apitube.io/v1/news/everything");
   url.searchParams.set("api_key", key);
-  url.searchParams.set("q", query);
-  if (country) url.searchParams.set("country", country);
+  url.searchParams.set("title", compactQuery(query));
+  url.searchParams.set("sort.by", "published_at");
+  url.searchParams.set("sort.order", "desc");
+  url.searchParams.set("per_page", "50");
+  if (country) url.searchParams.set("source.country.code", country.toLowerCase());
   const payload = record(await fetchJson("APITube", url));
   const raw = Array.isArray(payload.results)
     ? payload.results
@@ -127,19 +235,25 @@ export async function searchNews(query: string, country: string) {
           : "Provider failed."
         : undefined,
   }));
+
   const byId = new Map<string, NewsItem>();
   settled.forEach((result) => {
-    if (result.status === "fulfilled")
-      result.value.forEach((item) => {
+    if (result.status !== "fulfilled") return;
+    result.value
+      .filter((item) => isOperationallyRelevant(item, query, country))
+      .forEach((item) => {
         if (!byId.has(item.id)) byId.set(item.id, item);
       });
   });
-  if (!health.some((provider) => provider.ok))
+
+  if (!health.some((provider) => provider.ok)) {
     throw new Error(
       health
         .map((provider) => `${provider.provider}: ${provider.error}`)
         .join("; "),
     );
+  }
+
   return {
     source: "NewsData.io + APITube",
     retrievedAt: isoNow(),
