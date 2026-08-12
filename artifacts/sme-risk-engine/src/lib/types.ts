@@ -1,25 +1,67 @@
 export type ExamType =
-  | "pre-employment" | "annual" | "deployment" | "firefighter"
-  | "aviation" | "law-enforcement" | "dot-fmcsa" | "return-to-work"
-  | "fitness-for-duty" | "other";
+  | "pre-employment"
+  | "annual"
+  | "deployment"
+  | "firefighter"
+  | "aviation"
+  | "law-enforcement"
+  | "dot-fmcsa"
+  | "return-to-work"
+  | "fitness-for-duty"
+  | "other";
 
 export type CaseStatus =
-  | "Draft" | "Needs Records" | "Risk Review Needed"
-  | "Ready for SME" | "SME Reviewed" | "Finalized";
+  | "Draft"
+  | "Needs Records"
+  | "Risk Review Needed"
+  | "Ready for SME"
+  | "SME Reviewed"
+  | "Finalized";
 
 export type ConditionCategory =
-  | "cardiovascular" | "respiratory" | "endocrine-metabolic" | "neurologic"
-  | "psychiatric" | "orthopedic" | "sleep-disorder" | "renal"
-  | "gastrointestinal" | "hematologic" | "infectious-disease" | "immunologic"
-  | "dermatologic" | "vision-hearing" | "other";
+  | "cardiovascular"
+  | "respiratory"
+  | "endocrine-metabolic"
+  | "neurologic"
+  | "psychiatric"
+  | "orthopedic"
+  | "sleep-disorder"
+  | "renal"
+  | "gastrointestinal"
+  | "hematologic"
+  | "infectious-disease"
+  | "immunologic"
+  | "dermatologic"
+  | "vision-hearing"
+  | "other";
 
-export type ConditionStatus = "active" | "stable" | "resolved" | "uncontrolled" | "unclear";
+export type ConditionStatus =
+  | "active"
+  | "stable"
+  | "resolved"
+  | "uncontrolled"
+  | "unclear";
 export type IncapacitationRisk = "Yes" | "Possible" | "No" | "Unclear";
 export type RecurrenceRisk = "High" | "Moderate" | "Low" | "Unclear";
-export type DocumentationConfidence = "documented" | "partial" | "unclear" | "missing";
+export type DocumentationConfidence =
+  | "documented"
+  | "partial"
+  | "unclear"
+  | "missing";
 export type RiskScore = 0 | 1 | 2 | 3 | "U";
-export type SourceConfidence = "official" | "internal" | "sme-summary" | "secondary" | "unclear";
+export type SourceConfidence =
+  | "official"
+  | "internal"
+  | "sme-summary"
+  | "secondary"
+  | "unclear";
 export type SourceReliability = "High" | "Moderate" | "Low" | "Unverified";
+export type SourceType =
+  | "Official Source"
+  | "Regulatory Source"
+  | "Public Health Data"
+  | "Scientific Literature"
+  | "News Report";
 
 export interface MedicalCondition {
   id: string;
@@ -204,7 +246,12 @@ export interface ApplicableStandards {
 
 export interface RiskInteraction {
   id: string;
-  type: "condition-job" | "condition-med" | "condition-country" | "med-job" | "med-country";
+  type:
+    | "condition-job"
+    | "condition-med"
+    | "condition-country"
+    | "med-job"
+    | "med-country";
   sourceId: string;
   targetId: string;
   description: string;
@@ -246,6 +293,7 @@ export interface Source {
   relevantJobs: string;
   relevantCountries: string;
   sourceReliability: SourceReliability;
+  sourceType?: SourceType;
   notes: string;
   createdAt: string;
 }
@@ -257,7 +305,12 @@ export interface AOREvent {
   region: string;
   coordinates: [number, number];
   riskLevel: "critical" | "high" | "moderate" | "low" | "monitor";
-  category: "health" | "conflict" | "environmental" | "infrastructure" | "disease";
+  category:
+    | "health"
+    | "conflict"
+    | "environmental"
+    | "infrastructure"
+    | "disease";
   title: string;
   summary: string;
   details: string;

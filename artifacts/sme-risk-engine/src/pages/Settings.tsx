@@ -41,11 +41,11 @@ export default function Settings({
   const [providers, setProviders] = useState<ProviderStatusRecord[]>([]);
   const [providerLoading, setProviderLoading] = useState(true);
   const [providerError, setProviderError] = useState("");
-  const refreshProviders = useCallback(async () => {
+  const refreshProviders = useCallback(async (force = false) => {
     setProviderLoading(true);
     setProviderError("");
     try {
-      const response = await fetchIntelligenceProviders();
+      const response = await fetchIntelligenceProviders(force);
       setProviders(response.providers);
     } catch (error) {
       setProviderError(
@@ -58,7 +58,22 @@ export default function Settings({
     }
   }, []);
   useEffect(() => {
-    void refreshProviders();
+    const controller = new AbortController();
+    void fetchIntelligenceProviders(false, controller.signal)
+      .then((response) => setProviders(response.providers))
+      .catch((error) => {
+        if (error instanceof DOMException && error.name === "AbortError")
+          return;
+        setProviderError(
+          error instanceof Error
+            ? error.message
+            : "Provider status could not be loaded.",
+        );
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setProviderLoading(false);
+      });
+    return () => controller.abort();
   }, [refreshProviders]);
 
   function handleImport(text: string) {
@@ -192,7 +207,7 @@ export default function Settings({
           <button
             className="glow-btn glow-btn-secondary"
             disabled={providerLoading}
-            onClick={() => void refreshProviders()}
+            onClick={() => void refreshProviders(true)}
             style={{
               display: "inline-flex",
               gap: ".35rem",
