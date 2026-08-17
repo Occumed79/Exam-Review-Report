@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type CSSProperties, type PointerEvent as 
 import { Activity, Database, Search, Sparkles } from 'lucide-react';
 import type { OccupationalInjuryProfile } from '@/lib/occupationalInjuryIntelligence';
 import type { InjuryMetric, OccupationInjuryEvidence } from '@/lib/liveOccupationalApi';
+import HologramPointCloud from './HologramPointCloud';
 import './injury-anatomy.css';
 import './injury-hologram-advanced.css';
 
@@ -43,37 +44,34 @@ const REGION_LABELS: Record<RegionKey, string> = {
   wholeBody: 'Whole body / multiple',
 };
 
-const FRONT_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/8/86/BodyParts3D_anatomy.svg';
-const BACK_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Human_skeleton_back_no-text_no-color.svg';
-
 const HOTSPOT_POSITIONS: Record<'front' | 'back', Record<RegionKey, { x: number; y: number; w: number; h: number }>> = {
   front: {
-    head: { x: 50, y: 10, w: 15, h: 12 },
-    neck: { x: 50, y: 19, w: 10, h: 8 },
-    shoulder: { x: 50, y: 27, w: 40, h: 14 },
-    chest: { x: 50, y: 37, w: 31, h: 19 },
-    lowBack: { x: 50, y: 50, w: 28, h: 14 },
-    upperExtremity: { x: 50, y: 43, w: 63, h: 31 },
-    hand: { x: 50, y: 57, w: 78, h: 17 },
-    hip: { x: 50, y: 58, w: 30, h: 14 },
-    knee: { x: 50, y: 75, w: 28, h: 12 },
-    lowerExtremity: { x: 50, y: 82, w: 36, h: 30 },
-    foot: { x: 50, y: 96, w: 34, h: 9 },
-    wholeBody: { x: 50, y: 53, w: 72, h: 88 },
+    head: { x: 50, y: 12, w: 18, h: 15 },
+    neck: { x: 50, y: 20, w: 12, h: 7 },
+    shoulder: { x: 50, y: 28, w: 42, h: 13 },
+    chest: { x: 50, y: 39, w: 34, h: 22 },
+    lowBack: { x: 50, y: 52, w: 30, h: 15 },
+    upperExtremity: { x: 50, y: 45, w: 68, h: 35 },
+    hand: { x: 50, y: 61, w: 80, h: 15 },
+    hip: { x: 50, y: 58, w: 31, h: 14 },
+    knee: { x: 50, y: 76, w: 28, h: 11 },
+    lowerExtremity: { x: 50, y: 82, w: 34, h: 30 },
+    foot: { x: 50, y: 96, w: 35, h: 9 },
+    wholeBody: { x: 50, y: 53, w: 76, h: 90 },
   },
   back: {
-    head: { x: 50, y: 10, w: 15, h: 12 },
-    neck: { x: 50, y: 19, w: 10, h: 8 },
-    shoulder: { x: 50, y: 27, w: 40, h: 14 },
-    chest: { x: 50, y: 37, w: 31, h: 18 },
-    lowBack: { x: 50, y: 50, w: 30, h: 18 },
-    upperExtremity: { x: 50, y: 43, w: 63, h: 31 },
-    hand: { x: 50, y: 57, w: 78, h: 17 },
-    hip: { x: 50, y: 59, w: 32, h: 15 },
-    knee: { x: 50, y: 75, w: 28, h: 12 },
-    lowerExtremity: { x: 50, y: 82, w: 36, h: 30 },
-    foot: { x: 50, y: 96, w: 34, h: 9 },
-    wholeBody: { x: 50, y: 53, w: 72, h: 88 },
+    head: { x: 50, y: 12, w: 18, h: 15 },
+    neck: { x: 50, y: 20, w: 12, h: 7 },
+    shoulder: { x: 50, y: 28, w: 42, h: 13 },
+    chest: { x: 50, y: 39, w: 34, h: 21 },
+    lowBack: { x: 50, y: 52, w: 32, h: 17 },
+    upperExtremity: { x: 50, y: 45, w: 68, h: 35 },
+    hand: { x: 50, y: 61, w: 80, h: 15 },
+    hip: { x: 50, y: 59, w: 33, h: 15 },
+    knee: { x: 50, y: 76, w: 28, h: 11 },
+    lowerExtremity: { x: 50, y: 82, w: 34, h: 30 },
+    foot: { x: 50, y: 96, w: 35, h: 9 },
+    wholeBody: { x: 50, y: 53, w: 76, h: 90 },
   },
 };
 
@@ -177,29 +175,6 @@ function heatStyle(signal: RegionSignal): CSSProperties {
   } as CSSProperties;
 }
 
-function DigitalHuman({ view }: { view: 'front' | 'back' }) {
-  const isFront = view === 'front';
-
-  return (
-    <svg
-      className="anatomy-inline-fallback digital-human"
-      viewBox="0 0 260 520"
-      role="img"
-      aria-label={`${isFront ? 'Anterior' : 'Posterior'} segmented digital human model`}
-    >
-      <defs><linearGradient id="bodyGlass" x1="0" x2="1"><stop stopColor="#baf4ff" stopOpacity=".12"/><stop offset=".5" stopColor="#53cbe8" stopOpacity=".34"/><stop offset="1" stopColor="#baf4ff" stopOpacity=".1"/></linearGradient></defs>
-      <g className="anatomy-fallback-outline digital-segments">
-        <path d="M108 17l22-11 22 11 7 28-12 27h-34l-12-27z"/><path d="M114 75h32l9 18-25 16-25-16z"/>
-        <path d="M98 94l32 17 32-17 25 22-19 31-8 63-30 22-30-22-8-63-19-31z"/><path d="M104 213l26 20 26-20 13 42-39 28-39-28z"/>
-        <path d="M72 118l18 8-7 82-21 64-20-9 15-68-3-55z"/><path d="M188 118l-18 8 7 82 21 64 20-9-15-68 3-55z"/>
-        <path d="M95 266l34 19-10 72-10 132H83l3-138z"/><path d="M165 266l-34 19 10 72 10 132h26l-3-138z"/>
-      </g>
-      <g className="anatomy-fallback-bones digital-wire"><path d="M130 10v472M72 118l58 18 58-18M95 266l35 19 35-19M84 351l35 6M176 351l-35 6"/><path d={isFront ? "M103 121l27 18 27-18M105 160l25 17 25-17M109 198l21 14 21-14" : "M101 119l29 30 29-30M104 174l26-25 26 25"}/><circle cx="130" cy="42" r="18"/><circle cx="72" cy="202" r="5"/><circle cx="188" cy="202" r="5"/><circle cx="101" cy="354" r="6"/><circle cx="159" cy="354" r="6"/></g>
-      <g className="digital-markers"><path d="M22 102h45M193 102h45M22 318h54M184 318h54"/><circle cx="130" cy="136" r="48"/><circle cx="130" cy="136" r="56"/></g>
-    </svg>
-  );
-}
-
 export default function InjuryBodyMap({
   measured,
   profile,
@@ -209,9 +184,12 @@ export default function InjuryBodyMap({
 }) {
   const signals = useMemo(() => buildRegionSignals(measured, profile), [measured, profile]);
   const signalMap = useMemo(() => new Map<RegionKey, RegionSignal>(signals.map((signal) => [signal.key, signal])), [signals]);
+  const regionScores = useMemo(
+    () => Object.fromEntries(signals.map((signal) => [signal.key, signal.score])) as Partial<Record<RegionKey, number>>,
+    [signals],
+  );
   const [active, setActive] = useState<RegionKey | null>(signals[0]?.key ?? null);
   const [view, setView] = useState<'front' | 'back'>('front');
-  const [assetFailed, setAssetFailed] = useState(false);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const idle = !profile;
 
@@ -223,11 +201,10 @@ export default function InjuryBodyMap({
   const activeKey = active ?? signals[0]?.key ?? null;
   const activeSignal = activeKey ? signalMap.get(activeKey) : undefined;
   const hasMeasured = signals.some((signal) => signal.source === 'BLS measured');
-  const sourceUrl = view === 'front' ? FRONT_ANATOMY_URL : BACK_ANATOMY_URL;
 
   const projectionStyle = {
-    '--holo-rotate-x': `${(-tilt.y * 5.5).toFixed(2)}deg`,
-    '--holo-rotate-y': `${(tilt.x * 7.5).toFixed(2)}deg`,
+    '--holo-rotate-x': `${(-tilt.y * 3.5).toFixed(2)}deg`,
+    '--holo-rotate-y': `${(tilt.x * 4.5).toFixed(2)}deg`,
     '--holo-pointer-x': `${50 + tilt.x * 18}%`,
     '--holo-pointer-y': `${50 + tilt.y * 14}%`,
     '--holo-energy': activeSignal?.score ?? 0.34,
@@ -242,7 +219,6 @@ export default function InjuryBodyMap({
 
   const setProjectionView = (nextView: 'front' | 'back') => {
     setView(nextView);
-    setAssetFailed(false);
     setTilt({ x: 0, y: 0 });
   };
 
@@ -273,7 +249,7 @@ export default function InjuryBodyMap({
         >
           <div className="holo-telemetry holo-telemetry-left">
             <span>ANATOMY VECTOR</span><strong>{view === 'front' ? 'ANTERIOR' : 'POSTERIOR'}</strong>
-            <small>DEPTH PROJECTION · ACTIVE</small>
+            <small>VOLUMETRIC POINT CLOUD · ACTIVE</small>
           </div>
           <div className="holo-telemetry holo-telemetry-right">
             <span>REGION ENERGY</span><strong>{Math.round((activeSignal?.score ?? 0) * 100).toString().padStart(2, '0')}%</strong>
@@ -296,22 +272,13 @@ export default function InjuryBodyMap({
           <div className="advanced-hologram-rig">
             <div className="holo-volume-shell" />
             <div className="anatomy-real-body" data-view={view}>
-              {!assetFailed ? (
-                <>
-                  <img className="anatomy-real-img glow-layer" src={sourceUrl} alt="" aria-hidden="true" referrerPolicy="no-referrer" />
-                  <img className="anatomy-real-img depth-layer depth-layer-back" src={sourceUrl} alt="" aria-hidden="true" referrerPolicy="no-referrer" />
-                  <img
-                    className="anatomy-real-img core-layer"
-                    src={sourceUrl}
-                    alt={`${view === 'front' ? 'Anterior' : 'Posterior'} anatomical hologram`}
-                    referrerPolicy="no-referrer"
-                    onError={() => setAssetFailed(true)}
-                  />
-                  <img className="anatomy-real-img depth-layer depth-layer-front" src={sourceUrl} alt="" aria-hidden="true" referrerPolicy="no-referrer" />
-                </>
-              ) : (
-                <DigitalHuman view={view} />
-              )}
+              <HologramPointCloud
+                view={view}
+                tiltX={tilt.x}
+                tiltY={tilt.y}
+                activeRegion={activeKey}
+                regionScores={regionScores}
+              />
 
               <div className="holo-body-scanlines" />
               <div className="holo-body-crosshair" />
@@ -345,17 +312,17 @@ export default function InjuryBodyMap({
           {idle && <div className="injury-anatomy-idle-callout anatomy-real-callout"><Search size={18} /><strong>Search an occupation to energize the projection.</strong><span>Published BLS body-part data will drive region intensity while occupational-demand signals fill gaps.</span></div>}
         </div>
 
-        <div className="anatomy-real-credit">Multi-plane anatomical intelligence projection · real anatomy artwork + interactive regional signal mapping</div>
+        <div className="anatomy-real-credit">Procedural 3D human point cloud · projected volume + evidence-driven regional signal mapping</div>
       </div>
 
       <aside className="injury-anatomy-data anatomy-real-data">
         {idle ? (
           <div className="injury-anatomy-idle-data">
             <span>PROJECTION STACK</span>
-            <div><b>01</b><strong>Detailed anatomy layer</strong><small>Real anatomical artwork is composited into the projection instead of a generated mannequin silhouette.</small></div>
-            <div><b>02</b><strong>Volumetric depth field</strong><small>Independent projection planes, orbital HUD geometry and pointer-responsive parallax create spatial depth.</small></div>
+            <div><b>01</b><strong>Volumetric human point cloud</strong><small>Thousands of projected points are generated from rounded anatomical volumes rather than a flat polygon silhouette.</small></div>
+            <div><b>02</b><strong>True anatomical proportions</strong><small>Head, torso, pelvis, limbs, joints, hands and feet are independently modeled to preserve believable human form.</small></div>
             <div><b>03</b><strong>Evidence-driven heat</strong><small>BLS body-part counts illuminate corresponding regions; occupational demand signals provide contextual fallback.</small></div>
-            <div><b>04</b><strong>Interactive inspection</strong><small>Hover or select an illuminated body region to expose its evidence and relative signal intensity.</small></div>
+            <div><b>04</b><strong>Interactive depth</strong><small>Anterior/posterior projection, pointer-responsive perspective and regional selection operate on the volumetric model.</small></div>
           </div>
         ) : (
           <>
