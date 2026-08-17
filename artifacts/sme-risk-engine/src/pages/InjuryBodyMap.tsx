@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react';
 import { Activity, Database, Search, Sparkles } from 'lucide-react';
 import type { OccupationalInjuryProfile } from '@/lib/occupationalInjuryIntelligence';
 import type { InjuryMetric, OccupationInjuryEvidence } from '@/lib/liveOccupationalApi';
 import './injury-anatomy.css';
+import './injury-hologram-advanced.css';
 
 type RegionKey =
   | 'head'
@@ -41,6 +42,9 @@ const REGION_LABELS: Record<RegionKey, string> = {
   foot: 'Foot / ankle',
   wholeBody: 'Whole body / multiple',
 };
+
+const FRONT_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/8/86/BodyParts3D_anatomy.svg';
+const BACK_ANATOMY_URL = 'https://upload.wikimedia.org/wikipedia/commons/2/2e/Human_skeleton_back_no-text_no-color.svg';
 
 const HOTSPOT_POSITIONS: Record<'front' | 'back', Record<RegionKey, { x: number; y: number; w: number; h: number }>> = {
   front: {
@@ -207,6 +211,8 @@ export default function InjuryBodyMap({
   const signalMap = useMemo(() => new Map<RegionKey, RegionSignal>(signals.map((signal) => [signal.key, signal])), [signals]);
   const [active, setActive] = useState<RegionKey | null>(signals[0]?.key ?? null);
   const [view, setView] = useState<'front' | 'back'>('front');
+  const [assetFailed, setAssetFailed] = useState(false);
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const idle = !profile;
 
   useEffect(() => {
@@ -217,75 +223,139 @@ export default function InjuryBodyMap({
   const activeKey = active ?? signals[0]?.key ?? null;
   const activeSignal = activeKey ? signalMap.get(activeKey) : undefined;
   const hasMeasured = signals.some((signal) => signal.source === 'BLS measured');
+  const sourceUrl = view === 'front' ? FRONT_ANATOMY_URL : BACK_ANATOMY_URL;
+
+  const projectionStyle = {
+    '--holo-rotate-x': `${(-tilt.y * 5.5).toFixed(2)}deg`,
+    '--holo-rotate-y': `${(tilt.x * 7.5).toFixed(2)}deg`,
+    '--holo-pointer-x': `${50 + tilt.x * 18}%`,
+    '--holo-pointer-y': `${50 + tilt.y * 14}%`,
+    '--holo-energy': activeSignal?.score ?? 0.34,
+  } as CSSProperties;
+
+  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * 2;
+    setTilt({ x: Math.max(-1, Math.min(1, x)), y: Math.max(-1, Math.min(1, y)) });
+  };
+
+  const setProjectionView = (nextView: 'front' | 'back') => {
+    setView(nextView);
+    setAssetFailed(false);
+    setTilt({ x: 0, y: 0 });
+  };
 
   return (
-    <section className={`injury-anatomy-shell anatomy-real${idle ? ' idle' : ''}`}>
+    <section className={`injury-anatomy-shell anatomy-real advanced-hologram${idle ? ' idle' : ''}`} style={projectionStyle}>
       <div className="injury-anatomy-stage anatomy-real-stage">
         <div className="injury-anatomy-stage-head">
           <div>
-            <span><Activity size={13} /> PROJECTED INJURY ANATOMY</span>
-            <h3>{idle ? 'Occupation-linked anatomical projection' : 'Interactive body-region injury projection'}</h3>
+            <span><Activity size={13} /> HOLOGRAPHIC INJURY ANATOMY</span>
+            <h3>{idle ? 'Occupation-linked anatomical intelligence projection' : 'Interactive anatomical risk projection'}</h3>
           </div>
           <div className="anatomy-real-controls">
-            <div className="hologram-view-toggle liquid-glass">
-              <button className={view === 'front' ? 'active' : ''} onClick={() => setView('front')}>ANTERIOR</button>
-              <button className={view === 'back' ? 'active' : ''} onClick={() => setView('back')}>POSTERIOR</button>
+            <div className="hologram-view-toggle">
+              <button className={view === 'front' ? 'active' : ''} onClick={() => setProjectionView('front')}>ANTERIOR</button>
+              <button className={view === 'back' ? 'active' : ''} onClick={() => setProjectionView('back')}>POSTERIOR</button>
             </div>
             <div className={`injury-anatomy-mode${hasMeasured ? ' measured' : ''}`}>
               {idle ? <Search size={13} /> : hasMeasured ? <Database size={13} /> : <Sparkles size={13} />}
-              {idle ? 'Awaiting occupation' : hasMeasured ? 'BLS body-part data' : 'Demand-derived fallback'}
+              {idle ? 'Standby' : hasMeasured ? 'BLS-linked projection' : 'Demand-derived projection'}
             </div>
           </div>
         </div>
 
-        <div className="anatomy-real-visual">
+        <div
+          className="anatomy-real-visual advanced-hologram-visual"
+          onPointerMove={handlePointerMove}
+          onPointerLeave={() => setTilt({ x: 0, y: 0 })}
+        >
+          <div className="holo-telemetry holo-telemetry-left">
+            <span>ANATOMY VECTOR</span><strong>{view === 'front' ? 'ANTERIOR' : 'POSTERIOR'}</strong>
+            <small>DEPTH PROJECTION · ACTIVE</small>
+          </div>
+          <div className="holo-telemetry holo-telemetry-right">
+            <span>REGION ENERGY</span><strong>{Math.round((activeSignal?.score ?? 0) * 100).toString().padStart(2, '0')}%</strong>
+            <small>{hasMeasured ? 'MEASURED SIGNAL' : idle ? 'AWAITING INPUT' : 'DERIVED SIGNAL'}</small>
+          </div>
+
+          <div className="holo-floor-grid" />
+          <div className="holo-depth-field depth-field-a" />
+          <div className="holo-depth-field depth-field-b" />
+          <div className="holo-depth-field depth-field-c" />
           <div className="anatomy-real-hud hud-a" />
           <div className="anatomy-real-hud hud-b" />
           <div className="anatomy-real-hud hud-c" />
+          <div className="holo-orbit orbit-x" />
+          <div className="holo-orbit orbit-y" />
           <div className="anatomy-real-scan" />
+          <div className="holo-scan-plane scan-plane-secondary" />
           <div className="anatomy-real-projector"><i /><i /><i /></div>
 
-          <div className="anatomy-real-body" data-view={view}>
-            <DigitalHuman view={view} />
+          <div className="advanced-hologram-rig">
+            <div className="holo-volume-shell" />
+            <div className="anatomy-real-body" data-view={view}>
+              {!assetFailed ? (
+                <>
+                  <img className="anatomy-real-img glow-layer" src={sourceUrl} alt="" aria-hidden="true" referrerPolicy="no-referrer" />
+                  <img className="anatomy-real-img depth-layer depth-layer-back" src={sourceUrl} alt="" aria-hidden="true" referrerPolicy="no-referrer" />
+                  <img
+                    className="anatomy-real-img core-layer"
+                    src={sourceUrl}
+                    alt={`${view === 'front' ? 'Anterior' : 'Posterior'} anatomical hologram`}
+                    referrerPolicy="no-referrer"
+                    onError={() => setAssetFailed(true)}
+                  />
+                  <img className="anatomy-real-img depth-layer depth-layer-front" src={sourceUrl} alt="" aria-hidden="true" referrerPolicy="no-referrer" />
+                </>
+              ) : (
+                <DigitalHuman view={view} />
+              )}
 
-            {!idle && Object.entries(HOTSPOT_POSITIONS[view]).map(([key, position]) => {
-              const region = key as RegionKey;
-              const signal = signalMap.get(region);
-              if (!signal || region === 'wholeBody') return null;
-              return (
-                <button
-                  key={region}
-                  className={`anatomy-real-hotspot${active === region ? ' active' : ''}`}
-                  data-source={signal.source === 'BLS measured' ? 'measured' : 'derived'}
-                  style={{
-                    left: `${position.x}%`,
-                    top: `${position.y}%`,
-                    width: `${position.w}%`,
-                    height: `${position.h}%`,
-                    ...heatStyle(signal),
-                  }}
-                  onMouseEnter={() => setActive(region)}
-                  onFocus={() => setActive(region)}
-                  onClick={() => setActive(region)}
-                  aria-label={`${REGION_LABELS[region]} injury signal`}
-                />
-              );
-            })}
+              <div className="holo-body-scanlines" />
+              <div className="holo-body-crosshair" />
+
+              {!idle && Object.entries(HOTSPOT_POSITIONS[view]).map(([key, position]) => {
+                const region = key as RegionKey;
+                const signal = signalMap.get(region);
+                if (!signal || region === 'wholeBody') return null;
+                return (
+                  <button
+                    key={region}
+                    className={`anatomy-real-hotspot${active === region ? ' active' : ''}`}
+                    data-source={signal.source === 'BLS measured' ? 'measured' : 'derived'}
+                    style={{
+                      left: `${position.x}%`,
+                      top: `${position.y}%`,
+                      width: `${position.w}%`,
+                      height: `${position.h}%`,
+                      ...heatStyle(signal),
+                    }}
+                    onMouseEnter={() => setActive(region)}
+                    onFocus={() => setActive(region)}
+                    onClick={() => setActive(region)}
+                    aria-label={`${REGION_LABELS[region]} injury signal`}
+                  />
+                );
+              })}
+            </div>
           </div>
 
-          {idle && <div className="injury-anatomy-idle-callout anatomy-real-callout"><Search size={18} /><strong>Search an occupation to activate injury heat.</strong><span>Published BLS body-part data will illuminate the corresponding anatomical regions when available.</span></div>}
+          {idle && <div className="injury-anatomy-idle-callout anatomy-real-callout"><Search size={18} /><strong>Search an occupation to energize the projection.</strong><span>Published BLS body-part data will drive region intensity while occupational-demand signals fill gaps.</span></div>}
         </div>
 
-        <div className="anatomy-real-credit">Interactive segmented digital-human projection · select or hover illuminated regions to inspect evidence</div>
+        <div className="anatomy-real-credit">Multi-plane anatomical intelligence projection · real anatomy artwork + interactive regional signal mapping</div>
       </div>
 
       <aside className="injury-anatomy-data anatomy-real-data">
         {idle ? (
           <div className="injury-anatomy-idle-data">
-            <span>PROJECTION LAYERS</span>
-            <div><b>01</b><strong>Digital human model</strong><small>Segmented translucent geometry provides an interactive diagnostic projection.</small></div>
-            <div><b>02</b><strong>BLS injury heat</strong><small>Published body-part counts illuminate corresponding regions where available.</small></div>
-            <div><b>03</b><strong>Interactive inspection</strong><small>Hover a highlighted region to expose the measured or derived supporting detail.</small></div>
+            <span>PROJECTION STACK</span>
+            <div><b>01</b><strong>Detailed anatomy layer</strong><small>Real anatomical artwork is composited into the projection instead of a generated mannequin silhouette.</small></div>
+            <div><b>02</b><strong>Volumetric depth field</strong><small>Independent projection planes, orbital HUD geometry and pointer-responsive parallax create spatial depth.</small></div>
+            <div><b>03</b><strong>Evidence-driven heat</strong><small>BLS body-part counts illuminate corresponding regions; occupational demand signals provide contextual fallback.</small></div>
+            <div><b>04</b><strong>Interactive inspection</strong><small>Hover or select an illuminated body region to expose its evidence and relative signal intensity.</small></div>
           </div>
         ) : (
           <>
