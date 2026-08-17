@@ -5,11 +5,11 @@ import ToolErrorBoundary from "@/components/ToolErrorBoundary";
 import Guidelines from "@/pages/Guidelines";
 import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
-import AORMonitor from "@/pages/DeploymentReferenceV2";
+import ExternalFactors from "@/pages/ExternalFactors";
 import AORIntelligence from "@/pages/AORIntelligence";
 import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
-import ConditionReference from "@/pages/ConditionReference";
+import ConditionIntelligence from "@/pages/ConditionIntelligence";
 import StandardsMatrix from "@/pages/StandardsMatrixV2";
 import DrugChecker from "@/pages/DrugCheckerAdvanced";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV3";
@@ -31,7 +31,7 @@ function AppRouter() {
             <AORIntelligence />
           </Route>
           <Route path="/external-factors">
-            <AORMonitor />
+            <ExternalFactors />
           </Route>
           <Route path="/job-intelligence">
             <JobIntelligence />
@@ -40,7 +40,7 @@ function AppRouter() {
             <InjuryIntelligence />
           </Route>
           <Route path="/guidelines">
-            <ConditionReference />
+            <ConditionIntelligence />
           </Route>
           <Route path="/matrix">
             <StandardsMatrix />
