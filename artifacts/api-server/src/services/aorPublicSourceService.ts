@@ -162,8 +162,23 @@ function pointInScope(scope: Scope, longitude: number | null, latitude: number |
   return longitude >= minLon && longitude <= maxLon && latitude >= minLat && latitude <= maxLat;
 }
 
-function whoUrl(path: string) {
-  return path.startsWith("http") ? path : `https://www.who.int${path.startsWith("/") ? path : `/${path}`}`;
+function whoUrl(item: Record<string, unknown>) {
+  const donId = text(item.DonId);
+  if (donId) return `https://www.who.int/emergencies/disease-outbreak-news/item/${encodeURIComponent(donId)}`;
+  const path = text(item.ItemDefaultUrl);
+  return path.startsWith("http")
+    ? path
+    : `https://www.who.int${path.startsWith("/") ? path : `/${path || "emergencies/disease-outbreak-news"}`}`;
+}
+
+function arrayFromPayload(payload: unknown): unknown[] {
+  if (Array.isArray(payload)) return payload;
+  const root = record(payload);
+  for (const key of ["features", "events", "items", "data", "value", "results"]) {
+    const candidate = root[key];
+    if (Array.isArray(candidate)) return candidate;
+  }
+  return [];
 }
 
 export async function getWhoOutbreaks(command: AorCommandId, limit = 12): Promise<WhoOutbreakItem[]> {
@@ -186,7 +201,7 @@ export async function getWhoOutbreaks(command: AorCommandId, limit = 12): Promis
         title,
         publishedAt: dateString(item.PublicationDateAndTime),
         summary,
-        url: whoUrl(text(item.ItemDefaultUrl) || "/emergencies/disease-outbreak-news"),
+        url: whoUrl(item),
         matchedArea,
         provider: "WHO Disease Outbreak News" as const,
         relevant: Boolean(matchedArea) && !isExcluded(scope, searchText),
@@ -197,58 +212,58 @@ export async function getWhoOutbreaks(command: AorCommandId, limit = 12): Promis
     .map(({ relevant: _relevant, ...item }) => item);
 }
 
-const GDACS_TYPES = ["EQ", "TC", "FL", "VO", "WF", "DR"] as const;
-
 export async function getGdacsEvents(command: AorCommandId, limit = 12): Promise<GdacsEventItem[]> {
   const scope = SCOPES[command];
-  const responses = await Promise.allSettled(
-    GDACS_TYPES.map((eventType) => {
-      const url = new URL("https://www.gdacs.org/gdacsapi/api/events/geteventlist/MAP");
-      url.searchParams.set("eventtypes", eventType);
-      return fetchJson("GDACS", url, {}, 10_000);
-    }),
-  );
-  if (!responses.some((response) => response.status === "fulfilled")) {
-    throw new Error("GDACS did not return any event feed.");
-  }
+  // GDACS publishes this compact generated application feed from the same official
+  // data system. It is more reliable for unattended reads than the homepage map
+  // action, whose required query contract has changed over time.
+  const url = new URL("https://www.gdacs.org/contentdata/xml/gdacs_app_feed.json");
+  const payload = await fetchJson("GDACS", url, {}, 12_000);
+  const rows = arrayFromPayload(payload);
   const seen = new Set<string>();
   const items: GdacsEventItem[] = [];
-  for (const response of responses) {
-    if (response.status !== "fulfilled") continue;
-    const payload = record(response.value);
-    const features = Array.isArray(payload.features) ? payload.features : [];
-    for (const rawFeature of features) {
-      const feature = record(rawFeature);
-      const properties = record(feature.properties);
-      const geometry = record(feature.geometry);
-      const coordinate = firstCoordinate(geometry.coordinates);
-      const longitude = coordinate?.[0] ?? null;
-      const latitude = coordinate?.[1] ?? null;
-      const eventType = text(properties.eventtype) || text(properties.eventType) || text(properties.type) || "Disaster";
-      const eventId = text(properties.eventid) || text(properties.eventId) || text(properties.id) || text(feature.id);
-      const title = text(properties.name) || text(properties.title) || text(properties.description) || `${eventType} event`;
-      const country = text(properties.country) || text(properties.countryname) || text(properties.countryName) || text(properties.iso3);
-      const searchable = `${title} ${country} ${text(properties.htmldescription)} ${text(properties.description)}`;
-      if (isExcluded(scope, searchable)) continue;
-      if (!scopeMatch(scope, searchable) && !pointInScope(scope, longitude, latitude)) continue;
-      const id = `${eventType}-${eventId || title}`;
-      if (seen.has(id)) continue;
-      seen.add(id);
-      items.push({
-        id,
-        title,
-        eventType,
-        alertLevel: text(properties.alertlevel) || text(properties.alertLevel) || text(properties.alert) || "",
-        country,
-        fromDate: dateString(properties.fromdate ?? properties.fromDate ?? properties.date),
-        toDate: dateString(properties.todate ?? properties.toDate),
-        url: text(properties.url) || (eventId ? `https://www.gdacs.org/report.aspx?eventtype=${encodeURIComponent(eventType)}&eventid=${encodeURIComponent(eventId)}` : "https://www.gdacs.org/"),
-        latitude,
-        longitude,
-        provider: "GDACS",
-      });
-    }
+
+  for (const raw of rows) {
+    const feature = record(raw);
+    const propertiesRecord = record(feature.properties);
+    const properties = Object.keys(propertiesRecord).length ? propertiesRecord : feature;
+    const geometry = record(feature.geometry);
+    const directCoordinate = firstCoordinate(geometry.coordinates);
+    const longitude = directCoordinate?.[0] ?? numberValue(properties.longitude ?? properties.lon ?? properties.lng);
+    const latitude = directCoordinate?.[1] ?? numberValue(properties.latitude ?? properties.lat);
+    const eventType = text(properties.eventtype) || text(properties.eventType) || text(properties.type) || text(properties.event_type) || "Disaster";
+    const eventId = text(properties.eventid) || text(properties.eventId) || text(properties.id) || text(feature.id) || text(properties.event_id);
+    const title = text(properties.name) || text(properties.title) || text(properties.eventname) || text(properties.description) || `${eventType} event`;
+    const country = text(properties.country) || text(properties.countryname) || text(properties.countryName) || text(properties.iso3) || text(properties.country_name);
+    const searchable = `${title} ${country} ${text(properties.htmldescription)} ${text(properties.description)} ${text(properties.location)}`;
+
+    if (isExcluded(scope, searchable)) continue;
+    if (!scopeMatch(scope, searchable) && !pointInScope(scope, longitude, latitude)) continue;
+
+    const id = `${eventType}-${eventId || title}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const episodeId = text(properties.episodeid) || text(properties.episodeId) || text(properties.episode_id);
+    const explicitUrl = text(properties.url) || text(properties.link) || text(properties.weburl) || text(properties.webUrl);
+    const fallbackUrl = eventId
+      ? `https://www.gdacs.org/resources.aspx?eventid=${encodeURIComponent(eventId)}&eventtype=${encodeURIComponent(eventType)}${episodeId ? `&episodeid=${encodeURIComponent(episodeId)}` : ""}`
+      : "https://www.gdacs.org/";
+
+    items.push({
+      id,
+      title,
+      eventType,
+      alertLevel: text(properties.alertlevel) || text(properties.alertLevel) || text(properties.alert) || text(properties.alert_level) || "",
+      country,
+      fromDate: dateString(properties.fromdate ?? properties.fromDate ?? properties.date ?? properties.startdate ?? properties.startDate),
+      toDate: dateString(properties.todate ?? properties.toDate ?? properties.enddate ?? properties.endDate),
+      url: explicitUrl || fallbackUrl,
+      latitude,
+      longitude,
+      provider: "GDACS",
+    });
   }
+
   return items
     .sort((a, b) => (b.fromDate || b.toDate).localeCompare(a.fromDate || a.toDate))
     .slice(0, Math.max(1, Math.min(limit, 30)));
