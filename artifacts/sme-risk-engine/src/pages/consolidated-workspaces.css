@@ -1,6 +1,6 @@
 .consolidated-workspace {
   display: grid;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
 }
 
@@ -51,66 +51,43 @@
 }
 
 .consolidated-header p {
-  max-width: 780px;
+  max-width: 800px;
   margin: 0;
   color: rgba(199, 215, 224, .72);
   font-size: 13px;
   line-height: 1.55;
 }
 
-.consolidated-switcher {
+.consolidated-domain-summary {
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  padding: 4px;
-  border: 1px solid rgba(93, 184, 204, .18);
-  border-radius: 14px;
-  background: rgba(4, 14, 22, .72);
-  min-width: 390px;
+  grid-template-columns: repeat(2, minmax(190px, 1fr));
+  gap: 7px;
+  min-width: 410px;
 }
 
-.consolidated-switcher button {
-  appearance: none;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: rgba(199, 215, 224, .62);
+.consolidated-domain-summary > span {
   display: grid;
   grid-template-columns: 18px 1fr;
   align-items: center;
-  gap: 9px;
-  padding: 11px 12px;
-  text-align: left;
-  cursor: pointer;
-  transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
-}
-
-.consolidated-switcher button:hover {
+  gap: 3px 9px;
+  min-height: 60px;
+  padding: 11px 13px;
+  border: 1px solid rgba(93, 184, 204, .18);
+  border-radius: 12px;
+  background: rgba(4, 14, 22, .7);
   color: #dff9ff;
-  background: rgba(44, 141, 165, .08);
+  box-shadow: inset 0 1px rgba(255,255,255,.025);
 }
 
-.consolidated-switcher button.active {
-  color: #e8fcff;
-  background: linear-gradient(135deg, rgba(51, 160, 184, .22), rgba(20, 80, 98, .16));
-  box-shadow: inset 0 0 0 1px rgba(105, 222, 239, .22), 0 0 24px rgba(44, 173, 200, .08);
-}
-
-.consolidated-switcher button span {
-  display: grid;
-  gap: 2px;
-}
-
-.consolidated-switcher strong {
-  font-size: 11px;
-  font-weight: 750;
-}
-
-.consolidated-switcher small {
-  color: rgba(177, 199, 210, .48);
+.consolidated-domain-summary svg { color: #74dce9; }
+.consolidated-domain-summary b { font-size: 10px; letter-spacing: .075em; }
+.consolidated-domain-summary small {
+  grid-column: 2;
+  color: rgba(177, 199, 210, .52);
   font-size: 9px;
-  white-space: nowrap;
+  line-height: 1.35;
 }
 
 .consolidated-context-strip {
@@ -122,14 +99,10 @@
   border: 1px solid rgba(88, 173, 192, .12);
   border-radius: 11px;
   background: rgba(8, 22, 31, .64);
-  color: rgba(173, 194, 204, .45);
+  color: rgba(179, 202, 212, .64);
   font-size: 9px;
   letter-spacing: .045em;
   text-transform: uppercase;
-}
-
-.consolidated-context-strip span.active {
-  color: #7be1ee;
 }
 
 .consolidated-context-strip i {
@@ -138,17 +111,85 @@
   background: linear-gradient(90deg, rgba(99,211,230,.35), transparent);
 }
 
-.consolidated-view {
+.consolidated-domain-section {
   min-width: 0;
-  animation: consolidated-view-in .22s ease both;
+  padding: 12px;
+  border: 1px solid rgba(88, 177, 197, .13);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(9, 24, 34, .68), rgba(4, 13, 20, .45));
+  box-shadow: inset 0 1px rgba(255,255,255,.018);
 }
 
-@keyframes consolidated-view-in {
-  from { opacity: .55; transform: translateY(3px); }
-  to { opacity: 1; transform: none; }
+.consolidated-domain-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 13px;
+  align-items: center;
+  margin: 0 2px 12px;
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid rgba(91, 185, 205, .12);
 }
 
-/* The combined workspace owns the page title and domain boundary. Child tool headers are intentionally hidden. */
+.consolidated-domain-index {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(101, 220, 236, .22);
+  border-radius: 9px;
+  background: rgba(28, 101, 119, .12);
+  color: #79e1ed;
+  font: 700 10px/1 monospace;
+}
+
+.consolidated-domain-heading small {
+  color: rgba(111, 215, 230, .7);
+  font-size: 9px;
+  letter-spacing: .14em;
+  font-weight: 750;
+}
+
+.consolidated-domain-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 3px 0;
+  font-size: 18px;
+  color: #eefcff;
+}
+
+.consolidated-domain-heading p {
+  margin: 0;
+  color: rgba(184, 205, 215, .58);
+  font-size: 10px;
+}
+
+.consolidated-domain-signal {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  border: 1px solid rgba(102, 207, 226, .13);
+  border-radius: 999px;
+  background: rgba(4, 15, 22, .7);
+  color: rgba(184, 221, 229, .7);
+  font-size: 8px;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+.consolidated-domain-signal i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #71dce8;
+  box-shadow: 0 0 10px rgba(113,220,232,.55);
+}
+
+.consolidated-domain-content { min-width: 0; }
+
+/* The unified page owns the page title; child tool headers remain hidden. */
 .clinical-consolidated .injury-header,
 .clinical-consolidated .condition-intel-header,
 .aor-consolidated .workstation-header,
@@ -164,18 +205,14 @@
 }
 
 @media (max-width: 1180px) {
-  .consolidated-header {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-  }
-  .consolidated-switcher {
-    min-width: 0;
-    width: 100%;
-  }
+  .consolidated-header { grid-template-columns: 1fr; align-items: stretch; }
+  .consolidated-domain-summary { min-width: 0; width: 100%; }
 }
 
 @media (max-width: 760px) {
   .consolidated-header { padding: 18px; }
-  .consolidated-switcher { grid-template-columns: 1fr; }
+  .consolidated-domain-summary { grid-template-columns: 1fr; }
   .consolidated-context-strip { overflow-x: auto; white-space: nowrap; }
+  .consolidated-domain-heading { grid-template-columns: auto minmax(0, 1fr); }
+  .consolidated-domain-signal { grid-column: 2; justify-self: start; }
 }
