@@ -18,7 +18,7 @@ type Scope = {
 const SCOPES: Record<AorCommandId, Scope> = {
   northcom: {
     label: "USNORTHCOM",
-    terms: ["United States", "U.S.", "USA", "Alaska", "Canada", "Mexico", "Greenland", "Bahamas", "Puerto Rico", "California", "Hawaii"],
+    terms: ["United States", "U.S.", "USA", "Alaska", "Canada", "Mexico", "Greenland", "Bahamas", "Puerto Rico", "California"],
     bbox: [-170, 23, -50, 85],
   },
   southcom: {
@@ -44,7 +44,7 @@ const SCOPES: Record<AorCommandId, Scope> = {
   },
   indopacom: {
     label: "USPACOM",
-    terms: ["Indo-Pacific", "Pacific", "Australia", "Bangladesh", "Bhutan", "Brunei", "Cambodia", "China", "Taiwan", "Fiji", "India", "Indonesia", "Japan", "Kiribati", "Laos", "Malaysia", "Maldives", "Marshall Islands", "Micronesia", "Mongolia", "Myanmar", "Burma", "Nauru", "Nepal", "New Zealand", "North Korea", "Palau", "Papua New Guinea", "Philippines", "Samoa", "Singapore", "Solomon Islands", "South Korea", "Sri Lanka", "Thailand", "Timor-Leste", "Tonga", "Tuvalu", "Vanuatu", "Vietnam"],
+    terms: ["Indo-Pacific", "Pacific", "Hawaii", "Australia", "Bangladesh", "Bhutan", "Brunei", "Cambodia", "China", "Taiwan", "Fiji", "India", "Indonesia", "Japan", "Kiribati", "Laos", "Malaysia", "Maldives", "Marshall Islands", "Micronesia", "Mongolia", "Myanmar", "Burma", "Nauru", "Nepal", "New Zealand", "North Korea", "Palau", "Papua New Guinea", "Philippines", "Samoa", "Singapore", "Solomon Islands", "South Korea", "Sri Lanka", "Thailand", "Timor-Leste", "Tonga", "Tuvalu", "Vanuatu", "Vietnam"],
   },
 };
 
@@ -110,8 +110,12 @@ function hasTerm(haystack: string, term: string) {
   return source.includes(needle);
 }
 
+function isExcluded(scope: Scope, haystack: string) {
+  return (scope.exclude ?? []).some((term) => hasTerm(haystack, term));
+}
+
 function scopeMatch(scope: Scope, haystack: string) {
-  if ((scope.exclude ?? []).some((term) => hasTerm(haystack, term))) return false;
+  if (isExcluded(scope, haystack)) return false;
   return scope.terms.some((term) => hasTerm(haystack, term));
 }
 
@@ -185,7 +189,7 @@ export async function getWhoOutbreaks(command: AorCommandId, limit = 12): Promis
         url: whoUrl(text(item.ItemDefaultUrl) || "/emergencies/disease-outbreak-news"),
         matchedArea,
         provider: "WHO Disease Outbreak News" as const,
-        relevant: Boolean(matchedArea) && !((scope.exclude ?? []).some((term) => hasTerm(searchText, term))),
+        relevant: Boolean(matchedArea) && !isExcluded(scope, searchText),
       };
     })
     .filter((item) => item.relevant)
@@ -225,6 +229,7 @@ export async function getGdacsEvents(command: AorCommandId, limit = 12): Promise
       const title = text(properties.name) || text(properties.title) || text(properties.description) || `${eventType} event`;
       const country = text(properties.country) || text(properties.countryname) || text(properties.countryName) || text(properties.iso3);
       const searchable = `${title} ${country} ${text(properties.htmldescription)} ${text(properties.description)}`;
+      if (isExcluded(scope, searchable)) continue;
       if (!scopeMatch(scope, searchable) && !pointInScope(scope, longitude, latitude)) continue;
       const id = `${eventType}-${eventId || title}`;
       if (seen.has(id)) continue;
@@ -271,6 +276,7 @@ export async function getUsgsEarthquakes(command: AorCommandId, limit = 12): Pro
       const depthKm = Array.isArray(geometry.coordinates) ? numberValue(geometry.coordinates[2]) : null;
       const place = text(properties.place);
       const title = text(properties.title) || (place ? `Earthquake near ${place}` : "USGS earthquake");
+      const searchable = `${title} ${place}`;
       return {
         id: text(feature.id) || title,
         title,
@@ -284,7 +290,7 @@ export async function getUsgsEarthquakes(command: AorCommandId, limit = 12): Pro
         longitude,
         depthKm,
         provider: "USGS Earthquake Catalog" as const,
-        relevant: scopeMatch(scope, `${title} ${place}`),
+        relevant: !isExcluded(scope, searchable) && scopeMatch(scope, searchable),
       };
     })
     .filter((item) => item.relevant)
