@@ -23,3 +23,14 @@ The upstream repository states that the male base mesh is provided under CC0 and
 - Use in this application: the shader's holographic scanline, Fresnel, signal/flicker and additive-light treatment is adapted onto real PubChem 3D atom and bond geometry in the Drug Checker molecular viewer.
 
 The upstream repository identifies the project as MIT licensed. The adaptation retains attribution and is used as the visual material layer rather than recreating the hologram effect with CSS.
+
+## Standards Intelligence relationship map
+
+- Asset/library: Cytoscape.js
+- Source project: `cytoscape/cytoscape.js`
+- Runtime version: `3.33.4`
+- License: MIT
+- Runtime module: `https://esm.sh/cytoscape@3.33.4`
+- Use in this application: interactive graph visualization connecting a reviewer scenario to active standards and matched source-backed requirements in the Standards Intelligence engine.
+
+Cytoscape.js is used as the network visualization/interaction engine. The application supplies its own standards data, rule logic, styling, and reviewer interpretation layer.
