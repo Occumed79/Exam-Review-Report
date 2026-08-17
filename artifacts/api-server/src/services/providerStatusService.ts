@@ -180,7 +180,7 @@ export async function getProviderStatuses(): Promise<ProviderStatus[]> {
       news
         ? () =>
             get(
-              `https://newsdata.io/api/1/latest?apikey=${encodeURIComponent(news)}&q=health`,
+              `https://newsdata.io/api/1/latest?apikey=${encodeURIComponent(news)}&q=health&language=en`,
             )
         : undefined,
     ),
@@ -192,7 +192,7 @@ export async function getProviderStatuses(): Promise<ProviderStatus[]> {
       apiTube
         ? () =>
             get(
-              `https://api.apitube.io/v1/news/everything?api_key=${encodeURIComponent(apiTube)}&q=health`,
+              `https://api.apitube.io/v1/news/everything?api_key=${encodeURIComponent(apiTube)}&title=health&per_page=1&sort.by=published_at&sort.order=desc`,
             )
         : undefined,
     ),
