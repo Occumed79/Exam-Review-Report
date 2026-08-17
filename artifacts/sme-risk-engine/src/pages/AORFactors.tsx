@@ -1,9 +1,50 @@
-import { CloudSun, Globe2, Radar } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { CloudSun, Globe2, LoaderCircle, Radar, RefreshCw } from 'lucide-react';
 import AORIntelligence from './AORIntelligence';
 import ExternalFactors from './ExternalFactors';
+import { fetchIntelligenceProviders, type ProviderStatusRecord } from '../lib/intelligenceApi';
 import './consolidated-workspaces.css';
 
+const AOR_PROVIDER_IDS = ['newsdata', 'apitube', 'regulations', 'congress'] as const;
+const PROVIDER_LABELS: Record<(typeof AOR_PROVIDER_IDS)[number], string> = {
+  newsdata: 'NewsData.io',
+  apitube: 'APITube',
+  regulations: 'Regulations.gov',
+  congress: 'Congress.gov',
+};
+
+function providerTone(status?: ProviderStatusRecord['status']) {
+  if (status === 'connected' || status === 'public') return 'connected';
+  if (status === 'degraded') return 'degraded';
+  if (status === 'error' || status === 'not_configured') return 'error';
+  return 'checking';
+}
+
 export default function AORFactors() {
+  const [providerStatus, setProviderStatus] = useState<ProviderStatusRecord[]>([]);
+  const [checkingProviders, setCheckingProviders] = useState(true);
+
+  const refreshProviders = useCallback(async () => {
+    setCheckingProviders(true);
+    try {
+      const result = await fetchIntelligenceProviders(true);
+      setProviderStatus(result.providers);
+    } catch {
+      setProviderStatus([]);
+    } finally {
+      setCheckingProviders(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void refreshProviders();
+  }, [refreshProviders]);
+
+  const providerMap = useMemo(
+    () => new Map(providerStatus.map((provider) => [provider.id, provider])),
+    [providerStatus],
+  );
+
   return (
     <div className="consolidated-workspace aor-consolidated" data-testid="aor-factors">
       <header className="consolidated-header consolidated-header-single">
@@ -17,6 +58,29 @@ export default function AORFactors() {
           <span><CloudSun size={14} /><b>EXPOSURE FACTORS</b><small>Heat · altitude · AQI · fatigue · PPE</small></span>
         </div>
       </header>
+
+      <div className="aor-provider-diagnostics" aria-label="Live intelligence provider diagnostics">
+        <div className="aor-provider-diagnostics-label">
+          <span>LIVE SOURCE DIAGNOSTICS</span>
+          <small>Active upstream checks — not configuration-only status</small>
+        </div>
+        <div className="aor-provider-diagnostics-grid">
+          {AOR_PROVIDER_IDS.map((id) => {
+            const provider = providerMap.get(id);
+            const tone = checkingProviders && !provider ? 'checking' : providerTone(provider?.status);
+            return (
+              <div key={id} className="aor-provider-chip" data-tone={tone} title={provider?.error ?? `${PROVIDER_LABELS[id]} ${provider?.status ?? 'checking'}`}>
+                <i />
+                <span><strong>{PROVIDER_LABELS[id]}</strong><small>{checkingProviders && !provider ? 'checking' : provider?.status?.replace('_', ' ') ?? 'unavailable'}</small></span>
+              </div>
+            );
+          })}
+        </div>
+        <button type="button" onClick={() => void refreshProviders()} disabled={checkingProviders}>
+          {checkingProviders ? <LoaderCircle size={13} className="animate-spin" /> : <RefreshCw size={13} />}
+          Recheck
+        </button>
+      </div>
 
       <div className="consolidated-context-strip consolidated-context-strip-static">
         <span>01 Where the work occurs &amp; what is happening there</span>
