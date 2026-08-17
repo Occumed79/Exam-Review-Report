@@ -1,0 +1,181 @@
+.consolidated-workspace {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.consolidated-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 28px;
+  align-items: end;
+  padding: 24px 28px 20px;
+  border: 1px solid rgba(92, 195, 216, 0.18);
+  border-radius: 18px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(53, 190, 216, 0.1), transparent 32%),
+    linear-gradient(135deg, rgba(11, 28, 39, 0.97), rgba(7, 18, 27, 0.96));
+  box-shadow: inset 0 1px rgba(255,255,255,.025), 0 18px 45px rgba(0,0,0,.16);
+  overflow: hidden;
+  position: relative;
+}
+
+.consolidated-header::after {
+  content: '';
+  position: absolute;
+  right: -90px;
+  top: -180px;
+  width: 420px;
+  height: 420px;
+  border: 1px solid rgba(102, 228, 245, 0.06);
+  border-radius: 50%;
+  box-shadow: 0 0 0 55px rgba(102,228,245,.018), 0 0 0 110px rgba(102,228,245,.012);
+  pointer-events: none;
+}
+
+.consolidated-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #78dbe8;
+  font-size: 10px;
+  letter-spacing: .16em;
+  font-weight: 750;
+}
+
+.consolidated-header h1 {
+  margin: 7px 0 5px;
+  font-size: clamp(28px, 3vw, 42px);
+  letter-spacing: -.045em;
+  line-height: 1;
+}
+
+.consolidated-header p {
+  max-width: 780px;
+  margin: 0;
+  color: rgba(199, 215, 224, .72);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.consolidated-switcher {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(180px, 1fr));
+  padding: 4px;
+  border: 1px solid rgba(93, 184, 204, .18);
+  border-radius: 14px;
+  background: rgba(4, 14, 22, .72);
+  min-width: 390px;
+}
+
+.consolidated-switcher button {
+  appearance: none;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(199, 215, 224, .62);
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.consolidated-switcher button:hover {
+  color: #dff9ff;
+  background: rgba(44, 141, 165, .08);
+}
+
+.consolidated-switcher button.active {
+  color: #e8fcff;
+  background: linear-gradient(135deg, rgba(51, 160, 184, .22), rgba(20, 80, 98, .16));
+  box-shadow: inset 0 0 0 1px rgba(105, 222, 239, .22), 0 0 24px rgba(44, 173, 200, .08);
+}
+
+.consolidated-switcher button span {
+  display: grid;
+  gap: 2px;
+}
+
+.consolidated-switcher strong {
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.consolidated-switcher small {
+  color: rgba(177, 199, 210, .48);
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.consolidated-context-strip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 0 14px;
+  border: 1px solid rgba(88, 173, 192, .12);
+  border-radius: 11px;
+  background: rgba(8, 22, 31, .64);
+  color: rgba(173, 194, 204, .45);
+  font-size: 9px;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.consolidated-context-strip span.active {
+  color: #7be1ee;
+}
+
+.consolidated-context-strip i {
+  width: 28px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(99,211,230,.35), transparent);
+}
+
+.consolidated-view {
+  min-width: 0;
+  animation: consolidated-view-in .22s ease both;
+}
+
+@keyframes consolidated-view-in {
+  from { opacity: .55; transform: translateY(3px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* The combined workspace owns the page title and domain boundary. Child tool headers are intentionally hidden. */
+.clinical-consolidated .injury-header,
+.clinical-consolidated .condition-intel-header,
+.aor-consolidated .workstation-header,
+.aor-consolidated .external-factors-header {
+  display: none !important;
+}
+
+.clinical-consolidated .injury-workbench,
+.clinical-consolidated .condition-intelligence,
+.aor-consolidated .aor-command,
+.aor-consolidated .external-factors-workbench {
+  padding-top: 0;
+}
+
+@media (max-width: 1180px) {
+  .consolidated-header {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+  .consolidated-switcher {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 760px) {
+  .consolidated-header { padding: 18px; }
+  .consolidated-switcher { grid-template-columns: 1fr; }
+  .consolidated-context-strip { overflow-x: auto; white-space: nowrap; }
+}
