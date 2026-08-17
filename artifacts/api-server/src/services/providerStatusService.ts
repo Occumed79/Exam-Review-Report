@@ -152,7 +152,7 @@ export async function getProviderStatuses(): Promise<ProviderStatus[]> {
       get("https://www.who.int/api/news/diseaseoutbreaknews?$top=1&$orderby=PublicationDateAndTime%20desc"),
     ),
     check("gdacs", "GDACS", "public", true, () =>
-      get("https://www.gdacs.org/gdacsapi/api/events/geteventlist/MAP?eventtypes=EQ"),
+      get("https://www.gdacs.org/contentdata/xml/gdacs_app_feed.json"),
     ),
     check("usgs", "USGS Earthquake Catalog", "public", true, () =>
       get("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=1&orderby=time"),
