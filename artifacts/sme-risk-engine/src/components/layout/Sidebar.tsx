@@ -5,8 +5,8 @@ import {
   BookOpen,
   Briefcase,
   Calculator,
+  CloudSun,
   Database,
-  Globe,
   Grid3x3,
   Radar,
   Pill,
@@ -31,7 +31,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/injury-intelligence", label: "Injury Intelligence", icon: Activity },
       { href: "/job-intelligence", label: "Job Intelligence", icon: Briefcase },
-      { href: "/external-factors", label: "External Factors", icon: Globe },
+      { href: "/external-factors", label: "External Factors", icon: CloudSun },
       { href: "/aor", label: "AOR Intelligence", icon: Radar },
     ],
   },
@@ -40,8 +40,8 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/drugs", label: "Drug Checker", icon: Pill },
       { href: "/calculator", label: "Clinical Calculators", icon: Calculator },
-      { href: "/guidelines", label: "Condition Reference", icon: BookOpen },
-      { href: "/matrix", label: "Standards Matrix", icon: Grid3x3 },
+      { href: "/guidelines", label: "Condition Intelligence", icon: BookOpen },
+      { href: "/matrix", label: "Standards Intelligence", icon: Grid3x3 },
     ],
   },
   {
