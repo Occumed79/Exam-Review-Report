@@ -4,6 +4,7 @@ import { searchRegulations, getRegulationsStatus } from "../services/regulations
 import { searchNews, getNewsStatus } from "../services/newsService";
 import { getWhoIndicators, getWhoStatus } from "../services/whoService";
 import { getProviderStatuses } from "../services/providerStatusService";
+import { getAorPublicSources, isAorCommand } from "../services/aorPublicSourceService";
 
 const router: IRouter = Router();
 function query(value: unknown, fallback = "") {
@@ -44,6 +45,28 @@ router.get("/intelligence/status", async (_req, res) => {
   }
 });
 
+router.get("/intelligence/aor-public", async (req, res) => {
+  const command = query(req.query.command).toLowerCase();
+  if (!isAorCommand(command)) {
+    res.status(400).json({
+      ok: false,
+      error: "command must be northcom, southcom, eucom, africom, centcom, or indopacom.",
+    });
+    return;
+  }
+  try {
+    res.setHeader("Cache-Control", "public, max-age=120, stale-while-revalidate=300");
+    res.json({
+      ok: true,
+      ...(await getAorPublicSources(command, limit(req.query.limit))),
+    });
+  } catch (error) {
+    failure(res, error);
+  }
+});
+
+// Legacy intelligence endpoints remain available to other workspaces during the
+// migration, but AOR Factors no longer depends on them.
 router.get("/intelligence/congress", async (req, res) => {
   const q = query(
     req.query.q,
