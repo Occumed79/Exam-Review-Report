@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
-import { Atom, Database, Loader2, Orbit, ShieldAlert } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Atom, Database, Loader2, ShieldAlert } from 'lucide-react';
+import MedicationHologram3D from './MedicationHologram3D';
 import './medication-molecule-panel.css';
 
 type OccupationalProfile = {
@@ -12,8 +13,6 @@ type MolecularRecord = {
   CID?: number;
   MolecularFormula?: string;
   MolecularWeight?: string | number;
-  SMILES?: string;
-  ConnectivitySMILES?: string;
   XLogP?: number;
   TPSA?: number;
   Complexity?: number;
@@ -37,26 +36,10 @@ type Props = {
   profile: OccupationalProfile;
 };
 
-type BubblePosition = { x: number; y: number };
-
-const SMILES_DRAWER_URL = 'https://esm.sh/smiles-drawer@2.4.1';
 const PUBCHEM_PROPERTIES = [
-  'MolecularFormula',
-  'MolecularWeight',
-  'SMILES',
-  'ConnectivitySMILES',
-  'XLogP',
-  'TPSA',
-  'Complexity',
-  'HBondDonorCount',
-  'HBondAcceptorCount',
-  'IUPACName',
-  'Title',
+  'MolecularFormula', 'MolecularWeight', 'XLogP', 'TPSA', 'Complexity',
+  'HBondDonorCount', 'HBondAcceptorCount', 'IUPACName', 'Title',
 ].join(',');
-
-async function remoteImport(url: string): Promise<any> {
-  return import(/* @vite-ignore */ url);
-}
 
 function cleanDrugName(name: string): string {
   return name
@@ -75,119 +58,48 @@ function riskTone(text: string): Factor['tone'] {
 
 function buildFactors(profile: OccupationalProfile, molecule: MolecularRecord | null): Factor[] {
   const factors: Factor[] = [];
-
   if (profile) {
-    factors.push({
-      id: 'class',
-      label: 'Medication class',
-      value: profile.className,
-      detail: 'Curated therapeutic class used by the occupational review profile.',
-      tone: 'violet',
-    });
-
-    profile.flags.slice(0, 3).forEach((flag, index) => {
-      factors.push({
-        id: `flag-${index}`,
-        label: index === 0 ? 'Primary work factor' : 'Work factor',
-        value: flag,
-        detail: profile.reviewerPoints[index] ?? profile.reviewerPoints[0] ?? 'Reviewer-relevant occupational consideration.',
-        tone: riskTone(flag),
-      });
-    });
-
-    profile.reviewerPoints.slice(0, 2).forEach((point, index) => {
-      factors.push({
-        id: `review-${index}`,
-        label: index === 0 ? 'Reviewer focus' : 'Functional context',
-        value: point.length > 74 ? `${point.slice(0, 71)}…` : point,
-        detail: point,
-        tone: 'cyan',
-      });
-    });
-  }
-
-  if (molecule?.MolecularFormula) {
-    factors.push({
-      id: 'formula',
-      label: 'Formula',
-      value: molecule.MolecularFormula,
-      detail: 'PubChem molecular formula for the resolved compound.',
+    factors.push({ id: 'class', label: 'Medication class', value: profile.className, detail: 'Curated therapeutic class used by the occupational review profile.', tone: 'violet' });
+    profile.flags.slice(0, 3).forEach((flag, index) => factors.push({
+      id: `flag-${index}`,
+      label: index === 0 ? 'Primary work factor' : 'Work factor',
+      value: flag,
+      detail: profile.reviewerPoints[index] ?? profile.reviewerPoints[0] ?? 'Reviewer-relevant occupational consideration.',
+      tone: riskTone(flag),
+    }));
+    profile.reviewerPoints.slice(0, 2).forEach((point, index) => factors.push({
+      id: `review-${index}`,
+      label: index === 0 ? 'Reviewer focus' : 'Functional context',
+      value: point.length > 74 ? `${point.slice(0, 71)}…` : point,
+      detail: point,
       tone: 'cyan',
-    });
+    }));
   }
-
-  if (molecule?.MolecularWeight !== undefined) {
-    factors.push({
-      id: 'weight',
-      label: 'Molecular weight',
-      value: `${molecule.MolecularWeight} g/mol`,
-      detail: 'PubChem molecular weight for the resolved compound.',
-      tone: 'cyan',
-    });
-  }
-
-  if (molecule?.XLogP !== undefined) {
-    factors.push({
-      id: 'xlogp',
-      label: 'XLogP',
-      value: String(molecule.XLogP),
-      detail: 'Computed octanol/water partition coefficient reported by PubChem.',
-      tone: 'violet',
-    });
-  }
-
-  if (molecule?.TPSA !== undefined) {
-    factors.push({
-      id: 'tpsa',
-      label: 'Polar surface area',
-      value: `${molecule.TPSA} Å²`,
-      detail: 'Topological polar surface area reported by PubChem.',
-      tone: 'violet',
-    });
-  }
-
+  if (molecule?.MolecularFormula) factors.push({ id: 'formula', label: 'Formula', value: molecule.MolecularFormula, detail: 'PubChem molecular formula for the resolved compound.', tone: 'cyan' });
+  if (molecule?.MolecularWeight !== undefined) factors.push({ id: 'weight', label: 'Molecular weight', value: `${molecule.MolecularWeight} g/mol`, detail: 'PubChem molecular weight for the resolved compound.', tone: 'cyan' });
+  if (molecule?.XLogP !== undefined) factors.push({ id: 'xlogp', label: 'XLogP', value: String(molecule.XLogP), detail: 'Computed octanol/water partition coefficient reported by PubChem.', tone: 'violet' });
+  if (molecule?.TPSA !== undefined) factors.push({ id: 'tpsa', label: 'Polar surface area', value: `${molecule.TPSA} Å²`, detail: 'Topological polar surface area reported by PubChem.', tone: 'violet' });
   return factors.slice(0, 9);
 }
 
-const BUBBLE_POSITIONS: BubblePosition[] = [
-  { x: 49, y: 5 },
-  { x: 79, y: 17 },
-  { x: 91, y: 43 },
-  { x: 82, y: 72 },
-  { x: 58, y: 90 },
-  { x: 27, y: 86 },
-  { x: 8, y: 66 },
-  { x: 7, y: 35 },
-  { x: 23, y: 13 },
+const BUBBLE_POSITIONS = [
+  { left: '49%', top: '5%' }, { left: '79%', top: '17%' }, { left: '91%', top: '43%' },
+  { left: '82%', top: '72%' }, { left: '58%', top: '90%' }, { left: '27%', top: '86%' },
+  { left: '8%', top: '66%' }, { left: '7%', top: '35%' }, { left: '23%', top: '13%' },
 ];
 
-function tetherPath(position: BubblePosition, index: number): string {
-  const centerX = 50;
-  const centerY = 50;
-  const midX = (centerX + position.x) / 2;
-  const midY = (centerY + position.y) / 2;
-  const horizontalBend = position.x < centerX ? -4.5 : 4.5;
-  const verticalBend = position.y < centerY ? -2.5 : 2.5;
-  const alternating = index % 2 === 0 ? 1 : -1;
-  return `M ${centerX} ${centerY} Q ${midX + horizontalBend * alternating} ${midY + verticalBend} ${position.x} ${position.y}`;
-}
-
 export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Props) {
-  const svgRef = useRef<SVGSVGElement | null>(null);
-  const tracerSvgRef = useRef<SVGSVGElement | null>(null);
   const [molecule, setMolecule] = useState<MolecularRecord | null>(null);
   const [moleculeState, setMoleculeState] = useState<'loading' | 'ready' | 'missing'>('loading');
-  const [structureReady, setStructureReady] = useState(false);
+  const [structureState, setStructureState] = useState<'loading' | 'ready' | 'error'>('loading');
   const [activeFactorId, setActiveFactorId] = useState('');
 
   useEffect(() => {
     let cancelled = false;
     const controller = new AbortController();
-
     const load = async () => {
       setMoleculeState('loading');
       setMolecule(null);
-      setStructureReady(false);
       try {
         const lookupName = cleanDrugName(drugName);
         const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${encodeURIComponent(lookupName)}/property/${PUBCHEM_PROPERTIES}/JSON`;
@@ -207,94 +119,18 @@ export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Pr
         }
       }
     };
-
     void load();
-    return () => {
-      cancelled = true;
-      controller.abort();
-    };
+    return () => { cancelled = true; controller.abort(); };
   }, [drugName]);
 
-  const smiles = molecule?.SMILES ?? molecule?.ConnectivitySMILES ?? null;
-
-  useEffect(() => {
-    let cancelled = false;
-    const draw = async () => {
-      const target = svgRef.current;
-      if (!target || !smiles) {
-        if (tracerSvgRef.current) tracerSvgRef.current.innerHTML = '';
-        setStructureReady(false);
-        return;
-      }
-      try {
-        const mod = await remoteImport(SMILES_DRAWER_URL);
-        if (cancelled || !svgRef.current) return;
-        const SmilesDrawer = mod.default ?? mod;
-        const drawer = new SmilesDrawer.SvgDrawer({
-          width: 360,
-          height: 360,
-          padding: 34,
-          bondThickness: 1.7,
-          bondLength: 26,
-          shortBondLength: 0.82,
-          terminalCarbons: false,
-          explicitHydrogens: false,
-          compactDrawing: false,
-          experimentalSSSR: true,
-        });
-        SmilesDrawer.parse(
-          smiles,
-          (tree: unknown) => {
-            if (cancelled || !svgRef.current) return;
-            svgRef.current.innerHTML = '';
-            drawer.draw(tree, svgRef.current, 'dark');
-            if (tracerSvgRef.current) tracerSvgRef.current.innerHTML = svgRef.current.innerHTML;
-            setStructureReady(true);
-          },
-          () => {
-            if (!cancelled) setStructureReady(false);
-          },
-        );
-      } catch (error) {
-        console.warn('Molecule renderer unavailable', error);
-        if (!cancelled) setStructureReady(false);
-      }
-    };
-    void draw();
-    return () => {
-      cancelled = true;
-    };
-  }, [smiles]);
-
   const factors = useMemo(() => buildFactors(profile, molecule), [profile, molecule]);
-
   useEffect(() => {
     if (!factors.length) setActiveFactorId('');
     else if (!factors.some((factor) => factor.id === activeFactorId)) setActiveFactorId(factors[0].id);
   }, [factors, activeFactorId]);
 
   const activeFactor = factors.find((factor) => factor.id === activeFactorId) ?? factors[0] ?? null;
-
-  const handleStagePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / Math.max(rect.width, 1) - 0.5) * 2;
-    const y = ((event.clientY - rect.top) / Math.max(rect.height, 1) - 0.5) * 2;
-    event.currentTarget.style.setProperty('--med-pointer-x', `${50 + x * 18}%`);
-    event.currentTarget.style.setProperty('--med-pointer-y', `${50 + y * 14}%`);
-    event.currentTarget.style.setProperty('--med-depth-x', `${(x * 9).toFixed(2)}px`);
-    event.currentTarget.style.setProperty('--med-depth-y', `${(y * 6).toFixed(2)}px`);
-    event.currentTarget.style.setProperty('--med-tilt-x', `${(-y * 4.5).toFixed(2)}deg`);
-    event.currentTarget.style.setProperty('--med-tilt-y', `${(x * 6).toFixed(2)}deg`);
-  };
-
-  const handleStagePointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
-    event.currentTarget.style.setProperty('--med-pointer-x', '50%');
-    event.currentTarget.style.setProperty('--med-pointer-y', '50%');
-    event.currentTarget.style.setProperty('--med-depth-x', '0px');
-    event.currentTarget.style.setProperty('--med-depth-y', '0px');
-    event.currentTarget.style.setProperty('--med-tilt-x', '0deg');
-    event.currentTarget.style.setProperty('--med-tilt-y', '0deg');
-  };
+  const handleHologramStatus = useCallback((status: 'loading' | 'ready' | 'error') => setStructureState(status), []);
 
   return (
     <section className="med-molecule-shell" data-testid="medication-molecule-panel">
@@ -311,87 +147,49 @@ export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Pr
       </div>
 
       <div className="med-molecule-workspace">
-        <div className="med-molecule-stage" onPointerMove={handleStagePointerMove} onPointerLeave={handleStagePointerLeave}>
+        <div className="med-molecule-stage asset-hologram-stage">
           <div className="med-molecule-grid" />
-          <div className="med-molecule-depth-beams"><i /><i /><i /><i /></div>
           <div className="med-molecule-orbit orbit-one" />
           <div className="med-molecule-orbit orbit-two" />
           <div className="med-molecule-orbit orbit-three" />
           <div className="med-molecule-projector" />
           <div className="med-molecule-scan" />
-          <div className="med-molecule-scan-secondary" />
 
-          <svg className="med-energy-tether-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-            {factors.map((factor, index) => {
-              const position = BUBBLE_POSITIONS[index % BUBBLE_POSITIONS.length];
-              const active = factor.id === activeFactorId;
-              const path = tetherPath(position, index);
-              return (
-                <g key={`tether-${factor.id}`} className={active ? 'is-active' : ''}>
-                  <path className="med-tether-dormant" d={path} />
-                  {active && <>
-                    <path className="med-tether-core" d={path} />
-                    <path className="med-tether-runner" d={path} />
-                    <circle className="med-tether-node" cx={position.x} cy={position.y} r="0.8" />
-                  </>}
-                </g>
-              );
-            })}
-          </svg>
-
-          <div className="med-molecule-center">
+          <div className="med-molecule-center asset-hologram-center">
             <div className="med-molecule-aura" />
-            <div className="med-molecule-core-ring core-ring-a" />
-            <div className="med-molecule-core-ring core-ring-b" />
-            <div className="med-molecule-core-ring core-ring-c" />
-            <svg ref={svgRef} className={`med-molecule-svg${structureReady ? ' ready' : ''}`} viewBox="0 0 360 360" aria-label={`${drugName} molecular structure`} />
-            <svg ref={tracerSvgRef} className={`med-molecule-energy-tracer${structureReady ? ' ready' : ''}`} viewBox="0 0 360 360" aria-hidden="true" />
-            {!structureReady && (
-              <div className="med-molecule-placeholder">
-                <Orbit size={42} />
-                <strong>{moleculeState === 'loading' ? 'Resolving molecular structure' : 'Structure unavailable'}</strong>
-                <span>{moleculeState === 'missing' ? 'Occupational factors remain available.' : 'PubChem + SMILES visualization'}</span>
+            <MedicationHologram3D cid={molecule?.CID} drugName={cleanDrugName(drugName)} onStatus={handleHologramStatus} />
+            {structureState !== 'ready' && (
+              <div className="med-molecule-placeholder asset-hologram-placeholder">
+                {structureState === 'loading' ? <Loader2 size={32} className="animate-spin" /> : <ShieldAlert size={30} />}
+                <strong>{structureState === 'loading' ? 'Loading 3D holographic conformer' : '3D conformer unavailable'}</strong>
+                <span>PubChem geometry · Anderson Mancini holographic shader</span>
               </div>
             )}
           </div>
 
           <div className="med-factor-orbit">
-            {factors.map((factor, index) => {
-              const position = BUBBLE_POSITIONS[index % BUBBLE_POSITIONS.length];
-              return (
-                <button
-                  key={factor.id}
-                  type="button"
-                  className={`med-factor-bubble tone-${factor.tone}${activeFactorId === factor.id ? ' active' : ''}`}
-                  style={{ left: `${position.x}%`, top: `${position.y}%` }}
-                  onMouseEnter={() => setActiveFactorId(factor.id)}
-                  onFocus={() => setActiveFactorId(factor.id)}
-                  onClick={() => setActiveFactorId(factor.id)}
-                >
-                  <small>{factor.label}</small>
-                  <strong>{factor.value}</strong>
-                </button>
-              );
-            })}
+            {factors.map((factor, index) => (
+              <button
+                key={factor.id}
+                type="button"
+                className={`med-factor-bubble tone-${factor.tone}${activeFactorId === factor.id ? ' active' : ''}`}
+                style={BUBBLE_POSITIONS[index]}
+                onMouseEnter={() => setActiveFactorId(factor.id)}
+                onFocus={() => setActiveFactorId(factor.id)}
+                onClick={() => setActiveFactorId(factor.id)}
+              >
+                <small>{factor.label}</small>
+                <strong>{factor.value}</strong>
+              </button>
+            ))}
           </div>
         </div>
 
         <aside className={`med-factor-inspector${activeFactor ? ` tone-${activeFactor.tone}` : ''}`}>
           <span>ACTIVE FACTOR</span>
-          {activeFactor ? (
-            <>
-              <h3>{activeFactor.label}</h3>
-              <strong>{activeFactor.value}</strong>
-              <p>{activeFactor.detail}</p>
-            </>
-          ) : (
-            <>
-              <h3>No factor selected</h3>
-              <p>Molecular and occupational factors will populate as data becomes available.</p>
-            </>
-          )}
+          {activeFactor ? <><h3>{activeFactor.label}</h3><strong>{activeFactor.value}</strong><p>{activeFactor.detail}</p></> : <><h3>No factor selected</h3><p>Molecular and occupational factors will populate as data becomes available.</p></>}
           <div className="med-factor-inspector-meta">
-            <div><span>STRUCTURE</span><b>{structureReady ? 'LIVE' : '—'}</b></div>
+            <div><span>STRUCTURE</span><b>{structureState === 'ready' ? '3D LIVE' : '—'}</b></div>
             <div><span>OCC PROFILE</span><b>{profile ? 'CURATED' : 'NONE'}</b></div>
             <div><span>MOLECULE</span><b>{molecule?.CID ? `CID ${molecule.CID}` : '—'}</b></div>
           </div>
