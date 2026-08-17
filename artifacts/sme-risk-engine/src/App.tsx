@@ -3,17 +3,13 @@ import { useStore } from "@/lib/store";
 import AppShell from "@/components/layout/AppShell";
 import ToolErrorBoundary from "@/components/ToolErrorBoundary";
 import Guidelines from "@/pages/Guidelines";
-import Sources from "@/pages/Sources";
 import Settings from "@/pages/Settings";
-import ExternalFactors from "@/pages/ExternalFactors";
-import AORIntelligence from "@/pages/AORIntelligence";
+import InjuriesMedicalConditions from "@/pages/InjuriesMedicalConditions";
+import AORFactors from "@/pages/AORFactors";
 import JobIntelligence from "@/pages/JobIntelligence";
-import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
-import ConditionIntelligence from "@/pages/ConditionIntelligence";
 import StandardsMatrix from "@/pages/StandardsMatrixV2";
 import DrugChecker from "@/pages/DrugCheckerAdvanced";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV3";
-import Citations from "@/pages/CitationFinderV2";
 import "@/pages/injury-osha.css";
 
 function AppRouter() {
@@ -25,22 +21,28 @@ function AppRouter() {
       <ToolErrorBoundary key={location}>
         <Switch>
           <Route path="/">
-            <InjuryIntelligence />
+            <InjuriesMedicalConditions initialView="injuries" />
+          </Route>
+          <Route path="/injuries-medical-conditions">
+            <InjuriesMedicalConditions />
+          </Route>
+          <Route path="/injury-intelligence">
+            <InjuriesMedicalConditions initialView="injuries" />
+          </Route>
+          <Route path="/guidelines">
+            <InjuriesMedicalConditions initialView="conditions" />
+          </Route>
+          <Route path="/aor-factors">
+            <AORFactors />
           </Route>
           <Route path="/aor">
-            <AORIntelligence />
+            <AORFactors initialView="aor" />
           </Route>
           <Route path="/external-factors">
-            <ExternalFactors />
+            <AORFactors initialView="exposures" />
           </Route>
           <Route path="/job-intelligence">
             <JobIntelligence />
-          </Route>
-          <Route path="/injury-intelligence">
-            <InjuryIntelligence />
-          </Route>
-          <Route path="/guidelines">
-            <ConditionIntelligence />
           </Route>
           <Route path="/matrix">
             <StandardsMatrix />
@@ -51,21 +53,11 @@ function AppRouter() {
           <Route path="/calculator">
             <ClinicalCalculator />
           </Route>
-          <Route path="/citations">
-            <Citations />
-          </Route>
           <Route path="/guideline-editor">
             <Guidelines
               guidelines={store.guidelines}
               onSave={store.saveGuideline}
               onDelete={store.deleteGuideline}
-            />
-          </Route>
-          <Route path="/sources">
-            <Sources
-              sources={store.sources}
-              onSave={store.saveSource}
-              onDelete={store.deleteSource}
             />
           </Route>
           <Route path="/settings">
