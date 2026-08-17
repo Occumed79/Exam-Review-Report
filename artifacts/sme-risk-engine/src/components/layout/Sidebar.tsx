@@ -1,12 +1,8 @@
 import { Link, useLocation } from "wouter";
 import {
   Activity,
-  BookMarked,
-  BookOpen,
   Briefcase,
   Calculator,
-  CloudSun,
-  Database,
   Grid3x3,
   Radar,
   Pill,
@@ -29,10 +25,9 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Intelligence",
     items: [
-      { href: "/injury-intelligence", label: "Injury Intelligence", icon: Activity },
+      { href: "/injuries-medical-conditions", label: "Injuries & Medical Conditions", icon: Activity },
       { href: "/job-intelligence", label: "Job Intelligence", icon: Briefcase },
-      { href: "/external-factors", label: "External Factors", icon: CloudSun },
-      { href: "/aor", label: "AOR Intelligence", icon: Radar },
+      { href: "/aor-factors", label: "AOR Factors", icon: Radar },
     ],
   },
   {
@@ -40,15 +35,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/drugs", label: "Drug Checker", icon: Pill },
       { href: "/calculator", label: "Clinical Calculators", icon: Calculator },
-      { href: "/guidelines", label: "Condition Intelligence", icon: BookOpen },
       { href: "/matrix", label: "Standards Intelligence", icon: Grid3x3 },
-    ],
-  },
-  {
-    label: "Evidence",
-    items: [
-      { href: "/citations", label: "Citation Finder", icon: BookMarked },
-      { href: "/sources", label: "Source Library", icon: Database },
     ],
   },
   {
@@ -59,6 +46,17 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
 ];
+
+function isActive(location: string, href: string) {
+  if (location === href) return true;
+  if (href === "/injuries-medical-conditions") {
+    return ["/", "/injury-intelligence", "/guidelines"].includes(location);
+  }
+  if (href === "/aor-factors") {
+    return ["/aor", "/external-factors"].includes(location);
+  }
+  return false;
+}
 
 export default function Sidebar() {
   const [location] = useLocation();
@@ -80,13 +78,13 @@ export default function Sidebar() {
             <div className="sidebar-group-label">{group.label}</div>
             <div className="sidebar-group-items">
               {group.items.map(({ href, label, icon: Icon }) => {
-                const active = location === href || (href === "/injury-intelligence" && location === "/");
+                const active = isActive(location, href);
                 return (
                   <Link
                     key={href}
                     href={href}
                     className={`nav-item${active ? " active" : ""}`}
-                    data-testid={`nav-${label.toLowerCase().replace(/\s+/g, "-")}`}
+                    data-testid={`nav-${label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`}
                     aria-current={active ? "page" : undefined}
                   >
                     <span className="nav-item-icon" aria-hidden="true"><Icon size={17} /></span>
