@@ -107,22 +107,30 @@ function congressUrl(congress: number, type: string, number: string) {
     : "https://www.congress.gov/";
 }
 
-export async function searchCongress(query: string, limit: number) {
-  const { key } = credentials();
-  if (!key) throw new Error("Congress.gov is not configured on the server.");
-
-  // The Congress.gov bill-list endpoint does not provide full-text keyword
-  // search. Pull the current Congress list and apply deterministic relevance
-  // filtering locally rather than sending an unsupported query parameter.
-  const congress = currentCongress();
+async function fetchBillPage(congress: number, key: string, offset: number) {
   const url = new URL(`${BASE}/bill/${congress}`);
   url.searchParams.set("api_key", key);
   url.searchParams.set("format", "json");
   url.searchParams.set("limit", "250");
+  url.searchParams.set("offset", String(offset));
   url.searchParams.set("sort", "updateDate+desc");
-
   const payload = record(await fetchJson("Congress.gov", url));
-  const bills = Array.isArray(payload.bills) ? payload.bills : [];
+  return Array.isArray(payload.bills) ? payload.bills : [];
+}
+
+export async function searchCongress(query: string, limit: number) {
+  const { key } = credentials();
+  if (!key) throw new Error("Congress.gov is not configured on the server.");
+
+  // Congress.gov does not expose full-text keyword search on the bill list.
+  // Read the newest 500 records from the current Congress (two API pages) and
+  // apply deterministic occupational/defense relevance locally.
+  const congress = currentCongress();
+  const pages = await Promise.all([
+    fetchBillPage(congress, key, 0),
+    fetchBillPage(congress, key, 250),
+  ]);
+  const bills = pages.flat();
 
   const items = bills
     .map((raw) => {
@@ -168,6 +176,7 @@ export async function searchCongress(query: string, limit: number) {
     retrievedAt: isoNow(),
     query,
     congress,
+    scanned: bills.length,
     items,
   };
 }
