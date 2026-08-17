@@ -124,7 +124,7 @@ jobs:
             ["/"]='data-testid="injury-intelligence"'
             ["/injury-intelligence"]='data-testid="injury-intelligence"'
             ["/job-intelligence"]='data-testid="job-intelligence"'
-            ["/external-factors"]='data-testid="deployment-reference"'
+            ["/external-factors"]='data-testid="external-factors"'
             ["/drugs"]='data-testid="drug-checker"'
             ["/calculator"]='data-testid="clinical-calculators"'
             ["/guidelines"]='data-testid="condition-reference"'
