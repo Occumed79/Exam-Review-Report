@@ -122,7 +122,7 @@ function apiTubeItem(raw: unknown): NewsItem | null {
     url: text(value.href) || text(value.url),
     imageUrl: text(value.image) || text(value.image_url),
     publishedAt: text(value.published_at) || text(value.publishedAt),
-    sourceName: text(source.name) || text(value.source),
+    sourceName: text(source.name) || text(source.domain) || text(value.source),
     provider: "apitube" as const,
     countries: strings(value.countries),
   };
@@ -149,12 +149,50 @@ function queryGroups(query: string) {
   );
 }
 
+function eventScore(group: string[]) {
+  return group.filter((term) =>
+    OPERATIONAL_TERMS.some((known) => term.includes(known)),
+  ).length;
+}
+
+function operationalTerms(query: string) {
+  const groups = queryGroups(query);
+  if (groups.length) {
+    const best = [...groups].sort((a, b) => eventScore(b) - eventScore(a))[0] ?? [];
+    if (eventScore(best)) return best;
+  }
+  const lower = query.toLowerCase();
+  const matched = OPERATIONAL_TERMS.filter((term) => lower.includes(term));
+  return matched.length ? [...matched] : compactQuery(query).split(/\s+/).slice(0, 8);
+}
+
 function geographyTerms(query: string) {
   const groups = queryGroups(query);
   if (!groups.length) return [];
-  const eventScore = (group: string[]) =>
-    group.filter((term) => OPERATIONAL_TERMS.some((known) => term.includes(known))).length;
   return [...groups].sort((a, b) => eventScore(a) - eventScore(b))[0] ?? [];
+}
+
+function newsDataQuery(query: string) {
+  const terms = operationalTerms(query).slice(0, 8);
+  const rendered = terms.map((term) =>
+    /\s/.test(term) ? `"${term.replace(/"/g, "")}"` : term,
+  );
+  return (rendered.join(" OR ") || compactQuery(query)).slice(0, 500);
+}
+
+function apiTubeTitleQuery(query: string) {
+  // APITube documents `title` as a comma-separated enriched search filter.
+  // Do not pass the app's Boolean NewsData expression into this field.
+  const terms = [...operationalTerms(query).slice(0, 9), ...geographyTerms(query).slice(0, 7)];
+  return Array.from(
+    new Set(
+      terms
+        .map((term) => term.replace(/["']/g, "").replace(/\s+/g, " ").trim())
+        .filter(Boolean),
+    ),
+  )
+    .join(",")
+    .slice(0, 500);
 }
 
 function isOperationallyRelevant(item: NewsItem, query: string, country: string) {
@@ -165,7 +203,10 @@ function isOperationallyRelevant(item: NewsItem, query: string, country: string)
   const geo = geographyTerms(query);
   if (!geo.length) return true;
   if (geo.some((term) => haystack.includes(term))) return true;
-  if (country && item.countries.some((value) => value.toLowerCase() === country.toLowerCase())) {
+  if (
+    country &&
+    item.countries.some((value) => value.toLowerCase() === country.toLowerCase())
+  ) {
     return true;
   }
   return false;
@@ -179,6 +220,7 @@ async function fromNewsData(query: string, country: string): Promise<NewsItem[]>
     const url = new URL("https://newsdata.io/api/1/latest");
     url.searchParams.set("apikey", key);
     url.searchParams.set(titleOnly ? "qInTitle" : "q", q);
+    url.searchParams.set("language", "en");
     if (country) url.searchParams.set("country", country.toLowerCase());
     const payload = record(await fetchJson("NewsData.io", url));
     return (Array.isArray(payload.results) ? payload.results : [])
@@ -186,23 +228,39 @@ async function fromNewsData(query: string, country: string): Promise<NewsItem[]>
       .filter((item): item is NewsItem => Boolean(item));
   };
 
+  const primary = newsDataQuery(query);
   try {
-    return await run(query.slice(0, 500));
-  } catch (error) {
-    // NewsData returns 422 for some advanced-query combinations. Retry with a
-    // compact title query instead of discarding the provider entirely.
-    const fallback = compactQuery(query);
-    if (!fallback || fallback === query) throw error;
-    return run(fallback, true);
+    return await run(primary);
+  } catch (firstError) {
+    // Some NewsData plans reject complex Boolean expressions with 422. Retry
+    // with a smaller documented qInTitle OR expression, then a single term.
+    const terms = operationalTerms(query);
+    const fallback = terms
+      .slice(0, 4)
+      .map((term) => (/\s/.test(term) ? `"${term}"` : term))
+      .join(" OR ");
+    if (fallback && fallback !== primary) {
+      try {
+        return await run(fallback, true);
+      } catch {
+        // Continue to the simplest provider-supported request below.
+      }
+    }
+    const single = terms[0]?.replace(/["']/g, "").trim();
+    if (single) return run(single);
+    throw firstError;
   }
 }
 
 async function fromApiTube(query: string, country: string): Promise<NewsItem[]> {
   const key = keys().apitube;
   if (!key) throw new Error("APITube is not configured.");
+  const title = apiTubeTitleQuery(query);
+  if (!title) throw new Error("APITube query did not contain usable search terms.");
+
   const url = new URL("https://api.apitube.io/v1/news/everything");
   url.searchParams.set("api_key", key);
-  url.searchParams.set("title", compactQuery(query));
+  url.searchParams.set("title", title);
   url.searchParams.set("sort.by", "published_at");
   url.searchParams.set("sort.order", "desc");
   url.searchParams.set("per_page", "50");
