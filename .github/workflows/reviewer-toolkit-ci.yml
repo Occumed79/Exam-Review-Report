@@ -94,16 +94,16 @@ jobs:
 
           ROUTES=(
             "/"
+            "/injuries-medical-conditions"
             "/injury-intelligence"
+            "/guidelines"
             "/job-intelligence"
+            "/aor-factors"
+            "/aor"
             "/external-factors"
             "/drugs"
             "/calculator"
-            "/guidelines"
             "/matrix"
-            "/aor"
-            "/citations"
-            "/sources"
             "/guideline-editor"
             "/settings"
           )
@@ -121,17 +121,17 @@ jobs:
           fi
 
           declare -A MARKERS=(
-            ["/"]='data-testid="injury-intelligence"'
-            ["/injury-intelligence"]='data-testid="injury-intelligence"'
+            ["/"]='data-testid="injuries-medical-conditions"'
+            ["/injuries-medical-conditions"]='data-testid="injuries-medical-conditions"'
+            ["/injury-intelligence"]='data-testid="injuries-medical-conditions"'
+            ["/guidelines"]='data-testid="injuries-medical-conditions"'
             ["/job-intelligence"]='data-testid="job-intelligence"'
-            ["/external-factors"]='data-testid="external-factors"'
+            ["/aor-factors"]='data-testid="aor-factors"'
+            ["/aor"]='data-testid="aor-factors"'
+            ["/external-factors"]='data-testid="aor-factors"'
             ["/drugs"]='data-testid="drug-checker"'
             ["/calculator"]='data-testid="clinical-calculators"'
-            ["/guidelines"]='data-testid="condition-reference"'
             ["/matrix"]='data-testid="standards-matrix"'
-            ["/aor"]='data-testid="aor-intelligence"'
-            ["/citations"]='data-testid="citation-finder"'
-            ["/sources"]='data-testid="sources-page"'
             ["/guideline-editor"]='data-testid="guidelines-page"'
             ["/settings"]='data-testid="settings-page"'
           )
