@@ -1,4 +1,4 @@
-/* Procedural point-cloud renderer: this file intentionally overrides the old polygon-mask hologram. */
+/* Asset-driven point-cloud renderer. The human silhouette comes from a CC0 GLB mesh. */
 
 .advanced-hologram .anatomy-real-body::before,
 .advanced-hologram .anatomy-real-body::after {
@@ -7,104 +7,132 @@
 }
 
 .advanced-hologram-rig {
-  width: min(520px, 64vw);
-  height: 620px;
+  width: min(540px, 66vw);
+  height: 630px;
 }
 
 .advanced-hologram-rig .anatomy-real-body {
   position: relative;
-  width: min(485px, 60vw);
-  height: 620px;
+  width: min(505px, 62vw);
+  height: 630px;
   transform-style: preserve-3d;
-  animation: pointcloud-human-float 5.8s ease-in-out infinite;
+  animation: asset-human-float 6.2s ease-in-out infinite;
+}
+
+.hologram-point-cloud-host {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
 }
 
 .hologram-point-cloud-canvas {
   position: absolute;
-  z-index: 6;
   inset: 0;
   width: 100%;
   height: 100%;
   display: block;
   pointer-events: none;
-  opacity: .98;
+  opacity: .99;
   filter:
-    drop-shadow(0 0 3px rgba(221, 255, 255, .95))
-    drop-shadow(0 0 12px rgba(83, 235, 255, .62))
-    drop-shadow(0 0 30px rgba(45, 132, 255, .28));
+    drop-shadow(0 0 3px rgba(221,255,255,.88))
+    drop-shadow(0 0 11px rgba(83,235,255,.55))
+    drop-shadow(0 0 28px rgba(45,132,255,.24));
+}
+
+.hologram-asset-state {
+  position: absolute;
+  left: 50%;
+  top: 51%;
+  transform: translate(-50%, -50%);
+  padding: 8px 11px;
+  border: 1px solid rgba(113,229,239,.16);
+  border-radius: 7px;
+  background: rgba(4,14,22,.72);
+  color: rgba(176,236,242,.62);
+  font: 700 10px/1.2 var(--app-font-mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  box-shadow: 0 0 24px rgba(69,207,232,.08);
+}
+
+.hologram-asset-state.is-error {
+  color: rgba(255,176,157,.76);
+  border-color: rgba(255,145,120,.2);
 }
 
 .advanced-hologram .holo-volume-shell {
-  width: 360px;
-  height: 555px;
-  border-color: rgba(123, 236, 246, .08);
+  width: 372px;
+  height: 568px;
+  border-color: rgba(123,236,246,.075);
   background:
-    radial-gradient(ellipse at 50% 43%, rgba(92, 230, 247, .08), rgba(48, 132, 212, .025) 47%, transparent 72%);
-  box-shadow: 0 0 72px rgba(50, 203, 235, .045);
+    radial-gradient(ellipse at 50% 43%, rgba(92,230,247,.075), rgba(48,132,212,.022) 47%, transparent 72%);
+  box-shadow: 0 0 78px rgba(50,203,235,.04);
 }
 
 .advanced-hologram .holo-body-scanlines {
   z-index: 8;
-  inset: 2% 8%;
-  opacity: .26;
+  inset: 2% 7%;
+  opacity: .20;
   background:
-    repeating-linear-gradient(180deg, rgba(145, 252, 255, .06) 0 1px, transparent 1px 7px),
-    linear-gradient(90deg, transparent, rgba(128, 239, 250, .025) 50%, transparent);
+    repeating-linear-gradient(180deg, rgba(145,252,255,.05) 0 1px, transparent 1px 8px),
+    linear-gradient(90deg, transparent, rgba(128,239,250,.022) 50%, transparent);
 }
 
 .advanced-hologram .holo-body-crosshair {
   z-index: 5;
-  opacity: .42;
-  width: 275px;
-  height: 275px;
+  opacity: .36;
+  width: 286px;
+  height: 286px;
 }
 
 .advanced-hologram .anatomy-real-hotspot {
   z-index: 15;
   background:
     radial-gradient(ellipse at center,
-      color-mix(in srgb, var(--heat-color) 56%, transparent) 0%,
-      color-mix(in srgb, var(--heat-color) 17%, transparent) 46%,
+      color-mix(in srgb, var(--heat-color) 54%, transparent) 0%,
+      color-mix(in srgb, var(--heat-color) 15%, transparent) 45%,
       transparent 73%);
-  border-color: color-mix(in srgb, var(--heat-color) 24%, transparent);
-  opacity: calc(.08 + var(--heat-strength) * .34);
+  border-color: color-mix(in srgb, var(--heat-color) 22%, transparent);
+  opacity: calc(.06 + var(--heat-strength) * .30);
   mix-blend-mode: screen;
 }
 
 .advanced-hologram .anatomy-real-hotspot:hover,
 .advanced-hologram .anatomy-real-hotspot.active {
-  opacity: .72;
+  opacity: .68;
 }
 
 .advanced-hologram-rig::before,
 .advanced-hologram-rig::after {
-  bottom: 22px;
-  height: 545px;
-  clip-path: polygon(17% 100%, 42% 0, 58% 0, 83% 100%);
-  background: linear-gradient(180deg, rgba(172, 252, 255, .012), rgba(92, 229, 255, .09) 54%, rgba(53, 128, 255, .20));
-  filter: blur(5px);
+  bottom: 18px;
+  height: 560px;
+  clip-path: polygon(14% 100%, 41% 0, 59% 0, 86% 100%);
+  background: linear-gradient(180deg, rgba(172,252,255,.01), rgba(92,229,255,.085) 54%, rgba(53,128,255,.19));
+  filter: blur(6px);
 }
 
 .advanced-hologram-rig::after {
-  width: 205px;
-  opacity: .34;
-  filter: blur(10px);
+  width: 210px;
+  opacity: .30;
+  filter: blur(11px);
 }
 
 .advanced-hologram .anatomy-real-projector {
-  bottom: 12px;
-  width: 300px;
+  bottom: 10px;
+  width: 310px;
   height: 78px;
 }
 
 .advanced-hologram .holo-floor-grid {
-  bottom: -90px;
-  opacity: .28;
+  bottom: -94px;
+  opacity: .26;
 }
 
-@keyframes pointcloud-human-float {
+@keyframes asset-human-float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
+  50% { transform: translateY(-4px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -112,6 +140,6 @@
 }
 
 @media (max-width: 1120px) {
-  .advanced-hologram-rig { width: min(510px, 88vw); }
-  .advanced-hologram-rig .anatomy-real-body { width: min(475px, 82vw); }
+  .advanced-hologram-rig { width: min(520px, 88vw); }
+  .advanced-hologram-rig .anatomy-real-body { width: min(490px, 83vw); }
 }
