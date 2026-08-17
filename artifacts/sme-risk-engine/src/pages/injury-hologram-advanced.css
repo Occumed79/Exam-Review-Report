@@ -25,6 +25,22 @@
   50% { box-shadow: 0 0 48px rgba(72,241,216,.27), 0 0 90px rgba(43,146,240,.10), inset 0 0 34px rgba(72,241,216,.13); }
 }
 
+@keyframes point-cloud-breathe {
+  0%,100% { opacity: .90; filter: brightness(1.05) drop-shadow(0 0 8px rgba(77,230,255,.52)) drop-shadow(0 0 24px rgba(41,122,255,.32)); }
+  50% { opacity: 1; filter: brightness(1.22) drop-shadow(0 0 12px rgba(124,249,255,.70)) drop-shadow(0 0 34px rgba(49,145,255,.42)); }
+}
+
+@keyframes point-cloud-shimmer {
+  0% { background-position: 0 0, 0 0, 50% 50%, 50% 50%; }
+  50% { background-position: 3px 2px, -2px 3px, 52% 47%, 47% 53%; }
+  100% { background-position: 6px 4px, -4px 6px, 50% 50%, 50% 50%; }
+}
+
+@keyframes projection-beam-pulse {
+  0%,100% { opacity: .16; transform: translateX(-50%) scaleY(.94); }
+  50% { opacity: .30; transform: translateX(-50%) scaleY(1.03); }
+}
+
 .advanced-hologram {
   border-color: rgba(91, 225, 231, .30);
   background:
@@ -168,71 +184,95 @@
 }
 
 .advanced-hologram .anatomy-real-img {
-  transform-style: preserve-3d;
-  transition: filter 220ms ease, opacity 220ms ease;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none;
 }
 
-.advanced-hologram .anatomy-real-img.glow-layer {
-  z-index: 1;
-  opacity: .22;
-  transform: translateZ(-52px) scale(1.025);
+.advanced-hologram .anatomy-real-body::before,
+.advanced-hologram .anatomy-real-body::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 88%;
+  height: 96%;
+  transform: translate3d(-50%, -50%, 0);
+  clip-path: polygon(
+    50% 1.5%, 55.5% 3%, 58.5% 7%, 59.5% 12%, 58.5% 17.5%, 55.5% 22.5%,
+    55% 25%, 61% 27.5%, 69% 30.5%, 76% 35.5%, 83% 43%, 89% 52%, 94% 62%,
+    92% 67%, 88% 65.5%, 82% 57%, 76% 49%, 70% 42%, 68% 48%, 66% 61%, 65% 73%,
+    63% 83%, 61% 94%, 57% 98%, 53% 97%, 52% 84%, 51% 70%, 50% 59%,
+    49% 70%, 48% 84%, 47% 97%, 43% 98%, 39% 94%, 37% 83%, 35% 73%, 34% 61%,
+    32% 48%, 30% 42%, 24% 49%, 18% 57%, 12% 65.5%, 8% 67%, 6% 62%, 11% 52%,
+    17% 43%, 24% 35.5%, 31% 30.5%, 39% 27.5%, 45% 25%, 44.5% 22.5%, 41.5% 17.5%,
+    40.5% 12%, 41.5% 7%, 44.5% 3%
+  );
+  pointer-events: none;
+}
+
+.advanced-hologram .anatomy-real-body::before {
+  z-index: 4;
+  background:
+    radial-gradient(circle at 29% 32%, rgba(238,255,255,.98) 0 2px, transparent 2.8px) 0 0 / 6px 6px,
+    radial-gradient(circle at 70% 32%, rgba(190,249,255,.88) 0 1.4px, transparent 2.3px) 2px 3px / 7px 7px,
+    radial-gradient(ellipse at 50% 30%, rgba(193,252,255,.45), transparent 25%),
+    linear-gradient(180deg, rgba(161,248,255,.98), rgba(76,224,255,.84) 52%, rgba(93,214,255,.72));
+  background-blend-mode: screen, screen, screen, normal;
+  box-shadow: inset 0 0 58px rgba(218,255,255,.22);
   filter:
-    grayscale(1)
-    sepia(1)
-    saturate(4.4)
-    hue-rotate(117deg)
-    brightness(1.45)
-    contrast(1.38)
-    blur(5px)
-    drop-shadow(0 0 14px rgba(82,243,238,.75))
-    drop-shadow(0 0 32px rgba(61,133,240,.20));
-  mix-blend-mode: screen;
+    drop-shadow(0 0 3px rgba(220,255,255,.90))
+    drop-shadow(0 0 10px rgba(97,237,255,.72))
+    drop-shadow(0 0 28px rgba(45,132,255,.34));
+  opacity: .96;
+  animation: point-cloud-breathe 3.8s ease-in-out infinite, point-cloud-shimmer 7s linear infinite;
 }
 
-.advanced-hologram .anatomy-real-img.core-layer {
-  z-index: 5;
-  opacity: .94;
-  transform: translateZ(0);
-  mix-blend-mode: normal;
-  filter:
-    brightness(.82)
-    contrast(1.54)
-    saturate(.96)
-    drop-shadow(0 0 2px rgba(223,255,255,.42))
-    drop-shadow(0 0 10px rgba(82,228,232,.34));
-}
-
-.advanced-hologram .anatomy-real-img.depth-layer {
+.advanced-hologram .anatomy-real-body::after {
   z-index: 3;
-  opacity: .11;
-  mix-blend-mode: screen;
-  filter: grayscale(1) sepia(1) saturate(3.8) hue-rotate(120deg) contrast(1.65) brightness(1.05);
+  width: 91%;
+  height: 98%;
+  transform: translate3d(-50%, -50%, -28px) scale(1.018);
+  background:
+    radial-gradient(circle, rgba(126,239,255,.72) 0 1.6px, transparent 2.4px) 0 0 / 7px 7px,
+    linear-gradient(180deg, rgba(96,226,255,.48), rgba(37,101,255,.18));
+  background-blend-mode: screen;
+  filter: blur(2.6px) drop-shadow(0 0 18px rgba(40,142,255,.50));
+  opacity: .46;
 }
 
-.advanced-hologram .depth-layer-back {
-  transform: translate3d(-7px, 1px, -30px) scale(1.01);
-  filter: grayscale(1) sepia(1) saturate(3.8) hue-rotate(120deg) blur(.6px) contrast(1.6);
+.advanced-hologram .anatomy-real-body[data-view='back']::before {
+  background:
+    radial-gradient(circle at 31% 31%, rgba(231,255,255,.98) 0 2px, transparent 2.8px) 0 0 / 6px 6px,
+    radial-gradient(circle at 68% 31%, rgba(188,248,255,.86) 0 1.4px, transparent 2.3px) 2px 3px / 7px 7px,
+    radial-gradient(ellipse at 50% 36%, rgba(162,243,255,.38), transparent 27%),
+    linear-gradient(180deg, rgba(148,243,255,.92), rgba(72,214,255,.78) 52%, rgba(77,191,255,.68));
+  background-blend-mode: screen, screen, screen, normal;
 }
 
-.advanced-hologram .depth-layer-front {
-  z-index: 6;
-  opacity: .075;
-  transform: translate3d(6px, -1px, 24px) scale(.995);
-  filter: grayscale(1) sepia(1) saturate(4.6) hue-rotate(128deg) brightness(1.4) contrast(1.55);
+.advanced-hologram-rig::before,
+.advanced-hologram-rig::after {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: 42px;
+  width: 310px;
+  height: 500px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  clip-path: polygon(22% 100%, 42% 0, 58% 0, 78% 100%);
+  background: linear-gradient(180deg, rgba(122,245,255,.02), rgba(83,220,255,.12) 56%, rgba(49,126,255,.20));
+  filter: blur(3px);
+  animation: projection-beam-pulse 4.6s ease-in-out infinite;
 }
 
-.advanced-hologram .anatomy-real-body[data-view='back'] .core-layer {
-  opacity: .94;
-  mix-blend-mode: screen;
-  filter:
-    grayscale(.62)
-    sepia(.2)
-    saturate(1.45)
-    hue-rotate(150deg)
-    brightness(.94)
-    contrast(1.82)
-    drop-shadow(0 0 3px rgba(212,252,255,.5))
-    drop-shadow(0 0 11px rgba(77,203,235,.4));
+.advanced-hologram-rig::after {
+  width: 190px;
+  opacity: .44;
+  background: linear-gradient(180deg, rgba(209,255,255,.04), rgba(112,239,255,.15) 56%, rgba(63,151,255,.28));
+  filter: blur(8px);
+  animation-delay: -1.7s;
 }
 
 .holo-body-scanlines {
@@ -520,19 +560,13 @@
 .advanced-hologram .anatomy-real-callout span { font-size: 11px; }
 
 @media (prefers-reduced-motion: reduce) {
-  .advanced-hologram-rig,
-  .holo-depth-field,
-  .holo-orbit,
-  .holo-scan-plane,
-  .advanced-hologram .anatomy-real-projector {
-    animation: none !important;
-    transition: none !important;
-  }
+  .advanced-hologram .anatomy-real-body::before,
+  .advanced-hologram .anatomy-real-body::after,
+  .advanced-hologram-rig::before,
+  .advanced-hologram-rig::after { animation: none !important; }
 }
 
-@media (max-width: 1180px) {
-  .advanced-hologram .anatomy-real-stage { min-height: 720px; }
-  .advanced-hologram-visual { min-height: 640px; }
-  .advanced-hologram-rig { width: min(500px, 76vw); }
-  .holo-telemetry { display: none; }
+@media (max-width: 1120px) {
+  .advanced-hologram-rig { width: min(500px, 86vw); }
+  .advanced-hologram-rig .anatomy-real-body { width: min(455px, 80vw); }
 }
