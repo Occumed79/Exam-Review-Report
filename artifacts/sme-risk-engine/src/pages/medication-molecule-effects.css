@@ -1,0 +1,287 @@
+/* Cinematic enhancement layer for the medication molecule workspace.
+   Intentionally preserves the existing layout and data hierarchy. */
+
+.med-molecule-shell{
+  isolation:isolate;
+}
+
+.med-molecule-shell::after{
+  content:"";
+  position:absolute;
+  inset:-35% -18%;
+  pointer-events:none;
+  z-index:1;
+  background:
+    linear-gradient(108deg,transparent 38%,rgba(115,245,255,.025) 46%,rgba(215,255,255,.08) 50%,rgba(115,245,255,.025) 54%,transparent 62%);
+  transform:translateX(-42%);
+  animation:medShellSweep 11s ease-in-out infinite;
+  mix-blend-mode:screen;
+}
+
+.med-molecule-stage{
+  --molecule-energy-rgb:104,239,255;
+  --molecule-energy:#68efff;
+  perspective:1200px;
+  transform-style:preserve-3d;
+  box-shadow:
+    inset 0 0 72px rgba(var(--molecule-energy-rgb),.035),
+    0 0 0 1px rgba(var(--molecule-energy-rgb),.015);
+}
+
+/* Animated microscopic particle field. */
+.med-molecule-stage::before{
+  content:"";
+  position:absolute;
+  inset:-15%;
+  z-index:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle,rgba(220,255,255,.95) 0 1px,transparent 1.7px),
+    radial-gradient(circle,rgba(var(--molecule-energy-rgb),.7) 0 1px,transparent 1.6px),
+    radial-gradient(circle,rgba(111,172,255,.45) 0 1.2px,transparent 1.8px);
+  background-size:92px 92px,137px 137px,181px 181px;
+  background-position:12px 18px,65px 39px,20px 112px;
+  opacity:.17;
+  filter:drop-shadow(0 0 4px rgba(var(--molecule-energy-rgb),.45));
+  animation:medParticleDrift 22s linear infinite;
+  mask-image:radial-gradient(ellipse at center,#000 20%,rgba(0,0,0,.85) 52%,transparent 84%);
+}
+
+/* Volumetric fog around the projection volume. */
+.med-molecule-stage::after{
+  content:"";
+  position:absolute;
+  left:20%;
+  right:20%;
+  top:18%;
+  bottom:3%;
+  z-index:0;
+  pointer-events:none;
+  border-radius:50%;
+  background:
+    radial-gradient(ellipse at 50% 58%,rgba(var(--molecule-energy-rgb),.11),transparent 47%),
+    conic-gradient(from 0deg at 50% 50%,transparent,rgba(var(--molecule-energy-rgb),.035),transparent 18%,rgba(88,131,255,.035),transparent 38%,rgba(var(--molecule-energy-rgb),.035),transparent 61%);
+  filter:blur(22px);
+  opacity:.72;
+  animation:medEnergyFog 8s ease-in-out infinite;
+}
+
+.med-molecule-center{
+  transform-style:preserve-3d;
+  transition:transform .55s cubic-bezier(.2,.8,.2,1),filter .4s ease;
+  animation:medMoleculeFloat 5.8s ease-in-out infinite;
+}
+
+.med-molecule-stage:hover .med-molecule-center{
+  transform:translateZ(26px) rotateX(1.2deg) rotateY(-1.4deg) scale(1.018);
+}
+
+/* The real structure breathes as one luminous object. */
+.med-molecule-svg.ready{
+  transform-origin:50% 50%;
+  animation:medStructureBreath 3.6s ease-in-out infinite;
+  will-change:filter,transform;
+}
+
+.med-molecule-svg.ready path,
+.med-molecule-svg.ready line,
+.med-molecule-svg.ready polygon,
+.med-molecule-svg.ready polyline{
+  stroke:rgb(var(--molecule-energy-rgb))!important;
+  filter:drop-shadow(0 0 2px rgba(225,255,255,.95)) drop-shadow(0 0 7px rgba(var(--molecule-energy-rgb),.75));
+  animation:medBondCharge 2.9s ease-in-out infinite;
+}
+
+.med-molecule-svg.ready path:nth-of-type(3n),
+.med-molecule-svg.ready line:nth-of-type(3n){animation-delay:-.85s}
+.med-molecule-svg.ready path:nth-of-type(3n+1),
+.med-molecule-svg.ready line:nth-of-type(3n+1){animation-delay:-1.7s}
+
+.med-molecule-svg.ready text{
+  filter:drop-shadow(0 0 5px rgba(var(--molecule-energy-rgb),.8));
+  animation:medAtomPulse 3.2s ease-in-out infinite;
+}
+
+/* Multiple projector shafts make the molecule feel volumetric instead of backlit. */
+.med-molecule-projector{
+  opacity:.96;
+  background:linear-gradient(180deg,rgba(var(--molecule-energy-rgb),0),rgba(var(--molecule-energy-rgb),.085) 42%,rgba(var(--molecule-energy-rgb),.22) 100%);
+  box-shadow:0 26px 80px rgba(var(--molecule-energy-rgb),.17);
+  animation:medProjectorPulse 4.2s ease-in-out infinite;
+}
+
+.med-molecule-projector::before,
+.med-molecule-projector::after{
+  content:"";
+  position:absolute;
+  bottom:-8%;
+  top:2%;
+  width:62%;
+  border-radius:50%;
+  background:linear-gradient(180deg,transparent,rgba(var(--molecule-energy-rgb),.055) 50%,rgba(var(--molecule-energy-rgb),.16));
+  filter:blur(11px);
+  transform-origin:bottom center;
+}
+.med-molecule-projector::before{left:-10%;transform:skewX(-8deg) rotate(-4deg)}
+.med-molecule-projector::after{right:-10%;transform:skewX(8deg) rotate(4deg)}
+
+/* Holographic scan has a bright leading edge and trailing bloom. */
+.med-molecule-scan{
+  height:62px;
+  background:linear-gradient(180deg,transparent 0%,rgba(var(--molecule-energy-rgb),.015) 34%,rgba(222,255,255,.16) 49%,rgba(var(--molecule-energy-rgb),.07) 53%,transparent 100%);
+  box-shadow:0 0 18px rgba(var(--molecule-energy-rgb),.07);
+  opacity:.86;
+  animation-duration:4.7s;
+}
+
+/* Orbital rings carry bright energy nodes. */
+.med-molecule-orbit{
+  border-color:rgba(var(--molecule-energy-rgb),.11);
+  box-shadow:inset 0 0 14px rgba(var(--molecule-energy-rgb),.025),0 0 16px rgba(var(--molecule-energy-rgb),.025);
+}
+
+.med-molecule-orbit::before,
+.med-molecule-orbit::after{
+  content:"";
+  position:absolute;
+  width:5px;
+  height:5px;
+  border-radius:50%;
+  background:rgba(235,255,255,.98);
+  box-shadow:0 0 5px #fff,0 0 13px rgba(var(--molecule-energy-rgb),.98),0 0 26px rgba(var(--molecule-energy-rgb),.62);
+}
+.med-molecule-orbit::before{left:8%;top:23%}
+.med-molecule-orbit::after{right:11%;bottom:22%;width:3px;height:3px;opacity:.75}
+
+.med-molecule-aura{
+  background:radial-gradient(circle,rgba(224,255,255,.18) 0%,rgba(var(--molecule-energy-rgb),.17) 22%,rgba(var(--molecule-energy-rgb),.075) 51%,transparent 73%);
+  box-shadow:
+    0 0 32px rgba(218,255,255,.11),
+    0 0 68px rgba(var(--molecule-energy-rgb),.28),
+    0 0 145px rgba(var(--molecule-energy-rgb),.16);
+}
+
+.med-molecule-aura::before,
+.med-molecule-aura::after{
+  content:"";
+  position:absolute;
+  inset:-18%;
+  border-radius:50%;
+  border:1px solid rgba(var(--molecule-energy-rgb),.12);
+  animation:medShockwave 3.2s ease-out infinite;
+}
+.med-molecule-aura::after{animation-delay:-1.6s}
+
+.med-molecule-core-ring{
+  border-color:rgba(var(--molecule-energy-rgb),.17);
+  box-shadow:0 0 15px rgba(var(--molecule-energy-rgb),.035);
+}
+
+/* Factor bubbles become signal nodes rather than static labels. */
+.med-factor-bubble{
+  overflow:visible;
+}
+.med-factor-bubble::after{
+  content:"";
+  position:absolute;
+  inset:-1px;
+  border-radius:inherit;
+  border:1px solid transparent;
+  pointer-events:none;
+  opacity:0;
+}
+.med-factor-bubble.active::after{
+  border-color:currentColor;
+  opacity:.18;
+  animation:medBubbleSignal 2.2s ease-out infinite;
+}
+.med-factor-bubble.active{
+  animation:medActiveBubbleFloat 3.4s ease-in-out infinite;
+}
+
+.med-factor-bubble.tone-cyan.active{color:#dfffff;box-shadow:0 0 20px rgba(91,238,255,.28),0 0 52px rgba(48,159,255,.14),inset 0 0 18px rgba(95,237,255,.035)}
+.med-factor-bubble.tone-amber.active{color:#ffe5b9;box-shadow:0 0 20px rgba(255,186,78,.27),0 0 52px rgba(255,138,41,.12),inset 0 0 18px rgba(255,186,78,.04)}
+.med-factor-bubble.tone-red.active{color:#ffd6df;box-shadow:0 0 20px rgba(255,92,126,.29),0 0 54px rgba(255,55,96,.14),inset 0 0 18px rgba(255,92,126,.04)}
+.med-factor-bubble.tone-violet.active{color:#e8e0ff;box-shadow:0 0 20px rgba(176,137,255,.28),0 0 52px rgba(117,78,255,.13),inset 0 0 18px rgba(176,137,255,.04)}
+
+/* The entire molecular projection reacts to the selected factor category. */
+.med-molecule-stage:has(.med-factor-bubble.tone-amber.active){--molecule-energy-rgb:255,183,82;--molecule-energy:#ffb752}
+.med-molecule-stage:has(.med-factor-bubble.tone-red.active){--molecule-energy-rgb:255,88,121;--molecule-energy:#ff5879}
+.med-molecule-stage:has(.med-factor-bubble.tone-violet.active){--molecule-energy-rgb:173,137,255;--molecule-energy:#ad89ff}
+
+.med-molecule-stage:has(.tone-red.active) .med-molecule-scan{animation-duration:3.25s}
+.med-molecule-stage:has(.tone-red.active) .med-molecule-aura{animation-duration:2.45s}
+.med-molecule-stage:has(.tone-amber.active) .med-molecule-projector{animation-duration:3.1s}
+
+/* Inspector gets a restrained energy reflection so selection feels connected. */
+.med-factor-inspector{
+  transition:border-color .28s ease,box-shadow .28s ease,background .28s ease;
+}
+.med-factor-inspector.tone-cyan{box-shadow:inset 0 1px 0 rgba(215,250,255,.04),inset 4px 0 22px rgba(74,220,255,.018)}
+.med-factor-inspector.tone-amber{border-color:rgba(255,184,82,.17);box-shadow:inset 0 1px 0 rgba(255,245,220,.035),inset 4px 0 26px rgba(255,151,48,.025)}
+.med-factor-inspector.tone-red{border-color:rgba(255,89,123,.18);box-shadow:inset 0 1px 0 rgba(255,225,230,.035),inset 4px 0 28px rgba(255,60,97,.03)}
+.med-factor-inspector.tone-violet{border-color:rgba(176,138,255,.18);box-shadow:inset 0 1px 0 rgba(239,232,255,.035),inset 4px 0 26px rgba(135,94,255,.025)}
+
+@keyframes medShellSweep{
+  0%,18%{transform:translateX(-48%);opacity:0}
+  34%{opacity:.75}
+  58%{transform:translateX(44%);opacity:.3}
+  72%,100%{transform:translateX(55%);opacity:0}
+}
+@keyframes medParticleDrift{
+  from{background-position:12px 18px,65px 39px,20px 112px;transform:translate3d(0,0,0)}
+  to{background-position:104px -74px,-72px 176px,201px -69px;transform:translate3d(0,-10px,0)}
+}
+@keyframes medEnergyFog{
+  0%,100%{transform:scale(.98) rotate(0deg);opacity:.54}
+  50%{transform:scale(1.06) rotate(7deg);opacity:.88}
+}
+@keyframes medMoleculeFloat{
+  0%,100%{translate:0 0}
+  50%{translate:0 -5px}
+}
+@keyframes medStructureBreath{
+  0%,100%{transform:scale(1);filter:drop-shadow(0 0 5px rgba(221,255,255,.84)) drop-shadow(0 0 16px rgba(var(--molecule-energy-rgb),.45)) drop-shadow(0 0 38px rgba(var(--molecule-energy-rgb),.18))}
+  50%{transform:scale(1.018);filter:drop-shadow(0 0 7px rgba(238,255,255,.98)) drop-shadow(0 0 23px rgba(var(--molecule-energy-rgb),.72)) drop-shadow(0 0 54px rgba(var(--molecule-energy-rgb),.30))}
+}
+@keyframes medBondCharge{
+  0%,100%{stroke-opacity:.72}
+  48%{stroke-opacity:1}
+  58%{stroke-opacity:.9}
+}
+@keyframes medAtomPulse{
+  0%,100%{opacity:.84}
+  50%{opacity:1}
+}
+@keyframes medProjectorPulse{
+  0%,100%{opacity:.68;filter:blur(9px) saturate(1)}
+  50%{opacity:1;filter:blur(7px) saturate(1.28)}
+}
+@keyframes medShockwave{
+  0%{transform:scale(.74);opacity:.28}
+  72%,100%{transform:scale(1.25);opacity:0}
+}
+@keyframes medBubbleSignal{
+  0%{transform:scale(.98);opacity:.26}
+  75%,100%{transform:scale(1.18);opacity:0}
+}
+@keyframes medActiveBubbleFloat{
+  0%,100%{margin-top:0}
+  50%{margin-top:-6px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .med-molecule-shell::after,
+  .med-molecule-stage::before,
+  .med-molecule-stage::after,
+  .med-molecule-center,
+  .med-molecule-svg.ready,
+  .med-molecule-svg.ready path,
+  .med-molecule-svg.ready line,
+  .med-molecule-svg.ready text,
+  .med-molecule-projector,
+  .med-molecule-aura::before,
+  .med-molecule-aura::after,
+  .med-factor-bubble.active,
+  .med-factor-bubble.active::after{animation:none!important}
+}
