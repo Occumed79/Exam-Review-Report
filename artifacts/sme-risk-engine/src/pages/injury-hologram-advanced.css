@@ -1,0 +1,538 @@
+@keyframes holo-secondary-scan {
+  0% { transform: translateY(-320px) rotateX(64deg); opacity: 0; }
+  12% { opacity: .45; }
+  78% { opacity: .18; }
+  100% { transform: translateY(360px) rotateX(64deg); opacity: 0; }
+}
+
+@keyframes holo-orbit-x {
+  from { transform: translate(-50%, -50%) rotateX(68deg) rotateZ(0deg); }
+  to { transform: translate(-50%, -50%) rotateX(68deg) rotateZ(360deg); }
+}
+
+@keyframes holo-orbit-y {
+  from { transform: translate(-50%, -50%) rotateY(72deg) rotateZ(0deg); }
+  to { transform: translate(-50%, -50%) rotateY(72deg) rotateZ(-360deg); }
+}
+
+@keyframes holo-depth-drift {
+  0%,100% { opacity: .18; transform: translate3d(-50%, -50%, -80px) scale(.96); }
+  50% { opacity: .34; transform: translate3d(-50%, -50%, -55px) scale(1.02); }
+}
+
+@keyframes holo-projector-energy {
+  0%,100% { box-shadow: 0 0 30px rgba(72,241,216,.16), inset 0 0 28px rgba(72,241,216,.08); }
+  50% { box-shadow: 0 0 48px rgba(72,241,216,.27), 0 0 90px rgba(43,146,240,.10), inset 0 0 34px rgba(72,241,216,.13); }
+}
+
+.advanced-hologram {
+  border-color: rgba(91, 225, 231, .30);
+  background:
+    radial-gradient(circle at 37% 20%, rgba(31, 161, 208, .09), transparent 30%),
+    linear-gradient(128deg, rgba(6, 24, 34, .995), rgba(2, 9, 15, .998));
+  box-shadow:
+    0 28px 78px rgba(0,0,0,.42),
+    0 0 82px rgba(59, 209, 224, .055),
+    inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.advanced-hologram .anatomy-real-stage {
+  min-height: 760px;
+  background:
+    radial-gradient(circle at var(--holo-pointer-x, 50%) var(--holo-pointer-y, 50%), rgba(74, 226, 232, .115), transparent 24%),
+    radial-gradient(circle at 50% 54%, rgba(45, 188, 204, .075), transparent 35%),
+    linear-gradient(rgba(83, 166, 185, .032) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(83, 166, 185, .032) 1px, transparent 1px),
+    #041019;
+  background-size: auto, auto, 26px 26px, 26px 26px, auto;
+}
+
+.advanced-hologram .injury-anatomy-stage-head {
+  padding: 18px 20px 10px;
+}
+
+.advanced-hologram .injury-anatomy-stage-head > div:first-child > span,
+.advanced-hologram .injury-anatomy-focus > span,
+.advanced-hologram .injury-anatomy-ranking > span,
+.advanced-hologram .injury-anatomy-idle-data > span {
+  color: #8eeaf0;
+  font-size: 11px;
+  letter-spacing: .11em;
+}
+
+.advanced-hologram .injury-anatomy-stage-head h3 {
+  margin-top: 7px;
+  font-size: 20px;
+  font-weight: 720;
+  color: rgba(248,252,253,.96);
+}
+
+.advanced-hologram .hologram-view-toggle {
+  border-color: rgba(111, 219, 233, .20);
+  border-radius: 9px;
+  background: rgba(5, 17, 26, .86);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.03);
+}
+
+.advanced-hologram .hologram-view-toggle button {
+  min-height: 34px;
+  padding: 0 11px;
+  border-radius: 7px;
+  font-size: 10px;
+}
+
+.advanced-hologram .hologram-view-toggle button.active {
+  color: #e4fdff;
+  background: linear-gradient(180deg, rgba(95, 215, 229, .18), rgba(69, 166, 195, .09));
+  box-shadow: inset 0 0 0 1px rgba(139,230,240,.12), 0 0 18px rgba(80,213,229,.08);
+}
+
+.advanced-hologram .injury-anatomy-mode {
+  min-height: 38px;
+  padding: 0 11px;
+  border-radius: 9px;
+  font-size: 11px;
+}
+
+.advanced-hologram-visual {
+  min-height: 680px;
+  perspective: 1250px;
+  perspective-origin: 50% 48%;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.advanced-hologram-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at var(--holo-pointer-x, 50%) var(--holo-pointer-y, 50%), rgba(142, 249, 255, .055), transparent 18%),
+    linear-gradient(90deg, rgba(3,13,21,.72), transparent 20%, transparent 80%, rgba(3,13,21,.72));
+}
+
+.advanced-hologram-rig {
+  position: relative;
+  z-index: 5;
+  width: min(510px, 62vw);
+  height: 610px;
+  display: grid;
+  place-items: center;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--holo-rotate-x, 0deg)) rotateY(var(--holo-rotate-y, 0deg));
+  transition: transform 180ms cubic-bezier(.2,.8,.2,1);
+  will-change: transform;
+}
+
+.advanced-hologram-rig .anatomy-real-body {
+  width: min(475px, 58vw);
+  height: 610px;
+  transform-style: preserve-3d;
+}
+
+.holo-volume-shell {
+  position: absolute;
+  z-index: 0;
+  left: 50%;
+  top: 49%;
+  width: 330px;
+  height: 540px;
+  transform: translate3d(-50%, -50%, -30px);
+  border: 1px solid rgba(121, 234, 240, .13);
+  border-radius: 48% 48% 42% 42%;
+  background:
+    linear-gradient(90deg, transparent 0 48.8%, rgba(117,235,242,.05) 49.4% 50.6%, transparent 51.2%),
+    radial-gradient(ellipse, rgba(84, 222, 231, .065), rgba(34, 90, 140, .025) 52%, transparent 72%);
+  box-shadow:
+    inset 24px 0 50px rgba(64, 206, 220, .035),
+    inset -24px 0 50px rgba(72, 113, 214, .025),
+    0 0 48px rgba(49, 209, 220, .06);
+  pointer-events: none;
+}
+
+.holo-volume-shell::before,
+.holo-volume-shell::after {
+  content: '';
+  position: absolute;
+  inset: 7% 9%;
+  border: 1px dashed rgba(126,235,241,.08);
+  border-radius: inherit;
+}
+
+.holo-volume-shell::after {
+  inset: 15% 18%;
+  border-style: solid;
+  opacity: .6;
+}
+
+.advanced-hologram .anatomy-real-img {
+  transform-style: preserve-3d;
+  transition: filter 220ms ease, opacity 220ms ease;
+}
+
+.advanced-hologram .anatomy-real-img.glow-layer {
+  z-index: 1;
+  opacity: .22;
+  transform: translateZ(-52px) scale(1.025);
+  filter:
+    grayscale(1)
+    sepia(1)
+    saturate(4.4)
+    hue-rotate(117deg)
+    brightness(1.45)
+    contrast(1.38)
+    blur(5px)
+    drop-shadow(0 0 14px rgba(82,243,238,.75))
+    drop-shadow(0 0 32px rgba(61,133,240,.20));
+  mix-blend-mode: screen;
+}
+
+.advanced-hologram .anatomy-real-img.core-layer {
+  z-index: 5;
+  opacity: .94;
+  transform: translateZ(0);
+  mix-blend-mode: normal;
+  filter:
+    brightness(.82)
+    contrast(1.54)
+    saturate(.96)
+    drop-shadow(0 0 2px rgba(223,255,255,.42))
+    drop-shadow(0 0 10px rgba(82,228,232,.34));
+}
+
+.advanced-hologram .anatomy-real-img.depth-layer {
+  z-index: 3;
+  opacity: .11;
+  mix-blend-mode: screen;
+  filter: grayscale(1) sepia(1) saturate(3.8) hue-rotate(120deg) contrast(1.65) brightness(1.05);
+}
+
+.advanced-hologram .depth-layer-back {
+  transform: translate3d(-7px, 1px, -30px) scale(1.01);
+  filter: grayscale(1) sepia(1) saturate(3.8) hue-rotate(120deg) blur(.6px) contrast(1.6);
+}
+
+.advanced-hologram .depth-layer-front {
+  z-index: 6;
+  opacity: .075;
+  transform: translate3d(6px, -1px, 24px) scale(.995);
+  filter: grayscale(1) sepia(1) saturate(4.6) hue-rotate(128deg) brightness(1.4) contrast(1.55);
+}
+
+.advanced-hologram .anatomy-real-body[data-view='back'] .core-layer {
+  opacity: .94;
+  mix-blend-mode: screen;
+  filter:
+    grayscale(.62)
+    sepia(.2)
+    saturate(1.45)
+    hue-rotate(150deg)
+    brightness(.94)
+    contrast(1.82)
+    drop-shadow(0 0 3px rgba(212,252,255,.5))
+    drop-shadow(0 0 11px rgba(77,203,235,.4));
+}
+
+.holo-body-scanlines {
+  position: absolute;
+  z-index: 8;
+  inset: 3% 13% 2%;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(180deg, rgba(123,249,249,.045) 0 1px, transparent 1px 5px),
+    linear-gradient(90deg, transparent, rgba(104,235,244,.035) 48%, rgba(196,255,255,.07) 50%, rgba(104,235,244,.035) 52%, transparent);
+  mix-blend-mode: screen;
+  opacity: .68;
+  transform: translateZ(28px);
+}
+
+.holo-body-crosshair {
+  position: absolute;
+  z-index: 9;
+  left: 50%;
+  top: 43%;
+  width: 235px;
+  height: 235px;
+  transform: translate3d(-50%, -50%, 32px);
+  border: 1px solid rgba(132,240,244,.10);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.holo-body-crosshair::before,
+.holo-body-crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(137, 241, 245, .11);
+}
+
+.holo-body-crosshair::before { left: 50%; top: -30px; bottom: -30px; width: 1px; }
+.holo-body-crosshair::after { top: 50%; left: -30px; right: -30px; height: 1px; }
+
+.holo-floor-grid {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  bottom: -72px;
+  width: 640px;
+  height: 310px;
+  transform: translateX(-50%) rotateX(68deg);
+  transform-origin: 50% 100%;
+  background:
+    linear-gradient(rgba(101,216,230,.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(101,216,230,.12) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(ellipse at center, black 0 35%, transparent 73%);
+  opacity: .35;
+  pointer-events: none;
+}
+
+.holo-depth-field {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 50%;
+  width: 390px;
+  height: 570px;
+  border: 1px solid rgba(110,222,232,.07);
+  border-radius: 47%;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.depth-field-a {
+  transform: translate3d(-50%, -50%, -115px) scale(.91);
+  opacity: .2;
+  box-shadow: 0 0 46px rgba(73,205,220,.035);
+}
+
+.depth-field-b {
+  transform: translate3d(-50%, -50%, -70px) scale(.96);
+  opacity: .17;
+  border-style: dashed;
+}
+
+.depth-field-c {
+  animation: holo-depth-drift 5.5s ease-in-out infinite;
+  border-color: rgba(86,177,233,.08);
+}
+
+.holo-orbit {
+  position: absolute;
+  z-index: 2;
+  left: 50%;
+  top: 50%;
+  width: 490px;
+  height: 490px;
+  border: 1px solid rgba(116,236,241,.12);
+  border-left-color: transparent;
+  border-right-color: rgba(90, 153, 239, .12);
+  border-radius: 50%;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.holo-orbit::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -3px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #c0fdff;
+  box-shadow: 0 0 12px #78eaf2, 0 0 24px rgba(79,151,245,.4);
+}
+
+.orbit-x { animation: holo-orbit-x 19s linear infinite; }
+.orbit-y { width: 430px; height: 430px; animation: holo-orbit-y 15s linear infinite; }
+
+.holo-scan-plane {
+  position: absolute;
+  z-index: 7;
+  left: 19%;
+  right: 19%;
+  top: 50%;
+  height: 80px;
+  pointer-events: none;
+  transform-origin: center;
+  background: linear-gradient(180deg, transparent, rgba(89,233,244,.04) 30%, rgba(180,254,255,.18) 50%, rgba(89,233,244,.04) 70%, transparent);
+  border-top: 1px solid rgba(181,254,255,.10);
+  border-bottom: 1px solid rgba(89,233,244,.06);
+  mix-blend-mode: screen;
+}
+
+.scan-plane-secondary { animation: holo-secondary-scan 7.1s linear infinite 1.2s; }
+
+.advanced-hologram .anatomy-real-projector {
+  width: 285px;
+  height: 82px;
+  bottom: 23px;
+  border-color: rgba(109,241,239,.34);
+  animation: holo-projector-energy 3.8s ease-in-out infinite;
+}
+
+.advanced-hologram .anatomy-real-projector::before { width: 78%; height: 64%; }
+.advanced-hologram .anatomy-real-projector::after { width: 48%; height: 38%; }
+
+.holo-telemetry {
+  position: absolute;
+  z-index: 12;
+  top: 20px;
+  display: grid;
+  gap: 3px;
+  padding: 9px 11px;
+  border: 1px solid rgba(126,219,232,.10);
+  border-radius: 8px;
+  background: rgba(4,14,22,.56);
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+}
+
+.holo-telemetry::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  width: 22px;
+  height: 1px;
+  background: #88eaf1;
+  box-shadow: 0 0 10px rgba(111,225,235,.5);
+}
+
+.holo-telemetry-left { left: 18px; }
+.holo-telemetry-left::before { left: 9px; }
+.holo-telemetry-right { right: 18px; text-align: right; }
+.holo-telemetry-right::before { right: 9px; }
+.holo-telemetry span {
+  color: rgba(152,218,225,.58);
+  font: 720 9px/1.2 var(--app-font-mono);
+  letter-spacing: .11em;
+}
+.holo-telemetry strong {
+  color: #d9fbfd;
+  font: 720 13px/1.2 var(--app-font-mono);
+}
+.holo-telemetry small {
+  color: rgba(168,203,211,.42);
+  font: 650 9px/1.2 var(--app-font-mono);
+  letter-spacing: .05em;
+}
+
+.advanced-hologram .anatomy-real-hotspot {
+  z-index: 14;
+  border: 1px solid color-mix(in srgb, var(--heat-color) 43%, transparent);
+  box-shadow: inset 0 0 18px color-mix(in srgb, var(--heat-color) 10%, transparent);
+  transform: translate(-50%, -50%) translateZ(38px);
+}
+
+.advanced-hologram .anatomy-real-hotspot:hover,
+.advanced-hologram .anatomy-real-hotspot.active {
+  transform: translate(-50%, -50%) translateZ(48px) scale(1.045);
+  outline: 1px solid color-mix(in srgb, var(--heat-color) 72%, white 28%);
+  box-shadow: inset 0 0 24px color-mix(in srgb, var(--heat-color) 18%, transparent), 0 0 18px color-mix(in srgb, var(--heat-color) 24%, transparent);
+}
+
+.advanced-hologram .anatomy-real-credit {
+  left: 20px;
+  bottom: 9px;
+  color: rgba(177,208,215,.42);
+  font-size: 10px;
+}
+
+.advanced-hologram .injury-anatomy-data {
+  min-width: 330px;
+  background:
+    radial-gradient(circle at 15% 3%, rgba(71,205,219,.065), transparent 30%),
+    linear-gradient(180deg, rgba(7,20,29,.995), rgba(4,13,20,.998));
+}
+
+.advanced-hologram .injury-anatomy-focus {
+  padding: 18px;
+}
+
+.advanced-hologram .injury-anatomy-focus h4 {
+  margin-top: 8px;
+  font-size: 23px;
+}
+
+.advanced-hologram .injury-anatomy-focus-meta strong,
+.advanced-hologram .injury-anatomy-focus-meta em,
+.advanced-hologram .injury-anatomy-detail-list > div,
+.advanced-hologram .injury-anatomy-ranking button strong,
+.advanced-hologram .injury-anatomy-ranking button small,
+.advanced-hologram .injury-anatomy-ranking button > em {
+  font-size: 12px;
+}
+
+.advanced-hologram .injury-anatomy-detail-list > div {
+  line-height: 1.55;
+  color: rgba(221,235,237,.72);
+}
+
+.advanced-hologram .injury-anatomy-ranking {
+  padding: 16px 18px 20px;
+}
+
+.advanced-hologram .injury-anatomy-ranking button {
+  grid-template-columns: 28px minmax(0,1fr) auto;
+  gap: 9px;
+  padding: 10px 6px;
+}
+
+.advanced-hologram .injury-anatomy-ranking button > b {
+  font-size: 10px;
+}
+
+.advanced-hologram .injury-anatomy-idle-data {
+  padding: 18px;
+}
+
+.advanced-hologram .injury-anatomy-idle-data > div {
+  grid-template-columns: 34px 1fr;
+  gap: 4px 10px;
+  padding: 14px 0;
+}
+
+.advanced-hologram .injury-anatomy-idle-data > div b {
+  font-size: 11px;
+}
+
+.advanced-hologram .injury-anatomy-idle-data > div strong {
+  font-size: 13px;
+}
+
+.advanced-hologram .injury-anatomy-idle-data > div small {
+  color: rgba(211,229,233,.58);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.advanced-hologram .anatomy-real-callout {
+  bottom: 32px;
+  width: min(470px, 76%);
+  grid-template-columns: 32px 1fr;
+  padding: 11px 13px;
+}
+
+.advanced-hologram .anatomy-real-callout strong { font-size: 12px; }
+.advanced-hologram .anatomy-real-callout span { font-size: 11px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .advanced-hologram-rig,
+  .holo-depth-field,
+  .holo-orbit,
+  .holo-scan-plane,
+  .advanced-hologram .anatomy-real-projector {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  .advanced-hologram .anatomy-real-stage { min-height: 720px; }
+  .advanced-hologram-visual { min-height: 640px; }
+  .advanced-hologram-rig { width: min(500px, 76vw); }
+  .holo-telemetry { display: none; }
+}
