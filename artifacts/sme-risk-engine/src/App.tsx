@@ -21,25 +21,25 @@ function AppRouter() {
       <ToolErrorBoundary key={location}>
         <Switch>
           <Route path="/">
-            <InjuriesMedicalConditions initialView="injuries" />
+            <InjuriesMedicalConditions />
           </Route>
           <Route path="/injuries-medical-conditions">
             <InjuriesMedicalConditions />
           </Route>
           <Route path="/injury-intelligence">
-            <InjuriesMedicalConditions initialView="injuries" />
+            <InjuriesMedicalConditions />
           </Route>
           <Route path="/guidelines">
-            <InjuriesMedicalConditions initialView="conditions" />
+            <InjuriesMedicalConditions />
           </Route>
           <Route path="/aor-factors">
             <AORFactors />
           </Route>
           <Route path="/aor">
-            <AORFactors initialView="aor" />
+            <AORFactors />
           </Route>
           <Route path="/external-factors">
-            <AORFactors initialView="exposures" />
+            <AORFactors />
           </Route>
           <Route path="/job-intelligence">
             <JobIntelligence />
