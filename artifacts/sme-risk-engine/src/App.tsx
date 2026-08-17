@@ -11,7 +11,7 @@ import JobIntelligence from "@/pages/JobIntelligence";
 import InjuryIntelligence from "@/pages/InjuryIntelligenceLive";
 import ConditionReference from "@/pages/ConditionReference";
 import StandardsMatrix from "@/pages/StandardsMatrixV2";
-import DrugChecker from "@/pages/DrugCheckerV2";
+import DrugChecker from "@/pages/DrugCheckerAdvanced";
 import ClinicalCalculator from "@/pages/ClinicalCalculatorV3";
 import Citations from "@/pages/CitationFinderV2";
 import "@/pages/injury-osha.css";
