@@ -137,14 +137,14 @@ export default function MedicationHologram3D({ cid, drugName, onStatus }: Props)
 
         const holoMaterial = createAndersonManciniHolographicMaterial(THREE, {
           hologramColor: '#43e9ff',
-          fresnelAmount: 0.56,
-          fresnelOpacity: 1,
-          scanlineSize: 7.5,
-          hologramBrightness: 1.42,
-          signalSpeed: 0.48,
-          hologramOpacity: 0.68,
-          enableBlinking: true,
-          blinkFresnelOnly: true,
+          fresnelAmount: 0.32,
+          fresnelOpacity: 0.72,
+          scanlineSize: 15,
+          hologramBrightness: 0.82,
+          signalSpeed: 0.08,
+          hologramOpacity: 0.58,
+          enableBlinking: false,
+          blinkFresnelOnly: false,
           depthTest: false,
         });
 
@@ -162,7 +162,7 @@ export default function MedicationHologram3D({ cid, drugName, onStatus }: Props)
           const coreMaterial = new THREE.MeshBasicMaterial({
             color: elementColor(atom.element),
             transparent: true,
-            opacity: atom.element.toUpperCase() === 'C' ? 0.22 : 0.78,
+            opacity: atom.element.toUpperCase() === 'C' ? 0.12 : 0.46,
             blending: THREE.AdditiveBlending,
             depthWrite: false,
           });
@@ -191,7 +191,7 @@ export default function MedicationHologram3D({ cid, drugName, onStatus }: Props)
         });
 
         const ringMaterial = new THREE.MeshBasicMaterial({
-          color: '#4be8ff', transparent: true, opacity: 0.14, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false,
+          color: '#4be8ff', transparent: true, opacity: 0.07, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, depthWrite: false,
         });
         [1.75, 2.05, 2.38].forEach((radius, index) => {
           const ring = new THREE.Mesh(new THREE.TorusGeometry(radius, 0.008 + index * 0.004, 8, 120), ringMaterial.clone());
@@ -225,9 +225,9 @@ export default function MedicationHologram3D({ cid, drugName, onStatus }: Props)
           if (disposed) return;
           frame = requestAnimationFrame(animate);
           (holoMaterial as any).updateHologram?.();
-          root.rotation.y += 0.0028;
-          root.rotation.x += (targetX - root.rotation.x) * 0.035;
-          root.rotation.y += (targetY - root.rotation.y) * 0.012;
+          root.rotation.y += 0.0011;
+          root.rotation.x += (targetX - root.rotation.x) * 0.02;
+          root.rotation.y += (targetY - root.rotation.y) * 0.008;
           renderer.render(scene, camera);
         };
         animate();
