@@ -44,6 +44,61 @@ export type WhoIndicator = {
   dataYear: number;
 };
 
+export type WhoOutbreakItem = {
+  id: string;
+  title: string;
+  publishedAt: string;
+  summary: string;
+  url: string;
+  matchedArea: string;
+  provider: "WHO Disease Outbreak News";
+};
+export type GdacsEventItem = {
+  id: string;
+  title: string;
+  eventType: string;
+  alertLevel: string;
+  country: string;
+  fromDate: string;
+  toDate: string;
+  url: string;
+  latitude: number | null;
+  longitude: number | null;
+  provider: "GDACS";
+};
+export type UsgsEarthquakeItem = {
+  id: string;
+  title: string;
+  place: string;
+  magnitude: number | null;
+  occurredAt: string;
+  updatedAt: string;
+  url: string;
+  tsunami: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  depthKm: number | null;
+  provider: "USGS Earthquake Catalog";
+};
+export type AorPublicSourceHealth = {
+  provider: "WHO Disease Outbreak News" | "GDACS" | "USGS Earthquake Catalog";
+  ok: boolean;
+  itemCount: number;
+  error?: string;
+};
+export type AorPublicIntelligenceResponse = {
+  ok: true;
+  source: string;
+  retrievedAt: string;
+  command: string;
+  commandLabel: string;
+  partial: boolean;
+  sourceHealth: AorPublicSourceHealth[];
+  outbreaks: WhoOutbreakItem[];
+  disasters: GdacsEventItem[];
+  earthquakes: UsgsEarthquakeItem[];
+};
+
 async function request<T>(path: string, signal?: AbortSignal): Promise<T> {
   const response = await fetch(path, {
     headers: { Accept: "application/json" },
@@ -76,6 +131,16 @@ export function fetchIntelligenceProviders(
 ) {
   return request<IntelligenceProviderStatus>(
     `/api/intelligence/status${refresh ? "?refresh=1" : ""}`,
+    signal,
+  );
+}
+export function fetchAorPublicIntelligence(
+  command: string,
+  limit = 12,
+  signal?: AbortSignal,
+) {
+  return request<AorPublicIntelligenceResponse>(
+    `/api/intelligence/aor-public?${params({ command, limit })}`,
     signal,
   );
 }

@@ -148,6 +148,15 @@ export async function getProviderStatuses(): Promise<ProviderStatus[]> {
         "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/einfo.fcgi?db=pubmed&retmode=json",
       ),
     ),
+    check("who_outbreaks", "WHO Disease Outbreak News", "public", true, () =>
+      get("https://www.who.int/api/news/diseaseoutbreaknews?$top=1&$orderby=PublicationDateAndTime%20desc"),
+    ),
+    check("gdacs", "GDACS", "public", true, () =>
+      get("https://www.gdacs.org/contentdata/xml/gdacs_app_feed.json"),
+    ),
+    check("usgs", "USGS Earthquake Catalog", "public", true, () =>
+      get("https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=1&orderby=time"),
+    ),
     check(
       "congress",
       "Congress.gov",
@@ -196,7 +205,7 @@ export async function getProviderStatuses(): Promise<ProviderStatus[]> {
             )
         : undefined,
     ),
-    check("who", "WHO", "public", true, () =>
+    check("who", "WHO Global Health Observatory", "public", true, () =>
       get("https://ghoapi.azureedge.net/api/Indicator?$top=1"),
     ),
   ]);
