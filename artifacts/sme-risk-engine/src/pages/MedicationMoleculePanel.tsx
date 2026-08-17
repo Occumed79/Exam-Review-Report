@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Atom, Database, Loader2, Orbit, ShieldAlert } from 'lucide-react';
 import './medication-molecule-panel.css';
 
@@ -36,6 +36,8 @@ type Props = {
   rxcui: string;
   profile: OccupationalProfile;
 };
+
+type BubblePosition = { x: number; y: number };
 
 const SMILES_DRAWER_URL = 'https://esm.sh/smiles-drawer@2.4.1';
 const PUBCHEM_PROPERTIES = [
@@ -147,20 +149,32 @@ function buildFactors(profile: OccupationalProfile, molecule: MolecularRecord | 
   return factors.slice(0, 9);
 }
 
-const BUBBLE_POSITIONS = [
-  { left: '49%', top: '5%' },
-  { left: '79%', top: '17%' },
-  { left: '91%', top: '43%' },
-  { left: '82%', top: '72%' },
-  { left: '58%', top: '90%' },
-  { left: '27%', top: '86%' },
-  { left: '8%', top: '66%' },
-  { left: '7%', top: '35%' },
-  { left: '23%', top: '13%' },
+const BUBBLE_POSITIONS: BubblePosition[] = [
+  { x: 49, y: 5 },
+  { x: 79, y: 17 },
+  { x: 91, y: 43 },
+  { x: 82, y: 72 },
+  { x: 58, y: 90 },
+  { x: 27, y: 86 },
+  { x: 8, y: 66 },
+  { x: 7, y: 35 },
+  { x: 23, y: 13 },
 ];
+
+function tetherPath(position: BubblePosition, index: number): string {
+  const centerX = 50;
+  const centerY = 50;
+  const midX = (centerX + position.x) / 2;
+  const midY = (centerY + position.y) / 2;
+  const horizontalBend = position.x < centerX ? -4.5 : 4.5;
+  const verticalBend = position.y < centerY ? -2.5 : 2.5;
+  const alternating = index % 2 === 0 ? 1 : -1;
+  return `M ${centerX} ${centerY} Q ${midX + horizontalBend * alternating} ${midY + verticalBend} ${position.x} ${position.y}`;
+}
 
 export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Props) {
   const svgRef = useRef<SVGSVGElement | null>(null);
+  const tracerSvgRef = useRef<SVGSVGElement | null>(null);
   const [molecule, setMolecule] = useState<MolecularRecord | null>(null);
   const [moleculeState, setMoleculeState] = useState<'loading' | 'ready' | 'missing'>('loading');
   const [structureReady, setStructureReady] = useState(false);
@@ -208,6 +222,7 @@ export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Pr
     const draw = async () => {
       const target = svgRef.current;
       if (!target || !smiles) {
+        if (tracerSvgRef.current) tracerSvgRef.current.innerHTML = '';
         setStructureReady(false);
         return;
       }
@@ -233,6 +248,7 @@ export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Pr
             if (cancelled || !svgRef.current) return;
             svgRef.current.innerHTML = '';
             drawer.draw(tree, svgRef.current, 'dark');
+            if (tracerSvgRef.current) tracerSvgRef.current.innerHTML = svgRef.current.innerHTML;
             setStructureReady(true);
           },
           () => {
@@ -259,6 +275,27 @@ export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Pr
 
   const activeFactor = factors.find((factor) => factor.id === activeFactorId) ?? factors[0] ?? null;
 
+  const handleStagePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / Math.max(rect.width, 1) - 0.5) * 2;
+    const y = ((event.clientY - rect.top) / Math.max(rect.height, 1) - 0.5) * 2;
+    event.currentTarget.style.setProperty('--med-pointer-x', `${50 + x * 18}%`);
+    event.currentTarget.style.setProperty('--med-pointer-y', `${50 + y * 14}%`);
+    event.currentTarget.style.setProperty('--med-depth-x', `${(x * 9).toFixed(2)}px`);
+    event.currentTarget.style.setProperty('--med-depth-y', `${(y * 6).toFixed(2)}px`);
+    event.currentTarget.style.setProperty('--med-tilt-x', `${(-y * 4.5).toFixed(2)}deg`);
+    event.currentTarget.style.setProperty('--med-tilt-y', `${(x * 6).toFixed(2)}deg`);
+  };
+
+  const handleStagePointerLeave = (event: ReactPointerEvent<HTMLDivElement>) => {
+    event.currentTarget.style.setProperty('--med-pointer-x', '50%');
+    event.currentTarget.style.setProperty('--med-pointer-y', '50%');
+    event.currentTarget.style.setProperty('--med-depth-x', '0px');
+    event.currentTarget.style.setProperty('--med-depth-y', '0px');
+    event.currentTarget.style.setProperty('--med-tilt-x', '0deg');
+    event.currentTarget.style.setProperty('--med-tilt-y', '0deg');
+  };
+
   return (
     <section className="med-molecule-shell" data-testid="medication-molecule-panel">
       <div className="med-molecule-heading">
@@ -274,19 +311,41 @@ export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Pr
       </div>
 
       <div className="med-molecule-workspace">
-        <div className="med-molecule-stage">
+        <div className="med-molecule-stage" onPointerMove={handleStagePointerMove} onPointerLeave={handleStagePointerLeave}>
           <div className="med-molecule-grid" />
+          <div className="med-molecule-depth-beams"><i /><i /><i /><i /></div>
           <div className="med-molecule-orbit orbit-one" />
           <div className="med-molecule-orbit orbit-two" />
           <div className="med-molecule-orbit orbit-three" />
           <div className="med-molecule-projector" />
           <div className="med-molecule-scan" />
+          <div className="med-molecule-scan-secondary" />
+
+          <svg className="med-energy-tether-layer" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            {factors.map((factor, index) => {
+              const position = BUBBLE_POSITIONS[index % BUBBLE_POSITIONS.length];
+              const active = factor.id === activeFactorId;
+              const path = tetherPath(position, index);
+              return (
+                <g key={`tether-${factor.id}`} className={active ? 'is-active' : ''}>
+                  <path className="med-tether-dormant" d={path} />
+                  {active && <>
+                    <path className="med-tether-core" d={path} />
+                    <path className="med-tether-runner" d={path} />
+                    <circle className="med-tether-node" cx={position.x} cy={position.y} r="0.8" />
+                  </>}
+                </g>
+              );
+            })}
+          </svg>
 
           <div className="med-molecule-center">
             <div className="med-molecule-aura" />
             <div className="med-molecule-core-ring core-ring-a" />
             <div className="med-molecule-core-ring core-ring-b" />
+            <div className="med-molecule-core-ring core-ring-c" />
             <svg ref={svgRef} className={`med-molecule-svg${structureReady ? ' ready' : ''}`} viewBox="0 0 360 360" aria-label={`${drugName} molecular structure`} />
+            <svg ref={tracerSvgRef} className={`med-molecule-energy-tracer${structureReady ? ' ready' : ''}`} viewBox="0 0 360 360" aria-hidden="true" />
             {!structureReady && (
               <div className="med-molecule-placeholder">
                 <Orbit size={42} />
@@ -297,20 +356,23 @@ export default function MedicationMoleculePanel({ drugName, rxcui, profile }: Pr
           </div>
 
           <div className="med-factor-orbit">
-            {factors.map((factor, index) => (
-              <button
-                key={factor.id}
-                type="button"
-                className={`med-factor-bubble tone-${factor.tone}${activeFactorId === factor.id ? ' active' : ''}`}
-                style={BUBBLE_POSITIONS[index]}
-                onMouseEnter={() => setActiveFactorId(factor.id)}
-                onFocus={() => setActiveFactorId(factor.id)}
-                onClick={() => setActiveFactorId(factor.id)}
-              >
-                <small>{factor.label}</small>
-                <strong>{factor.value}</strong>
-              </button>
-            ))}
+            {factors.map((factor, index) => {
+              const position = BUBBLE_POSITIONS[index % BUBBLE_POSITIONS.length];
+              return (
+                <button
+                  key={factor.id}
+                  type="button"
+                  className={`med-factor-bubble tone-${factor.tone}${activeFactorId === factor.id ? ' active' : ''}`}
+                  style={{ left: `${position.x}%`, top: `${position.y}%` }}
+                  onMouseEnter={() => setActiveFactorId(factor.id)}
+                  onFocus={() => setActiveFactorId(factor.id)}
+                  onClick={() => setActiveFactorId(factor.id)}
+                >
+                  <small>{factor.label}</small>
+                  <strong>{factor.value}</strong>
+                </button>
+              );
+            })}
           </div>
         </div>
 
