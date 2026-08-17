@@ -91,6 +91,16 @@ function relevance(title: string, query: string) {
   return { policyHits, queryHits, score: policyHits + queryHits * 2 };
 }
 
+function providerSearchTerm(query: string) {
+  const lower = query.toLowerCase();
+  const matchedPolicyTerms = POLICY_TERMS.filter((term) => lower.includes(term));
+  if (matchedPolicyTerms.length) {
+    return Array.from(new Set(matchedPolicyTerms)).slice(0, 5).join(" ");
+  }
+  const tokens = queryTokens(query).slice(0, 5);
+  return tokens.join(" ") || "occupational health";
+}
+
 function isRecent(value: string) {
   if (!value) return false;
   const date = new Date(value);
@@ -100,17 +110,9 @@ function isRecent(value: string) {
   return date >= cutoff;
 }
 
-export async function searchRegulations(
-  query: string,
-  agency: string,
-  limit: number,
-) {
-  const { key } = credentials();
-  if (!key) throw new Error("Regulations.gov is not configured on the server.");
-
-  const normalizedAgency = agency.trim().toUpperCase();
+async function fetchDocuments(searchTerm: string, normalizedAgency: string, key: string) {
   const url = new URL(BASE);
-  url.searchParams.set("filter[searchTerm]", query);
+  url.searchParams.set("filter[searchTerm]", searchTerm);
   if (normalizedAgency) url.searchParams.set("filter[agencyId]", normalizedAgency);
   url.searchParams.set("page[size]", "50");
   url.searchParams.set("sort", "-postedDate");
@@ -118,9 +120,11 @@ export async function searchRegulations(
   const payload = record(
     await fetchJson("Regulations.gov", url, { headers: { "X-Api-Key": key } }),
   );
-  const data = Array.isArray(payload.data) ? payload.data : [];
+  return Array.isArray(payload.data) ? payload.data : [];
+}
 
-  const items = data
+function normalizeDocuments(data: unknown[], query: string, normalizedAgency: string, limit: number) {
+  return data
     .map((raw) => {
       const item = record(raw);
       const attributes = record(item.attributes);
@@ -159,11 +163,31 @@ export async function searchRegulations(
     })
     .slice(0, Math.min(limit, 50))
     .map(({ relevance: _relevance, ...item }) => item);
+}
+
+export async function searchRegulations(
+  query: string,
+  agency: string,
+  limit: number,
+) {
+  const { key } = credentials();
+  if (!key) throw new Error("Regulations.gov is not configured on the server.");
+
+  const normalizedAgency = agency.trim().toUpperCase();
+  const upstreamQuery = providerSearchTerm(query);
+  let raw = await fetchDocuments(upstreamQuery, normalizedAgency, key);
+  let items = normalizeDocuments(raw, query, normalizedAgency, limit);
+
+  if (!items.length && upstreamQuery !== "occupational health") {
+    raw = await fetchDocuments("occupational health", normalizedAgency, key);
+    items = normalizeDocuments(raw, query, normalizedAgency, limit);
+  }
 
   return {
     source: "Regulations.gov API v4",
     retrievedAt: isoNow(),
     query,
+    upstreamQuery,
     agency: normalizedAgency || null,
     items,
   };
