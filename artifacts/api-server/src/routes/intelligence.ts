@@ -1,8 +1,9 @@
 import { Router, type IRouter } from "express";
-import { searchCongress } from "../services/congressService";
-import { searchRegulations } from "../services/regulationsService";
-import { searchNews } from "../services/newsService";
-import { getWhoIndicators } from "../services/whoService";
+import { searchCongress, getCongressStatus } from "../services/congressService";
+import { searchRegulations, getRegulationsStatus } from "../services/regulationsService";
+import { searchNews, getNewsStatus } from "../services/newsService";
+import { getWhoIndicators, getWhoStatus } from "../services/whoService";
+import { getProviderStatuses } from "../services/providerStatusService";
 
 const router: IRouter = Router();
 function query(value: unknown, fallback = "") {
@@ -22,6 +23,26 @@ function failure(
     .status(message.includes("not configured") ? 503 : 502)
     .json({ ok: false, error: message });
 }
+
+router.get("/intelligence/status", async (_req, res) => {
+  try {
+    const providers = await getProviderStatuses();
+    const news = getNewsStatus();
+    res.setHeader("Cache-Control", "no-store");
+    res.json({
+      ok: true,
+      checkedAt: new Date().toISOString(),
+      providers,
+      congress: getCongressStatus(),
+      regulations: getRegulationsStatus(),
+      newsData: news.newsData,
+      apiTube: news.apiTube,
+      who: getWhoStatus(),
+    });
+  } catch (error) {
+    failure(res, error);
+  }
+});
 
 router.get("/intelligence/congress", async (req, res) => {
   const q = query(
