@@ -1,97 +1,217 @@
 import { useMemo, useState } from 'react';
-import { BookOpen, Briefcase, ExternalLink, Flame, Plane, Search, Shield, Truck } from 'lucide-react';
+import { AlertTriangle, BookOpen, CheckCircle2, ExternalLink, Flame, Network, Plane, Radar, Shield, Truck } from 'lucide-react';
+import StandardsRelationshipMap from './StandardsRelationshipMap';
+import {
+  STANDARD_SOURCES,
+  defaultFrameworksForOccupation,
+  evaluateStandards,
+  type FindingLevel,
+  type ReviewContext,
+  type StandardId,
+} from './standardsIntelligenceData';
 import './standards-matrix.css';
 
-const FRAMEWORKS = [
-  {
-    id: 'firefighter',
-    label: 'Firefighter / Emergency Responder',
-    standard: 'NFPA 1580 (2025)',
-    icon: Flame,
-    source: 'NFPA 1580 — occupational medical chapters',
-    sourceUrl: 'https://link.nfpa.org/all-publications/1580/2025',
-    useFor: 'Current NFPA emergency-responder health and wellness framework; occupational-medical chapters consolidate content formerly published in NFPA 1582.',
-    topics: ['Essential job tasks', 'Occupational medical evaluation', 'Annual fitness evaluation', 'SCBA / respirator', 'Heat / emergency response'],
-  },
-  {
-    id: 'dot',
-    label: 'Commercial Driver',
-    standard: 'FMCSA Medical Examiner’s Handbook — 2024',
-    icon: Truck,
-    source: 'FMCSA current handbook',
-    sourceUrl: 'https://www.fmcsa.dot.gov/regulations/medical/driver-medical-requirements/medical-examiners-handbook-2024-edition',
-    useFor: 'Current FMCSA guidance used with the physical qualification standards and Medical Advisory Criteria for interstate commercial drivers.',
-    topics: ['Loss of consciousness', 'Vision / hearing', 'Medication effects', 'Sleep / alertness', 'Cardiovascular'],
-  },
-  {
-    id: 'aviation',
-    label: 'Aviation',
-    standard: 'FAA AME Guide — current revision',
-    icon: Plane,
-    source: 'FAA Guide for Aviation Medical Examiners',
-    sourceUrl: 'https://www.faa.gov/ame_guide',
-    useFor: 'FAA’s continuously updated condition-specific aviation medical certification guidance.',
-    topics: ['Incapacitation', 'Cognition', 'Medication acceptability', 'Neurologic stability', 'Vision / hearing'],
-  },
-  {
-    id: 'law-enforcement',
-    label: 'Law Enforcement',
-    standard: 'Agency / POST / jurisdiction',
-    icon: Shield,
-    source: 'Jurisdiction / agency specific',
-    sourceUrl: '',
-    useFor: 'Law-enforcement duties where controlling medical criteria vary by jurisdiction, POST body, employer, and job classification.',
-    topics: ['Emergency driving', 'Use of force', 'Weapon handling', 'Stress tolerance', 'Physical confrontation'],
-  },
-  {
-    id: 'deployment',
-    label: 'Deployment',
-    standard: 'Client / Contract / Theater',
-    icon: Briefcase,
-    source: 'Program specific',
-    sourceUrl: '',
-    useFor: 'Remote, international, austere, or contract-specific medical requirements where the actual program document controls.',
-    topics: ['Medical access', 'Medication continuity', 'Evacuation', 'Climate', 'Specialty follow-up'],
-  },
+const FRAMEWORK_ICON: Record<StandardId, typeof Shield> = {
+  'centcom-mod18': Radar,
+  fmcsa: Truck,
+  faa: Plane,
+  nfpa1580: Flame,
+};
+
+const LEVEL_LABEL: Record<FindingLevel, string> = {
+  info: 'Source / baseline',
+  review: 'Review required',
+  waiver: 'Waiver / special pathway',
+  strict: 'Strict / high-priority',
+};
+
+const OCCUPATIONS = [
+  'DoD contractor — CENTCOM deployment',
+  'Firefighter / emergency responder',
+  'Commercial driver',
+  'Pilot / aviation crew',
+  'Deployed firefighter',
+  'Deployed commercial driver',
+  'Deployed aviation crew',
 ];
 
+function numberValue(value: string): number | undefined {
+  const parsed = Number.parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
+}
+
 export default function StandardsMatrixV2() {
-  const [query, setQuery] = useState('');
-  const filtered = useMemo(() => {
-    const clean = query.trim().toLowerCase();
-    if (!clean) return FRAMEWORKS;
-    return FRAMEWORKS.filter((framework) => `${framework.label} ${framework.standard} ${framework.useFor} ${framework.topics.join(' ')}`.toLowerCase().includes(clean));
-  }, [query]);
+  const [occupation, setOccupation] = useState('DoD contractor — CENTCOM deployment');
+  const [condition, setCondition] = useState('');
+  const [medication, setMedication] = useState('');
+  const [frameworks, setFrameworks] = useState<StandardId[]>(['centcom-mod18']);
+  const [age, setAge] = useState('');
+  const [a1c, setA1c] = useState('');
+  const [ahi, setAhi] = useState('');
+  const [papCompliance, setPapCompliance] = useState('');
+  const [epworth, setEpworth] = useState('');
+  const [sbp, setSbp] = useState('');
+  const [dbp, setDbp] = useState('');
+  const [ascvd, setAscvd] = useState('');
+  const [weightLb, setWeightLb] = useState('');
+  const [activeFindingId, setActiveFindingId] = useState('');
+
+  const context = useMemo<ReviewContext>(() => ({
+    frameworks,
+    occupation,
+    condition,
+    medication,
+    age: numberValue(age),
+    a1c: numberValue(a1c),
+    ahi: numberValue(ahi),
+    papCompliance: numberValue(papCompliance),
+    epworth: numberValue(epworth),
+    sbp: numberValue(sbp),
+    dbp: numberValue(dbp),
+    ascvd: numberValue(ascvd),
+    weightLb: numberValue(weightLb),
+  }), [frameworks, occupation, condition, medication, age, a1c, ahi, papCompliance, epworth, sbp, dbp, ascvd, weightLb]);
+
+  const findings = useMemo(() => evaluateStandards(context), [context]);
+  const activeFinding = findings.find((item) => item.id === activeFindingId) ?? findings[0] ?? null;
+  const strictCount = findings.filter((item) => item.level === 'strict').length;
+  const waiverCount = findings.filter((item) => item.level === 'waiver').length;
+  const reviewCount = findings.filter((item) => item.level === 'review').length;
+
+  const toggleFramework = (id: StandardId) => {
+    setFrameworks((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  };
+
+  const applyOccupation = (value: string) => {
+    setOccupation(value);
+    setFrameworks(defaultFrameworksForOccupation(value));
+    setActiveFindingId('');
+  };
 
   return (
-    <div className="standards-workbench" data-testid="standards-matrix">
-      <header className="standards-header">
+    <div className="standards-workbench standards-intelligence" data-testid="standards-matrix">
+      <header className="standards-header standards-engine-header">
         <div>
-          <div className="standards-kicker">REFERENCE / STANDARDS</div>
-          <h1>Standards Matrix</h1>
-          <p>Current source starting points for occupational frameworks reviewers repeatedly need to locate. No scoring and no clearance output.</p>
+          <div className="standards-kicker"><Network size={13} /> STANDARDS / INTERACTION ENGINE</div>
+          <h1>Standards Intelligence</h1>
+          <p>Stack the actual controlling frameworks around a reviewer scenario, surface the rules that interact, and separate binding requirements, waiver pathways, guidance, and copyrighted consensus standards.</p>
         </div>
-        <div className="standards-search liquid-glass"><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Framework, topic, standard…" /></div>
+        <div className="standards-engine-status">
+          <span><i /> SOURCE ENGINE LIVE</span>
+          <strong>{frameworks.length} frameworks · {findings.length} matched rules</strong>
+        </div>
       </header>
 
-      <div className="standards-table-head"><span>FRAMEWORK</span><span>USE / SCOPE</span><span>KEY TOPICS</span><span>SOURCE</span></div>
-      <div className="standards-list">
-        {filtered.map((framework) => {
-          const Icon = framework.icon;
+      <section className="standards-source-rack" aria-label="Controlling standards">
+        {(Object.keys(STANDARD_SOURCES) as StandardId[]).map((id) => {
+          const source = STANDARD_SOURCES[id];
+          const Icon = FRAMEWORK_ICON[id];
+          const active = frameworks.includes(id);
           return (
-            <article key={framework.id} className="standards-row">
-              <div className="standards-framework"><span className="standards-icon"><Icon size={16} /></span><div><strong>{framework.label}</strong><small>{framework.standard}</small></div></div>
-              <p>{framework.useFor}</p>
-              <div className="standards-topics">{framework.topics.map((topic) => <span key={topic}>{topic}</span>)}</div>
-              <div className="standards-source">
-                {framework.sourceUrl ? <a href={framework.sourceUrl} target="_blank" rel="noreferrer"><BookOpen size={13} /><span>{framework.source}</span><ExternalLink size={10} /></a> : <span>{framework.source}</span>}
-              </div>
-            </article>
+            <button key={id} type="button" className={`standard-source-chip${active ? ' active' : ''}`} onClick={() => toggleFramework(id)}>
+              <span className="source-chip-icon"><Icon size={17} /></span>
+              <span><small>{source.shortLabel}</small><strong>{source.edition}</strong></span>
+              <em>{active ? 'IN STACK' : 'ADD'}</em>
+            </button>
           );
         })}
-        {filtered.length === 0 && <div className="standards-empty">No framework matches that search.</div>}
+      </section>
+
+      <div className="standards-engine-grid">
+        <aside className="standards-context-panel">
+          <div className="panel-title"><span>01</span><div><strong>Review context</strong><small>Build the scenario that standards will evaluate.</small></div></div>
+
+          <label className="standards-field">
+            <span>Occupation / program</span>
+            <select value={occupation} onChange={(event) => applyOccupation(event.target.value)}>
+              {OCCUPATIONS.map((item) => <option key={item}>{item}</option>)}
+            </select>
+          </label>
+          <label className="standards-field"><span>Condition / concern</span><input value={condition} onChange={(event) => setCondition(event.target.value)} placeholder="OSA, hypertension, seizure, diabetes…" /></label>
+          <label className="standards-field"><span>Medication</span><input value={medication} onChange={(event) => setMedication(event.target.value)} placeholder="Eliquis, insulin, metoprolol…" /></label>
+
+          <div className="standards-metrics-grid">
+            <label><span>Age</span><input inputMode="decimal" value={age} onChange={(e) => setAge(e.target.value)} placeholder="40" /></label>
+            <label><span>Weight lb</span><input inputMode="decimal" value={weightLb} onChange={(e) => setWeightLb(e.target.value)} placeholder="300" /></label>
+            <label><span>A1C %</span><input inputMode="decimal" value={a1c} onChange={(e) => setA1c(e.target.value)} placeholder="7.0" /></label>
+            <label><span>ASCVD %</span><input inputMode="decimal" value={ascvd} onChange={(e) => setAscvd(e.target.value)} placeholder="15" /></label>
+            <label><span>SBP</span><input inputMode="decimal" value={sbp} onChange={(e) => setSbp(e.target.value)} placeholder="140" /></label>
+            <label><span>DBP</span><input inputMode="decimal" value={dbp} onChange={(e) => setDbp(e.target.value)} placeholder="90" /></label>
+            <label><span>AHI</span><input inputMode="decimal" value={ahi} onChange={(e) => setAhi(e.target.value)} placeholder="30" /></label>
+            <label><span>PAP %</span><input inputMode="decimal" value={papCompliance} onChange={(e) => setPapCompliance(e.target.value)} placeholder="70" /></label>
+            <label><span>Epworth</span><input inputMode="decimal" value={epworth} onChange={(e) => setEpworth(e.target.value)} placeholder="10" /></label>
+          </div>
+
+          <div className="standards-context-note">
+            <Shield size={15} />
+            <p>This engine surfaces source-backed reviewer issues. It does not independently issue a medical clearance or replace the designated physician, AME, ME, agency, or waiver authority.</p>
+          </div>
+        </aside>
+
+        <main className="standards-analysis-panel">
+          <div className="standards-analysis-head">
+            <div><span>02</span><strong>Interaction map</strong><small>Scenario → controlling sources → matched requirements</small></div>
+            <div className="standards-severity-strip">
+              <b className="strict">{strictCount} strict</b>
+              <b className="waiver">{waiverCount} waiver</b>
+              <b className="review">{reviewCount} review</b>
+            </div>
+          </div>
+          <div className="standards-network-shell">
+            <StandardsRelationshipMap frameworks={frameworks} findings={findings} activeFindingId={activeFinding?.id} onFindingSelect={setActiveFindingId} />
+            <div className="standards-network-legend"><span><i className="strict" /> strict</span><span><i className="waiver" /> waiver</span><span><i className="review" /> review</span><span><i className="source" /> source</span></div>
+          </div>
+        </main>
+
+        <aside className="standards-finding-inspector">
+          <div className="panel-title"><span>03</span><div><strong>Reviewer intelligence</strong><small>Selected source-backed finding</small></div></div>
+          {activeFinding ? (
+            <>
+              <div className={`finding-level level-${activeFinding.level}`}>{LEVEL_LABEL[activeFinding.level]}</div>
+              <h2>{activeFinding.title}</h2>
+              <p className="finding-summary">{activeFinding.summary}</p>
+              <div className="finding-action"><strong>Reviewer action</strong><p>{activeFinding.action}</p></div>
+              <div className="finding-source-block">
+                <span>{STANDARD_SOURCES[activeFinding.standardId].shortLabel}</span>
+                <strong>{activeFinding.citation}</strong>
+                <a href={activeFinding.sourceUrl} target="_blank" rel="noreferrer"><BookOpen size={13} /> Open controlling source <ExternalLink size={11} /></a>
+              </div>
+              <div className="finding-topics">{activeFinding.topics.map((topic) => <span key={topic}>{topic}</span>)}</div>
+            </>
+          ) : (
+            <div className="standards-no-finding"><CheckCircle2 size={28} /><strong>No matched condition rule yet</strong><p>Add a condition, medication, metric, or another framework to build the cross-standard review.</p></div>
+          )}
+        </aside>
       </div>
-      <div className="standards-footnote">Verify the current controlling version and any client-, agency-, employer-, contract-, or jurisdiction-specific requirement before applying criteria. Source pages can change independently of this app.</div>
+
+      <section className="standards-findings-section">
+        <div className="standards-findings-head"><div><span>04</span><strong>Matched requirements</strong><small>Click a finding to inspect its source and reviewer action.</small></div><strong>{findings.length} findings</strong></div>
+        <div className="standards-findings-grid">
+          {findings.map((item) => {
+            const source = STANDARD_SOURCES[item.standardId];
+            return (
+              <button key={item.id} type="button" onClick={() => setActiveFindingId(item.id)} className={`standard-finding-card level-${item.level}${activeFinding?.id === item.id ? ' active' : ''}`}>
+                <div className="finding-card-top"><span>{source.shortLabel}</span><em>{LEVEL_LABEL[item.level]}</em></div>
+                <strong>{item.title}</strong>
+                <p>{item.summary}</p>
+                <small>{item.citation}</small>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      <section className="standards-source-register">
+        <div className="standards-findings-head"><div><span>05</span><strong>Source register</strong><small>Authority, edition, and live source access.</small></div></div>
+        <div className="standards-source-register-grid">
+          {frameworks.map((id) => {
+            const source = STANDARD_SOURCES[id];
+            return <article key={id}><span>{source.authority.replace('-', ' ')}</span><h3>{source.title}</h3><p>{source.description}</p><div><b>{source.currentAsOf}</b><a href={source.sourceUrl} target="_blank" rel="noreferrer">Open source <ExternalLink size={11} /></a></div></article>;
+          })}
+        </div>
+      </section>
+
+      <div className="standards-footnote"><AlertTriangle size={14} /> Verify current controlling versions and client-, agency-, employer-, contract-, theater-, or jurisdiction-specific requirements before applying criteria. NFPA copyrighted criteria are referenced to the authorized NFPA source rather than reproduced wholesale.</div>
     </div>
   );
 }
