@@ -1,8 +1,5 @@
 import { ReactNode } from "react";
 import Sidebar from "./Sidebar";
-import TahoeGlassBackground from "../TahoeGlassBackground";
-import RouteInstrumentLayer from "../RouteInstrumentLayer";
-import InstrumentAnchorAliases from "../InstrumentAnchorAliases";
 
 interface AppShellProps {
   children: ReactNode;
@@ -11,14 +8,21 @@ interface AppShellProps {
 export default function AppShell({ children }: AppShellProps) {
   return (
     <div className="reviewer-app-shell">
-      <TahoeGlassBackground />
       <Sidebar />
 
       <main className="reviewer-main-stage">
-        <div className="reviewer-scroll-edge" aria-hidden="true" />
+        <header className="reviewer-topbar" aria-label="Exam Reviewer workspace">
+          <div className="reviewer-topbar-copy">
+            <span className="reviewer-topbar-eyebrow">OCCU-MED</span>
+            <strong>Clinical Review Workspace</strong>
+          </div>
+          <div className="reviewer-topbar-context">
+            <span className="reviewer-topbar-dot" aria-hidden="true" />
+            Evidence-guided occupational health review
+          </div>
+        </header>
+
         <div className="reviewer-stage-content">{children}</div>
-        <InstrumentAnchorAliases />
-        <RouteInstrumentLayer />
       </main>
     </div>
   );
