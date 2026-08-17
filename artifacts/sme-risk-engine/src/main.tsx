@@ -3,5 +3,6 @@ import App from "./App";
 import "./index.css";
 import "./app-theme.css";
 import "./pages/advanced-tab-system.css";
+import "./pages/injury-hologram-pointcloud.css";
 
 createRoot(document.getElementById("root")!).render(<App />);
