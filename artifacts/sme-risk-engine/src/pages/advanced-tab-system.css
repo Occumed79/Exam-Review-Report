@@ -1,0 +1,388 @@
+/* Advanced workstation visual system for remaining Exam Reviewer tabs.
+   This layer intentionally preserves functionality and page-specific markup while
+   upgrading the visual language from generic cards to instrument-grade surfaces. */
+
+@keyframes reviewer-grid-drift { to { background-position: 28px 28px, 28px 28px, 0 0; } }
+@keyframes reviewer-edge-scan { 0%,100% { opacity:.18; transform:translateX(-18%); } 50% { opacity:.62; transform:translateX(84%); } }
+@keyframes reviewer-pulse { 0%,100% { opacity:.38; } 50% { opacity:.88; } }
+@keyframes reviewer-float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-3px); } }
+
+:where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation) {
+  position: relative;
+  isolation: isolate;
+}
+
+:where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation)::before {
+  content:'';
+  position:absolute;
+  z-index:-2;
+  inset:-24px -28px -36px;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(105,222,236,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(105,222,236,.025) 1px, transparent 1px),
+    radial-gradient(circle at 42% 0%, rgba(34,153,206,.08), transparent 32%);
+  background-size:28px 28px,28px 28px,auto;
+  mask-image:linear-gradient(to bottom, black 0 84%, transparent 100%);
+  opacity:.8;
+  animation:reviewer-grid-drift 24s linear infinite;
+}
+
+:where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation)::after {
+  content:'';
+  position:absolute;
+  z-index:-1;
+  top:-10px;
+  left:0;
+  width:180px;
+  height:2px;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent,#6de6f0 28%,#d8fdff 52%,transparent 100%);
+  box-shadow:0 0 18px rgba(99,227,239,.42);
+  animation:reviewer-edge-scan 7s ease-in-out infinite;
+}
+
+/* ---- shared header hierarchy ---- */
+:where(.injury-header,.job-header,.deployment-header,.workstation-header,.citation-header) {
+  position:relative;
+  padding:4px 0 20px !important;
+  border-bottom:1px solid rgba(108,200,219,.16) !important;
+}
+
+:where(.injury-header,.job-header,.deployment-header,.workstation-header,.citation-header)::after {
+  content:'';
+  position:absolute;
+  left:0;
+  bottom:-1px;
+  width:120px;
+  height:1px;
+  background:linear-gradient(90deg,#7cecf4,transparent);
+  box-shadow:0 0 12px rgba(108,229,239,.34);
+}
+
+:where(.injury-header,.job-header,.deployment-header,.workstation-header,.citation-header) h1,
+[data-testid='guidelines-page'] h1,
+.library-page h1,
+.settings-workstation h1 {
+  font-size:clamp(32px,2.4vw,42px) !important;
+  line-height:1.02 !important;
+  letter-spacing:-.045em !important;
+  font-weight:780 !important;
+  color:#f5fcfd !important;
+  text-shadow:0 0 24px rgba(102,227,238,.06);
+}
+
+:where(.injury-header,.job-header,.deployment-header,.workstation-header,.citation-header) p,
+[data-testid='guidelines-page'] > div:first-child p,
+.library-page > div:first-child p,
+.settings-workstation > div:first-child p {
+  font-size:14px !important;
+  line-height:1.6 !important;
+  color:rgba(221,237,240,.68) !important;
+}
+
+:where(.injury-kicker,.job-kicker,.deployment-kicker,.workstation-eyebrow,.citation-kicker) {
+  color:#81e5ed !important;
+  font-size:11px !important;
+  letter-spacing:.14em !important;
+  text-shadow:0 0 14px rgba(93,222,234,.24);
+}
+
+/* ---- instrument surfaces ---- */
+:where(.injury-search-panel,.job-search-panel,.job-paste-panel,.citation-search-panel,.aor-map-surface,.aor-inspector,.deployment-map-card,.deployment-detail,.glass-card,.liquid-toolbar) {
+  border:1px solid rgba(103,190,211,.18) !important;
+  background:
+    linear-gradient(135deg,rgba(13,30,42,.97),rgba(6,15,23,.99)) !important;
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.26),
+    inset 0 1px 0 rgba(255,255,255,.03),
+    0 0 38px rgba(53,191,218,.025) !important;
+  backdrop-filter:none !important;
+}
+
+:where(.glass-card,.liquid-toolbar) {
+  border-radius:12px !important;
+}
+
+:where(.glass-input,input,select,textarea) {
+  accent-color:#79dce8;
+}
+
+:where(.injury-search-panel,.job-search-panel,.citation-search-panel,.liquid-toolbar) input,
+:where(.injury-search-panel,.job-search-panel,.citation-search-panel,.liquid-toolbar) select,
+[data-testid='guidelines-page'] .glass-input,
+.library-page .glass-input {
+  min-height:44px !important;
+  color:#eefbfc !important;
+  background:#07131d !important;
+  border-color:rgba(105,190,211,.22) !important;
+  font-size:13px !important;
+  border-radius:8px !important;
+}
+
+/* ================= INJURY INTELLIGENCE ================= */
+.injury-workbench {
+  max-width:1560px;
+}
+.injury-workbench::before {
+  background:
+    radial-gradient(circle at 52% 42%,rgba(52,224,230,.07),transparent 24%),
+    linear-gradient(rgba(86,210,226,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(86,210,226,.022) 1px,transparent 1px);
+  background-size:auto,26px 26px,26px 26px;
+}
+.injury-source-stack {
+  min-width:220px !important;
+  padding:12px 14px !important;
+  border:1px solid rgba(96,188,207,.14) !important;
+  border-radius:10px;
+  background:rgba(5,16,24,.72);
+}
+.injury-source-state { font-size:11px !important; grid-template-columns:8px 56px 1fr !important; }
+.injury-source-state small { font-size:10px !important; }
+.injury-source-dot.active { background:#87f1ec !important; box-shadow:0 0 10px #63d7e4,0 0 22px rgba(66,190,228,.34) !important; }
+.injury-search-panel { padding:14px !important; border-radius:12px !important; }
+.injury-field label { font-size:10px !important; color:rgba(175,226,232,.68) !important; }
+.injury-workbench :where(button,input,select) { font-size:12px; }
+.injury-workbench :where(.injury-stat,.injury-card,.injury-panel,.injury-evidence-card) {
+  border-color:rgba(103,192,211,.16) !important;
+  background:linear-gradient(145deg,rgba(12,27,38,.95),rgba(7,16,24,.98)) !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.025),0 14px 34px rgba(0,0,0,.18) !important;
+}
+
+/* ================= JOB INTELLIGENCE ================= */
+.job-workbench::before {
+  background:
+    radial-gradient(circle at 74% 14%,rgba(114,112,255,.075),transparent 23%),
+    radial-gradient(circle at 35% 24%,rgba(64,213,226,.055),transparent 28%),
+    linear-gradient(rgba(91,205,224,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(91,205,224,.025) 1px,transparent 1px);
+  background-size:auto,auto,30px 30px,30px 30px;
+}
+.job-source-status {
+  min-width:210px !important;
+  padding:11px 13px !important;
+  border:1px solid rgba(109,195,213,.14) !important;
+  border-radius:10px;
+  background:rgba(5,16,24,.72);
+}
+.job-source-status strong { font-size:12px !important; }
+.job-source-status small { font-size:10px !important; }
+.job-tabs {
+  margin-top:16px !important;
+  padding:4px !important;
+  border:1px solid rgba(102,190,211,.18) !important;
+  border-radius:10px !important;
+  background:#07131d !important;
+}
+.job-tabs button { min-height:40px !important; padding:0 13px !important; font-size:12px !important; border-radius:7px !important; }
+.job-tabs button.active {
+  color:#e4fcff !important;
+  background:linear-gradient(180deg,rgba(94,218,231,.17),rgba(65,151,193,.09)) !important;
+  border-color:rgba(117,225,235,.22) !important;
+  box-shadow:0 0 18px rgba(81,209,225,.06);
+}
+.job-workbench :where(.job-card,.job-profile-column,.job-summary,.job-standards,.job-result,.job-duty-card) {
+  border-color:rgba(103,191,211,.16) !important;
+  background:linear-gradient(145deg,rgba(12,27,38,.96),rgba(6,15,23,.985)) !important;
+}
+.job-workbench :where(p,li) { font-size:12px; }
+.job-workbench :where(.job-kicker,.job-summary-title,.job-standards>span,.job-paste-panel>div>span,.job-profile-column>span,.job-summary-job>span) { font-size:10px !important; }
+
+/* ================= EXTERNAL FACTORS ================= */
+.deployment-workbench::before {
+  background:
+    radial-gradient(circle at 52% 38%,rgba(82,216,222,.055),transparent 23%),
+    radial-gradient(circle at 82% 18%,rgba(255,170,91,.04),transparent 20%),
+    repeating-radial-gradient(circle at 50% 50%,rgba(105,221,229,.03) 0 1px,transparent 1px 46px);
+}
+.deployment-map-card {
+  border-radius:14px !important;
+  box-shadow:0 26px 70px rgba(0,0,0,.36),0 0 45px rgba(55,185,209,.035) !important;
+}
+.deployment-map-card::after {
+  content:'';
+  position:absolute;
+  inset:0;
+  z-index:3;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,transparent 49.9%,rgba(114,229,237,.045) 50%,transparent 50.1%),
+    linear-gradient(transparent 49.9%,rgba(114,229,237,.04) 50%,transparent 50.1%);
+  mask-image:radial-gradient(circle at center,black,transparent 78%);
+}
+.deployment-detail { border-radius:14px !important; }
+.deployment-title h2 { font-size:24px !important; }
+.deployment-title p,.deployment-section-body>p { font-size:12px !important; }
+.deployment-section h3 { font-size:13px !important; }
+.deployment-indicators article {
+  min-height:78px;
+  padding:11px !important;
+  border-radius:9px !important;
+  background:linear-gradient(145deg,rgba(15,34,45,.9),rgba(7,17,25,.9)) !important;
+}
+.deployment-indicators strong { font-size:16px !important; color:#d0f8fb !important; }
+.deployment-map-overlay { border-color:rgba(104,202,218,.2) !important; background:rgba(4,14,22,.9) !important; }
+
+/* ================= AOR INTELLIGENCE ================= */
+.aor-command::before {
+  background:
+    radial-gradient(circle at 32% 30%,rgba(66,207,223,.065),transparent 26%),
+    repeating-radial-gradient(circle at 40% 42%,rgba(95,214,226,.028) 0 1px,transparent 1px 58px),
+    linear-gradient(rgba(88,202,220,.02) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(88,202,220,.02) 1px,transparent 1px);
+  background-size:auto,auto,32px 32px,32px 32px;
+}
+.aor-command-grid { gap:18px !important; }
+.aor-map-surface,.aor-inspector { border-radius:14px !important; border-color:rgba(103,195,214,.2) !important; }
+.aor-map-surface { box-shadow:0 28px 72px rgba(0,0,0,.35),0 0 52px rgba(54,191,218,.03) !important; }
+.aor-world::after {
+  content:'';
+  position:absolute;
+  z-index:4;
+  inset:0;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent 49.8%,rgba(107,225,235,.05) 50%,transparent 50.2%);
+}
+.aor-map-toolbar { height:48px !important; border-color:rgba(117,219,233,.24) !important; background:rgba(5,16,24,.93) !important; }
+.aor-map-toolbar input { font-size:13px !important; }
+.aor-inspector { background:linear-gradient(180deg,#0b1822,#061018) !important; }
+.inspector-head { background:#0a1720 !important; }
+.inspector-head span { font-size:10px !important; color:#8de9ef !important; }
+.inspector-head h2 { font-size:24px !important; }
+.inspector-card h3 { font-size:13px !important; }
+.inspector-card.overview>p,.inspector-card dd,.source-row-title { font-size:12px !important; }
+.health-grid article {
+  padding:11px !important;
+  border-radius:9px !important;
+  border-color:rgba(106,198,216,.14) !important;
+  background:linear-gradient(145deg,rgba(14,31,42,.9),rgba(7,17,25,.92)) !important;
+}
+.health-grid strong { font-size:16px !important; color:#d4fbff !important; }
+
+/* ================= CITATION FINDER ================= */
+.citation-workbench::before {
+  background:
+    radial-gradient(circle at 64% 16%,rgba(134,108,255,.07),transparent 24%),
+    radial-gradient(circle at 24% 32%,rgba(57,213,228,.06),transparent 28%),
+    linear-gradient(rgba(93,203,220,.023) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(93,203,220,.023) 1px,transparent 1px);
+  background-size:auto,auto,34px 34px,34px 34px;
+}
+.citation-search-panel { margin-top:16px !important; padding:13px !important; border-radius:12px !important; }
+.citation-search-input { min-height:52px !important; border-radius:9px !important; border-color:rgba(105,200,219,.22) !important; background:#06131d !important; }
+.citation-search-input input { font-size:13px !important; }
+.citation-search-input button { min-height:36px !important; padding:0 12px !important; font-size:11px !important; }
+.citation-workbench :where(.citation-panel,.citation-side,.citation-result,.citation-source-card) {
+  border-color:rgba(103,193,213,.17) !important;
+  background:linear-gradient(145deg,rgba(12,28,39,.96),rgba(6,15,23,.985)) !important;
+  box-shadow:0 16px 38px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.025) !important;
+}
+.citation-workbench :where(.citation-panel-head span,.citation-side-head>span,.citation-examples>span) { font-size:10px !important; }
+.citation-workbench :where(p,small) { font-size:11px; }
+
+/* ================= SOURCE LIBRARY / GUIDELINE EDITOR ================= */
+[data-testid='guidelines-page'],.library-page,.settings-workstation { max-width:1460px !important; }
+[data-testid='guidelines-page']::before,.library-page::before {
+  background:
+    radial-gradient(circle at 78% 10%,rgba(106,103,255,.06),transparent 22%),
+    linear-gradient(rgba(92,204,222,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(92,204,222,.022) 1px,transparent 1px);
+  background-size:auto,30px 30px,30px 30px;
+}
+[data-testid='guidelines-page'] > div:first-child,
+.library-page > div:first-child,
+.settings-workstation > div:first-child {
+  position:relative;
+  padding-bottom:18px;
+  border-bottom:1px solid rgba(104,195,214,.16);
+}
+[data-testid='guidelines-page'] .liquid-toolbar,
+.library-page .liquid-toolbar {
+  margin-top:14px;
+  padding:12px 14px !important;
+  border-radius:11px !important;
+}
+[data-testid='guidelines-page'] .glass-card,
+.library-page .glass-card {
+  position:relative;
+  overflow:hidden;
+}
+[data-testid='guidelines-page'] .glass-card::before,
+.library-page .glass-card::before {
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  width:70px;
+  height:1px;
+  background:linear-gradient(90deg,#78e7ef,transparent);
+  opacity:.62;
+}
+[data-testid='guidelines-page'] .glass-card strong,
+.library-page .glass-card strong { font-size:13px !important; color:#edfafd !important; }
+[data-testid='guidelines-page'] .glass-card :where(p,div,span),
+.library-page .glass-card :where(p,div,span) { line-height:1.55; }
+[data-testid='guidelines-page'] .glow-btn,
+.library-page .glow-btn,
+.settings-workstation .glow-btn {
+  min-height:40px !important;
+  border-radius:8px !important;
+  border:1px solid rgba(110,219,231,.2) !important;
+  background:linear-gradient(180deg,rgba(92,214,228,.14),rgba(54,132,170,.07)) !important;
+  color:#d9fbfd !important;
+  font-size:12px !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.035),0 0 18px rgba(69,198,220,.035) !important;
+}
+
+/* ================= SETTINGS / SYSTEM HEALTH ================= */
+.settings-workstation::before {
+  background:
+    radial-gradient(circle at 76% 12%,rgba(69,217,171,.055),transparent 22%),
+    radial-gradient(circle at 26% 24%,rgba(65,190,224,.05),transparent 27%),
+    linear-gradient(rgba(91,206,220,.022) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(91,206,220,.022) 1px,transparent 1px);
+  background-size:auto,auto,32px 32px,32px 32px;
+}
+.settings-workstation .settings-section-label {
+  margin:22px 0 9px !important;
+  color:#84e4eb !important;
+  font:750 10px/1.2 var(--app-font-mono) !important;
+  letter-spacing:.14em !important;
+  text-transform:uppercase;
+}
+.settings-workstation .glass-card {
+  border-radius:12px !important;
+}
+.settings-workstation .provider-status-grid {
+  gap:10px !important;
+}
+.settings-workstation .provider-status-grid > * {
+  border:1px solid rgba(101,194,211,.16) !important;
+  border-radius:10px !important;
+  background:linear-gradient(145deg,rgba(12,28,38,.96),rgba(6,16,23,.98)) !important;
+  box-shadow:inset 0 1px rgba(255,255,255,.025) !important;
+}
+.settings-workstation :where(p,small) { font-size:11px !important; }
+.settings-workstation :where(strong) { color:#effbfc; }
+
+/* readability floor across these advanced tabs */
+:where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation) :where(button,input,select,textarea) {
+  font-family:inherit;
+}
+:where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation) :where(button) {
+  transition:border-color .18s ease,background .18s ease,color .18s ease,transform .18s ease,box-shadow .18s ease;
+}
+:where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation) :where(button:hover) {
+  border-color:rgba(119,223,233,.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation)::before,
+  :where(.injury-workbench,.job-workbench,.deployment-workbench,.aor-command,.citation-workbench,[data-testid='guidelines-page'],.library-page,.settings-workstation)::after { animation:none !important; }
+}
+
+@media (max-width:1100px) {
+  :where(.injury-header,.job-header,.deployment-header,.workstation-header) { gap:1rem; }
+  :where(.injury-header,.job-header,.deployment-header,.workstation-header) h1 { font-size:32px !important; }
+}
