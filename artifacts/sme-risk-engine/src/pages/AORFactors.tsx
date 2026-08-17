@@ -1,16 +1,15 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { CloudSun, Globe2, LoaderCircle, Radar, RefreshCw } from 'lucide-react';
-import AORIntelligence from './AORIntelligence';
+import AORPublicIntelligence from './AORPublicIntelligence';
 import ExternalFactors from './ExternalFactors';
 import { fetchIntelligenceProviders, type ProviderStatusRecord } from '../lib/intelligenceApi';
 import './consolidated-workspaces.css';
 
-const AOR_PROVIDER_IDS = ['newsdata', 'apitube', 'regulations', 'congress'] as const;
+const AOR_PROVIDER_IDS = ['who_outbreaks', 'gdacs', 'usgs'] as const;
 const PROVIDER_LABELS: Record<(typeof AOR_PROVIDER_IDS)[number], string> = {
-  newsdata: 'NewsData.io',
-  apitube: 'APITube',
-  regulations: 'Regulations.gov',
-  congress: 'Congress.gov',
+  who_outbreaks: 'WHO Outbreaks',
+  gdacs: 'GDACS',
+  usgs: 'USGS Earthquakes',
 };
 
 function providerTone(status?: ProviderStatusRecord['status']) {
@@ -54,7 +53,7 @@ export default function AORFactors() {
           <p>One continuous operating-environment workspace combining geographic command intelligence with the exposure and human-performance conditions that shape occupational risk in the field.</p>
         </div>
         <div className="consolidated-domain-summary" aria-label="Workspace coverage">
-          <span><Radar size={14} /><b>AOR / COMMAND</b><small>Geography · health · security · policy</small></span>
+          <span><Radar size={14} /><b>AOR / COMMAND</b><small>Geography · outbreaks · disasters · seismic activity</small></span>
           <span><CloudSun size={14} /><b>EXPOSURE FACTORS</b><small>Heat · altitude · AQI · fatigue · PPE</small></span>
         </div>
       </header>
@@ -62,7 +61,7 @@ export default function AORFactors() {
       <div className="aor-provider-diagnostics" aria-label="Live intelligence provider diagnostics">
         <div className="aor-provider-diagnostics-label">
           <span>LIVE SOURCE DIAGNOSTICS</span>
-          <small>Active upstream checks — not configuration-only status</small>
+          <small>Public no-key operational sources — active upstream checks</small>
         </div>
         <div className="aor-provider-diagnostics-grid">
           {AOR_PROVIDER_IDS.map((id) => {
@@ -96,12 +95,12 @@ export default function AORFactors() {
           <div>
             <small>GEOGRAPHIC / COMMAND DOMAIN</small>
             <h2 id="aor-domain-title"><Radar size={17} /> AOR &amp; Command Intelligence</h2>
-            <p>Combatant-command coverage, regional public-health context, operational/security signals, policy, and source timeline.</p>
+            <p>Combatant-command coverage with WHO disease outbreaks, GDACS natural hazards, USGS seismic activity, and a command-scoped source timeline.</p>
           </div>
           <div className="consolidated-domain-signal"><i /> LIVE AOR PICTURE</div>
         </div>
         <div className="consolidated-domain-content">
-          <AORIntelligence />
+          <AORPublicIntelligence />
         </div>
       </section>
 
