@@ -1,0 +1,99 @@
+.aor-public-command .aor-command-grid {
+  align-items: start;
+}
+
+.aor-public-command .aor-inspector {
+  max-height: 760px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.aor-public-command .aor-map-surface {
+  align-self: start;
+}
+
+.aor-source-ribbon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 9px 10px;
+  border: 1px solid rgba(108, 221, 235, 0.14);
+  border-radius: 12px;
+  background: rgba(3, 17, 25, 0.7);
+}
+
+.aor-source-ribbon > span,
+.aor-source-ribbon > strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+
+.aor-source-ribbon > span {
+  color: rgba(222, 246, 249, 0.72);
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.aor-source-ribbon > strong {
+  margin-left: auto;
+  color: rgba(231, 251, 249, 0.88);
+  background: rgba(54, 192, 174, 0.06);
+}
+
+.aor-source-ribbon > strong i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #68d7a5;
+  box-shadow: 0 0 9px rgba(104, 215, 165, 0.45);
+}
+
+.aor-source-ribbon > strong.degraded i {
+  background: #e3b45f;
+  box-shadow: 0 0 9px rgba(227, 180, 95, 0.4);
+}
+
+.aor-source-ribbon > strong.loading i {
+  background: #74cfe1;
+  box-shadow: 0 0 9px rgba(116, 207, 225, 0.4);
+}
+
+.aor-public-command .aor-scope-card {
+  padding-bottom: 12px;
+}
+
+.aor-source-summary {
+  display: block;
+  margin-top: 4px;
+  color: rgba(223, 240, 242, 0.58);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.aor-public-command .source-row {
+  padding-block: 9px;
+}
+
+.aor-public-command .provider-warning {
+  margin-bottom: 8px;
+}
+
+@media (max-width: 1180px) {
+  .aor-public-command .aor-inspector {
+    max-height: none;
+    overflow: visible;
+  }
+
+  .aor-source-ribbon > strong {
+    margin-left: 0;
+  }
+}
