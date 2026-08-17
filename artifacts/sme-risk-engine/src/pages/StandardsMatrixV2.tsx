@@ -25,8 +25,10 @@ const LEVEL_LABEL: Record<FindingLevel, string> = {
   strict: 'Strict / high-priority',
 };
 
+const DEFAULT_OCCUPATION = 'DoD contractor — CENTCOM deployment';
+
 const OCCUPATIONS = [
-  'DoD contractor — CENTCOM deployment',
+  DEFAULT_OCCUPATION,
   'Firefighter / emergency responder',
   'Commercial driver',
   'Pilot / aviation crew',
@@ -41,10 +43,10 @@ function numberValue(value: string): number | undefined {
 }
 
 export default function StandardsMatrixV2() {
-  const [occupation, setOccupation] = useState('DoD contractor — CENTCOM deployment');
+  const [occupation, setOccupation] = useState(DEFAULT_OCCUPATION);
   const [condition, setCondition] = useState('');
   const [medication, setMedication] = useState('');
-  const [frameworks, setFrameworks] = useState<StandardId[]>(['centcom-mod18']);
+  const [frameworks, setFrameworks] = useState<StandardId[]>(() => defaultFrameworksForOccupation(DEFAULT_OCCUPATION));
   const [age, setAge] = useState('');
   const [a1c, setA1c] = useState('');
   const [ahi, setAhi] = useState('');
@@ -56,8 +58,14 @@ export default function StandardsMatrixV2() {
   const [weightLb, setWeightLb] = useState('');
   const [activeFindingId, setActiveFindingId] = useState('');
 
+  const occupationDefaults = useMemo(() => defaultFrameworksForOccupation(occupation), [occupation]);
+  const effectiveFrameworks = useMemo<StandardId[]>(
+    () => frameworks.length ? frameworks : occupationDefaults,
+    [frameworks, occupationDefaults],
+  );
+
   const context = useMemo<ReviewContext>(() => ({
-    frameworks,
+    frameworks: effectiveFrameworks,
     occupation,
     condition,
     medication,
@@ -70,7 +78,7 @@ export default function StandardsMatrixV2() {
     dbp: numberValue(dbp),
     ascvd: numberValue(ascvd),
     weightLb: numberValue(weightLb),
-  }), [frameworks, occupation, condition, medication, age, a1c, ahi, papCompliance, epworth, sbp, dbp, ascvd, weightLb]);
+  }), [effectiveFrameworks, occupation, condition, medication, age, a1c, ahi, papCompliance, epworth, sbp, dbp, ascvd, weightLb]);
 
   const findings = useMemo(() => evaluateStandards(context), [context]);
   const activeFinding = findings.find((item) => item.id === activeFindingId) ?? findings[0] ?? null;
@@ -79,7 +87,15 @@ export default function StandardsMatrixV2() {
   const reviewCount = findings.filter((item) => item.level === 'review').length;
 
   const toggleFramework = (id: StandardId) => {
-    setFrameworks((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+    setFrameworks((current) => {
+      const stack = current.length ? current : occupationDefaults;
+      if (stack.includes(id)) {
+        if (stack.length === 1) return stack;
+        return stack.filter((item) => item !== id);
+      }
+      return [...stack, id];
+    });
+    setActiveFindingId('');
   };
 
   const applyOccupation = (value: string) => {
@@ -98,7 +114,7 @@ export default function StandardsMatrixV2() {
         </div>
         <div className="standards-engine-status">
           <span><i /> SOURCE ENGINE LIVE</span>
-          <strong>{frameworks.length} frameworks · {findings.length} matched rules</strong>
+          <strong>{effectiveFrameworks.length} frameworks · {findings.length} matched rules</strong>
         </div>
       </header>
 
@@ -106,12 +122,13 @@ export default function StandardsMatrixV2() {
         {(Object.keys(STANDARD_SOURCES) as StandardId[]).map((id) => {
           const source = STANDARD_SOURCES[id];
           const Icon = FRAMEWORK_ICON[id];
-          const active = frameworks.includes(id);
+          const active = effectiveFrameworks.includes(id);
+          const requiredByOccupation = occupationDefaults.includes(id);
           return (
             <button key={id} type="button" className={`standard-source-chip${active ? ' active' : ''}`} onClick={() => toggleFramework(id)}>
               <span className="source-chip-icon"><Icon size={17} /></span>
               <span><small>{source.shortLabel}</small><strong>{source.edition}</strong></span>
-              <em>{active ? 'IN STACK' : 'ADD'}</em>
+              <em>{active ? (requiredByOccupation ? 'CORE' : 'IN STACK') : 'ADD'}</em>
             </button>
           );
         })}
@@ -158,7 +175,7 @@ export default function StandardsMatrixV2() {
             </div>
           </div>
           <div className="standards-network-shell">
-            <StandardsRelationshipMap frameworks={frameworks} findings={findings} activeFindingId={activeFinding?.id} onFindingSelect={setActiveFindingId} />
+            <StandardsRelationshipMap frameworks={effectiveFrameworks} findings={findings} activeFindingId={activeFinding?.id} onFindingSelect={setActiveFindingId} />
             <div className="standards-network-legend"><span><i className="strict" /> strict</span><span><i className="waiver" /> waiver</span><span><i className="review" /> review</span><span><i className="source" /> source</span></div>
           </div>
         </main>
@@ -204,7 +221,7 @@ export default function StandardsMatrixV2() {
       <section className="standards-source-register">
         <div className="standards-findings-head"><div><span>05</span><strong>Source register</strong><small>Authority, edition, and live source access.</small></div></div>
         <div className="standards-source-register-grid">
-          {frameworks.map((id) => {
+          {effectiveFrameworks.map((id) => {
             const source = STANDARD_SOURCES[id];
             return <article key={id}><span>{source.authority.replace('-', ' ')}</span><h3>{source.title}</h3><p>{source.description}</p><div><b>{source.currentAsOf}</b><a href={source.sourceUrl} target="_blank" rel="noreferrer">Open source <ExternalLink size={11} /></a></div></article>;
           })}
